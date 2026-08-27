@@ -670,8 +670,8 @@
       hourlyRate: 40.00 
     };
 
-    // HIGH-AVAILABILITY CLOUD BACKEND (CORS & Cross-Device Enabled)
-    const CLOUD_SYNC_URL = "https://enin-domestic-sync-default-rtdb.europe-west1.firebasedatabase.app/";
+    // YOUR PRIVATE LIVE FIREBASE CLOUD DATABASE
+    const CLOUD_SYNC_URL = "https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app/";
     let isCloudSyncing = false;
 
     let users = [masterAdmin];
@@ -688,9 +688,9 @@
     function initApp() {
       // 1. Restore local cache
       try {
-        const u = JSON.parse(localStorage.getItem('enin_live_users_v3'));
-        const s = JSON.parse(localStorage.getItem('enin_live_shifts_v3'));
-        const c = JSON.parse(localStorage.getItem('enin_live_clients_v3'));
+        const u = JSON.parse(localStorage.getItem('enin_live_users_v4'));
+        const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
+        const c = JSON.parse(localStorage.getItem('enin_live_clients_v4'));
         if (u && Array.isArray(u)) users = u;
         if (s && Array.isArray(s)) shifts = s;
         if (c && Array.isArray(c)) clients = c;
@@ -700,7 +700,7 @@
         users.unshift(masterAdmin);
       }
 
-      // 2. Restore active login session
+      // 2. Restore active login session across reloads
       const savedSession = localStorage.getItem('enin_active_session');
       if (savedSession) {
         try {
@@ -715,8 +715,8 @@
       // 3. Connect to live cloud database immediately
       pullFromCloud(false);
 
-      // 4. Background real-time polling every 3 seconds
-      setInterval(() => pullFromCloud(false), 3000);
+      // 4. Background real-time polling every 2.5 seconds
+      setInterval(() => pullFromCloud(false), 2500);
     }
 
     // PULL CLOUD DATA
@@ -745,19 +745,19 @@
             else users.push(ru);
           });
           if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
-          localStorage.setItem('enin_live_users_v3', JSON.stringify(users));
+          localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
           updated = true;
         }
 
         if (resShifts && typeof resShifts === 'object') {
           shifts = Array.isArray(resShifts) ? resShifts : Object.values(resShifts);
-          localStorage.setItem('enin_live_shifts_v3', JSON.stringify(shifts));
+          localStorage.setItem('enin_live_shifts_v4', JSON.stringify(shifts));
           updated = true;
         }
 
         if (resClients && typeof resClients === 'object') {
           clients = Array.isArray(resClients) ? resClients : Object.values(resClients);
-          localStorage.setItem('enin_live_clients_v3', JSON.stringify(clients));
+          localStorage.setItem('enin_live_clients_v4', JSON.stringify(clients));
           updated = true;
         }
 
@@ -771,7 +771,7 @@
         }
 
         if (isManual) {
-          showToast("✓ Synced with live cloud database!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          showToast("✓ Connected to Live Firebase Database!", "bg-emerald-50 text-emerald-800 border-emerald-200");
         }
       } catch(err) {
         if (isManual) showToast("Connected via local cache.", "bg-slate-100 text-slate-700 border-slate-200");
@@ -785,9 +785,9 @@
 
     // PUSH CLOUD DATA
     async function pushToCloud() {
-      localStorage.setItem('enin_live_users_v3', JSON.stringify(users));
-      localStorage.setItem('enin_live_shifts_v3', JSON.stringify(shifts));
-      localStorage.setItem('enin_live_clients_v3', JSON.stringify(clients));
+      localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
+      localStorage.setItem('enin_live_shifts_v4', JSON.stringify(shifts));
+      localStorage.setItem('enin_live_clients_v4', JSON.stringify(clients));
 
       isCloudSyncing = true;
       try {
@@ -914,7 +914,7 @@
       calcHMRC();
 
       if (currentUser.role === 'it_admin') {
-        // Keep in IT admin if already there
+        // IT admin
       } else if (currentUser.role === 'manager') {
         // Manager
       }
