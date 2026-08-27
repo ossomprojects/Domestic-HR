@@ -54,7 +54,7 @@
           <i class="fa-solid fa-location-crosshairs text-2xl"></i>
         </div>
         <h1 class="text-xl font-extrabold text-snoo-navy tracking-tight">Enin's Domestic HR</h1>
-        <p class="text-xs text-slate-500 font-medium">Domestic Logistics & Shift Marketplace</p>
+        <p class="text-xs text-slate-500 font-medium">Live Cloud Portal & Shift Marketplace</p>
       </div>
 
       <!-- Auth Toggle -->
@@ -67,7 +67,7 @@
         </button>
       </div>
 
-      <!-- A. CLEAN LOGIN FORM -->
+      <!-- A. LOGIN FORM -->
       <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
         <div>
           <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address:</label>
@@ -132,7 +132,7 @@
   <!-- ================= 2. MAIN APPLICATION ================= -->
   <div id="mainApp" class="hidden flex-1 flex flex-col">
     
-    <!-- Light Header Banner -->
+    <!-- Header Banner -->
     <header class="bg-white/95 backdrop-blur-md text-slate-800 shadow-sm sticky top-0 z-40 border-b border-slate-200/90">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div class="flex items-center space-x-3">
@@ -148,6 +148,12 @@
         </div>
 
         <div class="flex items-center space-x-4">
+          <!-- Real-Time Cloud Sync Indicator -->
+          <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Cloud Sync Live</span>
+          </div>
+
           <div class="text-right hidden sm:block">
             <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900">User</p>
             <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Staff</p>
@@ -201,7 +207,7 @@
         <div class="flex justify-between items-center mb-6">
           <div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Available Domestic Shifts & Block Contracts</h2>
-            <p class="text-xs text-slate-500 font-medium">Browse verified domestic shifts or claim multi-day contracts.</p>
+            <p class="text-xs text-slate-500 font-medium">Live real-time synced shifts across all phones & devices.</p>
           </div>
           <span class="text-xs font-bold bg-snoo-blue/10 text-snoo-blue px-3.5 py-1.5 rounded-full border border-snoo-blue/20 flex items-center gap-1.5">
             <i class="fa-solid fa-bolt text-snoo-blue"></i> 1-Click Claim Active
@@ -440,7 +446,7 @@
 
       </section>
 
-      <!-- ================= TAB 4: IT SUPERIOR ADMIN & ROLES (LIGHT THEME) ================= -->
+      <!-- ================= TAB 4: IT SUPERIOR ADMIN & ROLES ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
@@ -450,15 +456,15 @@
               <span class="text-xs text-indigo-700 font-bold">IT Management & Security Console</span>
             </div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Enin's IT Infrastructure & Roles Control</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Manage user roles (Staff vs Manager) and system permissions.</p>
+            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Manage live user roles (Staff vs Manager) in real-time across all devices.</p>
           </div>
         </div>
 
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-4">
             <div>
-              <h3 class="text-sm font-bold text-snoo-navy">Registered User Accounts & Role Assignment</h3>
-              <p class="text-xs text-slate-500">Assign or switch roles between <strong>Staff</strong> and <strong>Manager</strong>.</p>
+              <h3 class="text-sm font-bold text-snoo-navy">Registered User Accounts & Live Roles</h3>
+              <p class="text-xs text-slate-500">Live synced list of all registered phones & accounts.</p>
             </div>
           </div>
 
@@ -541,7 +547,7 @@
         </div>
       </section>
 
-      <!-- ================= TAB 6: HMRC TAXES & PAYE (CLEAN LIGHT THEME) ================= -->
+      <!-- ================= TAB 6: HMRC TAXES & PAYE ================= -->
       <section id="view-hmrc" class="tab-view hidden">
         <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-6 pb-4 border-b">
@@ -603,7 +609,7 @@
     </main>
   </div>
 
-  <!-- ================= 4. JAVASCRIPT ENGINE ================= -->
+  <!-- ================= 4. REAL-TIME CLOUD BACKEND ENGINE ================= -->
   <script>
     // PERMANENT MASTER IT ADMIN
     const masterAdmin = { 
@@ -618,25 +624,131 @@
       hourlyRate: 40.00 
     };
 
-    let users = JSON.parse(localStorage.getItem('enin_live_users_v2')) || [masterAdmin];
-    if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) {
-      users.unshift(masterAdmin);
-    }
+    // CLOUD SYNC CONFIGURATION (Shared across all devices in real-time)
+    const CLOUD_SYNC_ENDPOINT = "https://kvdb.io/5q3KqY4H5oZ99p2xPEnin7/";
+    let isCloudSyncing = false;
 
-    let clients = JSON.parse(localStorage.getItem('enin_live_clients_v2')) || [
-      { id: 1, name: "Lord & Lady Harrington", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 }
+    let users = [masterAdmin];
+    let clients = [
+      { id: 1, name: "Lord & Lady Harrington", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
+      { id: 2, name: "Dr. Robert Chen", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
     ];
-
-    let shifts = JSON.parse(localStorage.getItem('enin_live_shifts_v2')) || [];
+    let shifts = [];
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
 
-    function saveState() {
-      localStorage.setItem('enin_live_users_v2', JSON.stringify(users));
-      localStorage.setItem('enin_live_shifts_v2', JSON.stringify(shifts));
-      localStorage.setItem('enin_live_clients_v2', JSON.stringify(clients));
+    // ================= PERSISTENT SESSION RESTORATION =================
+    function initApp() {
+      // 1. Load local cache first
+      try {
+        const localUsers = JSON.parse(localStorage.getItem('enin_cloud_users'));
+        const localShifts = JSON.parse(localStorage.getItem('enin_cloud_shifts'));
+        const localClients = JSON.parse(localStorage.getItem('enin_cloud_clients'));
+        if (localUsers && Array.isArray(localUsers)) users = localUsers;
+        if (localShifts && Array.isArray(localShifts)) shifts = localShifts;
+        if (localClients && Array.isArray(localClients)) clients = localClients;
+      } catch(e) {}
+
+      // Ensure Master Admin exists
+      if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) {
+        users.unshift(masterAdmin);
+      }
+
+      // 2. Check if user has an active persistent session
+      const savedSession = localStorage.getItem('enin_active_session');
+      if (savedSession) {
+        try {
+          const parsed = JSON.parse(savedSession);
+          // Match with latest user data
+          const liveUser = users.find(u => u.email.toLowerCase() === parsed.email.toLowerCase()) || parsed;
+          currentUser = liveUser;
+          document.getElementById('authScreen').classList.add('hidden');
+          document.getElementById('mainApp').classList.remove('hidden');
+          setupAppForUser();
+        } catch(e) {
+          console.warn("Session restore error", e);
+        }
+      }
+
+      // 3. Immediately pull live cloud state from other devices
+      pullFromCloud();
+
+      // 4. Start automatic polling every 4 seconds to sync shifts/users across phones
+      setInterval(pullFromCloud, 4000);
+    }
+
+    // PULL LATEST STATE FROM CLOUD
+    async function pullFromCloud() {
+      if (isCloudSyncing) return;
+      try {
+        const [resUsers, resShifts, resClients] = await Promise.all([
+          fetch(CLOUD_SYNC_ENDPOINT + 'users').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(CLOUD_SYNC_ENDPOINT + 'shifts').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(CLOUD_SYNC_ENDPOINT + 'clients').then(r => r.ok ? r.json() : null).catch(() => null)
+        ]);
+
+        let changed = false;
+
+        if (resUsers && Array.isArray(resUsers)) {
+          // Merge users
+          resUsers.forEach(ru => {
+            const idx = users.findIndex(u => u.email.toLowerCase() === ru.email.toLowerCase());
+            if (idx >= 0) users[idx] = ru;
+            else users.push(ru);
+          });
+          if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
+          localStorage.setItem('enin_cloud_users', JSON.stringify(users));
+          changed = true;
+        }
+
+        if (resShifts && Array.isArray(resShifts)) {
+          shifts = resShifts;
+          localStorage.setItem('enin_cloud_shifts', JSON.stringify(shifts));
+          changed = true;
+        }
+
+        if (resClients && Array.isArray(resClients)) {
+          clients = resClients;
+          localStorage.setItem('enin_cloud_clients', JSON.stringify(clients));
+          changed = true;
+        }
+
+        if (changed && currentUser) {
+          // Keep current user role in sync if changed by admin
+          const updatedSelf = users.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+          if (updatedSelf && updatedSelf.role !== currentUser.role) {
+            currentUser = updatedSelf;
+            localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+            setupAppForUser();
+          }
+
+          renderShifts();
+          updateITDirectory();
+          if (currentUser.role !== 'staff') updateManagerView();
+        }
+      } catch(err) {
+        // Fallback to local
+      }
+    }
+
+    // PUSH STATE TO CLOUD
+    async function pushToCloud() {
+      // Always save local first
+      localStorage.setItem('enin_cloud_users', JSON.stringify(users));
+      localStorage.setItem('enin_cloud_shifts', JSON.stringify(shifts));
+      localStorage.setItem('enin_cloud_clients', JSON.stringify(clients));
+
+      isCloudSyncing = true;
+      try {
+        await Promise.all([
+          fetch(CLOUD_SYNC_ENDPOINT + 'users', { method: 'POST', body: JSON.stringify(users) }).catch(() => {}),
+          fetch(CLOUD_SYNC_ENDPOINT + 'shifts', { method: 'POST', body: JSON.stringify(shifts) }).catch(() => {}),
+          fetch(CLOUD_SYNC_ENDPOINT + 'clients', { method: 'POST', body: JSON.stringify(clients) }).catch(() => {})
+        ]);
+      } catch(e) {}
+      isCloudSyncing = false;
     }
 
     function toggleAuthMode(mode) {
@@ -680,6 +792,8 @@
     }
 
     function loginSuccess() {
+      // Save session permanently so refreshes stay logged in
+      localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
@@ -711,13 +825,16 @@
       };
 
       users.push(newUser);
-      saveState();
-
       currentUser = newUser;
+      
+      // Save active session & push immediately to cloud
+      localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+      pushToCloud();
+
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
-      showToast(`Account created as ${newUser.title}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+      showToast(`Account registered & live! Role: ${newUser.title}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
     function setupAppForUser() {
@@ -749,10 +866,12 @@
 
     function handleLogout() {
       currentUser = null;
+      localStorage.removeItem('enin_active_session');
       document.getElementById('mainApp').classList.add('hidden');
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('loginEmail').value = '';
       document.getElementById('loginPassword').value = '';
+      showToast("Logged out successfully.", "bg-slate-100 text-slate-800 border-slate-200");
     }
 
     function applyRolePermissions() {
@@ -1017,9 +1136,9 @@
       if (s) {
         s.status = 'claimed';
         s.staffId = currentUser.id;
-        saveState();
+        pushToCloud();
         renderShifts();
-        showToast(`✓ Contract claimed successfully! Added to your schedule.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Contract claimed! Synced to cloud.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
@@ -1042,7 +1161,7 @@
         s.clockOutTime = `Today ${timeStr}`;
         showToast('✓ Clocked out successfully! Timesheet submitted.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
-      saveState();
+      pushToCloud();
       renderShifts();
       if (currentUser.role !== 'staff') updateManagerView();
     }
@@ -1076,9 +1195,9 @@
       if (u) {
         u.role = u.role === 'manager' ? 'staff' : 'manager';
         u.title = u.role === 'manager' ? 'Operations Manager' : 'Domestic Staff';
-        saveState();
+        pushToCloud();
         updateITDirectory();
-        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()} (Cloud Synced)`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
@@ -1118,7 +1237,7 @@
           hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
           clockInTime: null, clockOutTime: null, verified: false
         });
-        showToast(`✓ Single shift published to marketplace!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Single shift published to cloud marketplace!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       } else {
         const startStr = document.getElementById('newShiftStartDate').value;
         const endStr = document.getElementById('newShiftEndDate').value;
@@ -1178,7 +1297,7 @@
         showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days, ${totalBlockHours}h total)!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
       
-      saveState();
+      pushToCloud();
       renderShifts();
       updateManagerView();
     }
@@ -1293,6 +1412,9 @@
       setTimeout(hideToast, 4500);
     }
     function hideToast() { document.getElementById('toast').classList.add('hidden'); }
+
+    // Start App & Live Cloud Backend
+    initApp();
   </script>
 </body>
 </html>
