@@ -57,12 +57,7 @@
           <i class="fa-solid fa-location-crosshairs text-2xl"></i>
         </div>
         <h1 class="text-2xl font-black text-snoo-navy tracking-tight">Ennin's Domestic HR</h1>
-        <p class="text-xs text-slate-500 font-medium mt-1">Live Cloud Portal & Shift Marketplace</p>
-        
-        <!-- Live Firebase Status Badge -->
-        <div id="authFirebaseStatus" class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Server Connected
-        </div>
+        <p class="text-xs text-slate-500 font-medium mt-1">Domestic Workforce & Shift Logistics Portal</p>
       </div>
 
       <!-- Auth Toggle -->
@@ -157,13 +152,13 @@
         </div>
 
         <div class="flex items-center space-x-3">
-          <!-- Real-Time Firebase Status Pill -->
-          <div id="headerFirebasePill" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
+          <!-- Real-Time Firebase Status Pill (ONLY VISIBLE TO IT ADMIN) -->
+          <div id="headerFirebasePill" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online
           </div>
 
-          <!-- Real-Time Cloud Sync Button -->
-          <button onclick="testAndSyncFirebase(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
+          <!-- Real-Time Cloud Sync Button (ONLY VISIBLE TO IT ADMIN) -->
+          <button id="headerSyncBtn" onclick="testAndSyncFirebase(true)" title="Force sync live database" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
             <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
             <span class="hidden sm:inline">Sync Cloud</span>
           </button>
@@ -229,11 +224,8 @@
             <div>
               <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. A confirmation email has been dispatched. Once approved on the IT console, the shift marketplace will automatically unlock for you.
+                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once authorized by IT admin, the shift marketplace will automatically unlock for you.
               </p>
-              <button onclick="testAndSyncFirebase(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
-                <i class="fa-solid fa-rotate text-[11px]"></i> Check Status Now
-              </button>
             </div>
           </div>
         </div>
@@ -485,14 +477,72 @@
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
-              <span class="text-xs text-indigo-700 font-bold">IT Management & Automated Email Dispatch</span>
+              <span class="text-xs text-indigo-700 font-bold">IT Management & User Provisioning</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Ennin's IT Infrastructure & Authorizations</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review staff, dispatch shifts, and manage automated email alerts.</p>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Ennin's IT Infrastructure & Provisioning Control</h2>
+            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Register staff directly, manage accounts, and monitor automated emails.</p>
           </div>
         </div>
 
-        <!-- SECTION A: PENDING APPROVALS QUEUE -->
+        <!-- SECTION A: DIRECT STAFF ONBOARDING FORM (FOR USERS UNABLE TO SIGNUP THEMSELVES) -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct Staff & Manager Onboarding (IT Direct Register)
+              </h3>
+              <p class="text-xs text-slate-500">Register new staff directly into Firebase without waiting for manual signup.</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleITDirectAddUser(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Legal Name:</label>
+              <input type="text" id="itAddName" placeholder="e.g. John Adams" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Email Address:</label>
+              <input type="email" id="itAddEmail" placeholder="john@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">UK NI Number:</label>
+              <input type="text" id="itAddNI" placeholder="QQ 12 34 56 A" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold uppercase text-indigo-900">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Phone Number:</label>
+              <input type="tel" id="itAddPhone" placeholder="07700900123" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Role:</label>
+              <select id="itAddRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy">
+                <option value="staff">Staff</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Pay Rate (£/hr):</label>
+              <input type="number" id="itAddRate" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Password:</label>
+              <input type="text" id="itAddPass" value="welcome2026" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium font-mono text-snoo-blue">
+            </div>
+
+            <div class="flex items-end">
+              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md">
+                <i class="fa-solid fa-plus-circle"></i> Onboard Staff Now
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SECTION B: PENDING APPROVALS QUEUE -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
           <div class="flex justify-between items-center mb-4">
             <div>
@@ -512,7 +562,7 @@
                   <th class="p-3">UK NI Number</th>
                   <th class="p-3">Phone</th>
                   <th class="p-3">Requested</th>
-                  <th class="p-3 text-right">Approve Action</th>
+                  <th class="p-3 text-right">Approve / Reject Action</th>
                 </tr>
               </thead>
               <tbody id="itPendingTable" class="divide-y"></tbody>
@@ -520,7 +570,31 @@
           </div>
         </div>
 
-        <!-- SECTION B: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
+        <!-- SECTION C: AUTHORIZED DIRECTORY & DELETION -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
+              <p class="text-xs text-slate-500">Manage active staff, switch roles, or remove staff who left the company.</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Name & Email</th>
+                  <th class="p-3">UK NI Number</th>
+                  <th class="p-3">Role & Rate</th>
+                  <th class="p-3 text-right">Role / Delete Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itDirectoryTable" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION D: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-center">
             <div>
@@ -534,50 +608,7 @@
             </button>
           </div>
 
-          <!-- Live Diagnostic Result Box -->
           <div id="emailDiagnosticBox" class="hidden p-3.5 rounded-2xl text-xs font-mono border"></div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-              <span class="font-bold text-slate-700 block mb-1 text-[11px]">1. Sign-Up Confirmation:</span>
-              <p class="text-slate-500 text-[10px]">Sent automatically to applicant + alert to minute2131@gmail.com.</p>
-              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
-            </div>
-            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-              <span class="font-bold text-slate-700 block mb-1 text-[11px]">2. Shift Broadcasts:</span>
-              <p class="text-slate-500 text-[10px]">Broadcast email sent to all approved staff when a shift is published.</p>
-              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
-            </div>
-            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-              <span class="font-bold text-slate-700 block mb-1 text-[11px]">3. Claim Confirmation:</span>
-              <p class="text-slate-500 text-[10px]">Booking confirmation sent to staff with address + alert to manager.</p>
-              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- SECTION C: ACTIVE DIRECTORY -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-          <div class="flex justify-between items-center mb-4">
-            <div>
-              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
-              <p class="text-xs text-slate-500">Manage approved staff and operations managers.</p>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
-                <tr>
-                  <th class="p-3">Name & Email</th>
-                  <th class="p-3">UK NI Number</th>
-                  <th class="p-3">Role</th>
-                  <th class="p-3 text-right">Switch Role Action</th>
-                </tr>
-              </thead>
-              <tbody id="itDirectoryTable" class="divide-y"></tbody>
-            </table>
-          </div>
         </div>
 
       </section>
@@ -977,26 +1008,34 @@
     }
 
     function updateFirebaseStatusUI(isOnline, errMsg = "") {
-      const authBadge = document.getElementById('authFirebaseStatus');
       const headerPill = document.getElementById('headerFirebasePill');
+      const headerSync = document.getElementById('headerSyncBtn');
+      const isIT = currentUser && currentUser.role === 'it_admin';
 
-      if (authBadge) {
-        if (isOnline) {
-          authBadge.className = "mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200";
-          authBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Server Connected`;
+      if (headerPill) {
+        if (isIT) {
+          headerPill.classList.remove('hidden');
+          headerPill.classList.add('flex');
+          if (isOnline) {
+            headerPill.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold";
+            headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online`;
+          } else {
+            headerPill.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-[10px] font-bold";
+            headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> ${errMsg || 'Connecting...'}`;
+          }
         } else {
-          authBadge.className = "mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200";
-          authBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> ${errMsg || 'Firebase Connecting...'}`;
+          headerPill.classList.add('hidden');
+          headerPill.classList.remove('flex');
         }
       }
 
-      if (headerPill) {
-        if (isOnline) {
-          headerPill.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold";
-          headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online`;
+      if (headerSync) {
+        if (isIT) {
+          headerSync.classList.remove('hidden');
+          headerSync.classList.add('flex');
         } else {
-          headerPill.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-[10px] font-bold";
-          headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Firebase Reconnecting...`;
+          headerSync.classList.add('hidden');
+          headerSync.classList.remove('flex');
         }
       }
     }
@@ -1090,6 +1129,74 @@
       showToast(`✓ Registration saved to Firebase! Confirmation email sent to ${email}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
+    // DIRECT IT ONBOARDING
+    async function handleITDirectAddUser(e) {
+      e.preventDefault();
+      const name = document.getElementById('itAddName').value.trim();
+      const email = document.getElementById('itAddEmail').value.trim().toLowerCase();
+      const ni = document.getElementById('itAddNI').value.trim().toUpperCase();
+      const phone = document.getElementById('itAddPhone').value.trim();
+      const role = document.getElementById('itAddRole').value;
+      const rate = parseFloat(document.getElementById('itAddRate').value) || 15.00;
+      const pass = document.getElementById('itAddPass').value.trim();
+
+      if (users.some(u => u.email && u.email.toLowerCase() === email)) {
+        return showToast("An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
+
+      const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        phone: phone,
+        password: pass,
+        role: role,
+        title: role === 'manager' ? 'Operations Manager' : 'Domestic Staff',
+        ni: ni,
+        status: "active", // Directly active
+        hourlyRate: rate,
+        registeredAt: new Date().toLocaleDateString('en-GB')
+      };
+
+      users.push(newUser);
+      await pushToFirebaseDirect();
+      updateITDirectory();
+
+      // Dispatch Onboarding Welcome Email
+      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered by Ennin's IT Admin with the following credentials:\n\nRole: ${newUser.title}\nEmail: ${newUser.email}\nTemporary Password: ${pass}\nHourly Rate: £${rate.toFixed(2)}/hr\n\nYou can now sign into the portal immediately and start claiming shifts.\n\nBest regards,\nEnnin's Management`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Ennin's Domestic HR - Your Account Credentials", welcomeMsg);
+
+      // Reset form fields
+      document.getElementById('itAddName').value = '';
+      document.getElementById('itAddEmail').value = '';
+      document.getElementById('itAddNI').value = '';
+      document.getElementById('itAddPhone').value = '';
+
+      showToast(`✓ Directly onboarded ${newUser.name} as ${newUser.title}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+    }
+
+    // IT DELETE / REMOVE STAFF
+    async function deleteStaffUser(userId, userName) {
+      if (confirm(`Are you sure you want to remove ${userName} from Ennin's Domestic HR? This action cannot be undone.`)) {
+        users = users.filter(u => u.id !== userId);
+        
+        // Unassign from any shifts
+        shifts.forEach(s => {
+          if (s.staffId === userId) {
+            s.staffId = null;
+            if (s.status === 'claimed' || s.status === 'in_progress') {
+              s.status = 'open';
+            }
+          }
+        });
+
+        await pushToFirebaseDirect();
+        updateITDirectory();
+        renderShifts();
+        showToast(`✓ Removed ${userName} from the active staff directory.`, 'bg-slate-100 text-slate-800 border-slate-200');
+      }
+    }
+
     function setupAppForUser() {
       document.getElementById('userNameDisplay').textContent = currentUser.name;
       document.getElementById('userRoleDisplay').textContent = currentUser.title;
@@ -1110,6 +1217,7 @@
       if (header) header.classList.toggle('hidden', isPending);
 
       applyRolePermissions();
+      updateFirebaseStatusUI(firebaseOnline);
       populateDropdowns();
       renderShifts();
       updateITDirectory();
@@ -1448,6 +1556,7 @@
         navBadge.classList.toggle('hidden', pCount === 0);
       }
 
+      // RENDER PENDING TABLE
       const pTable = document.getElementById('itPendingTable');
       if (pendingUsers.length === 0) {
         pTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
@@ -1467,16 +1576,17 @@
             </td>
             <td class="p-3 text-right space-x-1.5">
               <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                <i class="fa-solid fa-check"></i> Approve as Staff
+                <i class="fa-solid fa-check"></i> Approve
               </button>
-              <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                Approve as Manager
+              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Reject Application">
+                <i class="fa-solid fa-trash"></i>
               </button>
             </td>
           </tr>
         `).join('');
       }
 
+      // RENDER ACTIVE DIRECTORY TABLE
       document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
         <tr class="hover:bg-slate-50 text-xs">
           <td class="p-3">
@@ -1486,13 +1596,16 @@
           <td class="p-3 font-mono font-bold text-indigo-900">${u.ni || 'N/A'}</td>
           <td class="p-3 font-semibold">
             <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
-              ${u.role}
+              ${u.role} (£${(u.hourlyRate || 15.00).toFixed(2)}/hr)
             </span>
           </td>
-          <td class="p-3 text-right">
+          <td class="p-3 text-right space-x-1.5">
             ${u.email === 'minute2131@gmail.com' ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
               <button onclick="toggleUserRole(${u.id})" class="bg-slate-100 hover:bg-snoo-blue/10 text-slate-700 hover:text-snoo-blue font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer border border-slate-200 shadow-xs">
                 Switch to ${u.role === 'manager' ? 'Staff' : 'Manager'}
+              </button>
+              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Remove Staff Member">
+                <i class="fa-solid fa-trash"></i>
               </button>
             `}
           </td>
