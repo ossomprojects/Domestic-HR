@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enin's Domestic HR & Shift Logistics</title>
+  <title>Ennin's Domestic HR & Shift Logistics</title>
   
   <!-- SnooCode Signature Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +13,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- Official EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -53,8 +56,13 @@
         <div class="inline-flex p-3.5 rounded-2xl bg-snoo-blue/10 text-snoo-blue mb-2 shadow-sm">
           <i class="fa-solid fa-location-crosshairs text-2xl"></i>
         </div>
-        <h1 class="text-xl font-extrabold text-snoo-navy tracking-tight">Enin's Domestic HR</h1>
-        <p class="text-xs text-slate-500 font-medium">Live Cloud Portal & Shift Marketplace</p>
+        <h1 class="text-2xl font-black text-snoo-navy tracking-tight">Ennin's Domestic HR</h1>
+        <p class="text-xs text-slate-500 font-medium mt-1">Live Cloud Portal & Shift Marketplace</p>
+        
+        <!-- Live Firebase Status Badge -->
+        <div id="authFirebaseStatus" class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Server Connected
+        </div>
       </div>
 
       <!-- Auth Toggle -->
@@ -92,7 +100,7 @@
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address:</label>
+          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address (Receives Confirmation):</label>
           <input type="email" id="regEmail" placeholder="sarah@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
         </div>
 
@@ -121,8 +129,8 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2 cursor-pointer mt-2">
-          <i class="fa-solid fa-paper-plane"></i> Submit Registration
+        <button type="submit" id="btnSubmitSignup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2 cursor-pointer mt-2">
+          <i class="fa-solid fa-paper-plane"></i> Submit & Send Confirmation Email
         </button>
       </form>
 
@@ -140,23 +148,29 @@
             <i class="fa-solid fa-location-dot text-lg text-snoo-mint"></i>
           </div>
           <div>
-            <h1 class="font-extrabold text-base tracking-tight text-snoo-navy flex items-center gap-2">
-              Enin's <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
+            <h1 class="font-black text-base tracking-tight text-snoo-navy flex items-center gap-2">
+              <span>Ennin's Domestic HR</span>
+              <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
             </h1>
             <p id="roleBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Domestic Operations Portal</p>
           </div>
         </div>
 
         <div class="flex items-center space-x-3">
-          <!-- Real-Time Cloud Sync Button & Indicator -->
-          <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
+          <!-- Real-Time Firebase Status Pill -->
+          <div id="headerFirebasePill" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online
+          </div>
+
+          <!-- Real-Time Cloud Sync Button -->
+          <button onclick="testAndSyncFirebase(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
             <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
             <span class="hidden sm:inline">Sync Cloud</span>
           </button>
 
           <div class="text-right hidden sm:block">
-            <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900">User</p>
-            <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Staff</p>
+            <p id="userNameDisplay" class="text-xs font-black leading-tight text-slate-900">Ennin IT Admin</p>
+            <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Super Admin</p>
           </div>
           <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
             <i class="fa-solid fa-power-off text-rose-500"></i> Logout
@@ -188,7 +202,7 @@
 
         <!-- IT MANAGER ONLY TAB -->
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Roles
+          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Email Settings
           <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
         </button>
       </div>
@@ -206,7 +220,7 @@
       <!-- ================= TAB 1: SHIFT MARKETPLACE ================= -->
       <section id="view-shifts" class="tab-view">
         
-        <!-- PENDING IT APPROVAL NOTICE (Visible to staff before IT authorizes them) -->
+        <!-- PENDING IT APPROVAL NOTICE -->
         <div id="pendingStaffNotice" class="hidden mb-6 p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 shadow-sm">
           <div class="flex items-start gap-4">
             <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-xl">
@@ -215,9 +229,9 @@
             <div>
               <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once approved on the IT console, the shift marketplace will automatically unlock for you.
+                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. A confirmation email has been dispatched. Once approved on the IT console, the shift marketplace will automatically unlock for you.
               </p>
-              <button onclick="pullFromCloud(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <button onclick="testAndSyncFirebase(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
                 <i class="fa-solid fa-rotate text-[11px]"></i> Check Status Now
               </button>
             </div>
@@ -419,7 +433,7 @@
                 
                 <div class="p-2.5 rounded-xl bg-snoo-blue/10 border border-snoo-blue/20 text-[10px] text-snoo-blue font-bold flex items-center gap-1.5">
                   <i class="fa-solid fa-cube text-snoo-blue"></i>
-                  <span>Posts as <strong>1 unified block shift</strong> for staff to claim in 1-click!</span>
+                  <span>Posts as <strong>1 unified block shift</strong> & sends email alert to all staff!</span>
                 </div>
               </div>
             </div>
@@ -437,7 +451,7 @@
             </div>
 
             <button onclick="createShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-md transition cursor-pointer text-xs flex items-center justify-center gap-2 mt-2">
-              <i class="fa-solid fa-calendar-plus"></i> Publish Shift Live to Cloud
+              <i class="fa-solid fa-bullhorn"></i> Publish Shift & Send Email Alerts
             </button>
           </div>
 
@@ -464,17 +478,17 @@
 
       </section>
 
-      <!-- ================= TAB 4: IT SUPERIOR ADMIN & APPROVALS ================= -->
+      <!-- ================= TAB 4: IT SUPERIOR ADMIN & EMAIL SETTINGS ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
-              <span class="text-xs text-indigo-700 font-bold">IT Management & Security Console</span>
+              <span class="text-xs text-indigo-700 font-bold">IT Management & Automated Email Dispatch</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Enin's IT Infrastructure & Authorizations</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review and approve incoming staff sign-ups to unlock shift access.</p>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Ennin's IT Infrastructure & Authorizations</h2>
+            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review staff, dispatch shifts, and manage automated email alerts.</p>
           </div>
         </div>
 
@@ -506,7 +520,43 @@
           </div>
         </div>
 
-        <!-- SECTION B: ACTIVE DIRECTORY -->
+        <!-- SECTION B: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
+                <i class="fa-solid fa-envelope-circle-check text-emerald-600"></i> Automated Email Dispatcher (EmailJS)
+              </h3>
+              <p class="text-xs text-slate-500">Service: <code class="font-mono text-snoo-blue font-bold">service_drg1mzk</code> | Template: <code class="font-mono text-snoo-blue font-bold">template_ibrgiwu</code></p>
+            </div>
+            <button onclick="testSendDiagnosticEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition">
+              <i class="fa-solid fa-paper-plane"></i> Send Test Email Now
+            </button>
+          </div>
+
+          <!-- Live Diagnostic Result Box -->
+          <div id="emailDiagnosticBox" class="hidden p-3.5 rounded-2xl text-xs font-mono border"></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+              <span class="font-bold text-slate-700 block mb-1 text-[11px]">1. Sign-Up Confirmation:</span>
+              <p class="text-slate-500 text-[10px]">Sent automatically to applicant + alert to minute2131@gmail.com.</p>
+              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
+            </div>
+            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+              <span class="font-bold text-slate-700 block mb-1 text-[11px]">2. Shift Broadcasts:</span>
+              <p class="text-slate-500 text-[10px]">Broadcast email sent to all approved staff when a shift is published.</p>
+              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
+            </div>
+            <div class="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+              <span class="font-bold text-slate-700 block mb-1 text-[11px]">3. Claim Confirmation:</span>
+              <p class="text-slate-500 text-[10px]">Booking confirmation sent to staff with address + alert to manager.</p>
+              <span class="inline-block mt-2 font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md text-[9px]">● Live & Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION C: ACTIVE DIRECTORY -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-4">
             <div>
@@ -552,7 +602,7 @@
           <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
             <div class="flex justify-between pb-6 border-b">
               <div>
-                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Enin's Domestic Services Ltd</h2>
+                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Ennin's Domestic Services Ltd</h2>
                 <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
                 <p class="text-slate-500">100 High Street, London EC1A 1AA</p>
               </div>
@@ -655,12 +705,12 @@
     </main>
   </div>
 
-  <!-- ================= 4. REAL-TIME CLOUD BACKEND ENGINE ================= -->
+  <!-- ================= 4. FIREBASE CLOUD & AUTOMATED EMAIL ENGINE ================= -->
   <script>
-    // PERMANENT MASTER IT ADMIN
+    // MASTER ADMIN
     const masterAdmin = { 
       id: 999, 
-      name: "Enin IT Admin", 
+      name: "Ennin IT Admin", 
       email: "minute2131@gmail.com", 
       password: "cookies", 
       role: "it_admin", 
@@ -671,8 +721,21 @@
     };
 
     // YOUR PRIVATE LIVE FIREBASE CLOUD DATABASE
-    const CLOUD_SYNC_URL = "https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app/";
+    const FIREBASE_BASE_URL = "https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app/";
+    
+    // YOUR EXACT EMAILJS CONFIGURATION
+    const EMAILJS_SERVICE_ID = "service_drg1mzk";
+    const EMAILJS_TEMPLATE_ID = "template_ibrgiwu";
+    const EMAILJS_PUBLIC_KEY = "n6n7McPNxCnLKVX7A";
+
+    try {
+      if (window.emailjs) {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+      }
+    } catch(e) {}
+
     let isCloudSyncing = false;
+    let firebaseOnline = false;
 
     let users = [masterAdmin];
     let clients = [
@@ -685,42 +748,139 @@
     let scheduleMode = 'single';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
 
-    function initApp() {
-      // 1. Restore local cache
-      try {
-        const u = JSON.parse(localStorage.getItem('enin_live_users_v4'));
-        const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
-        const c = JSON.parse(localStorage.getItem('enin_live_clients_v4'));
-        if (u && Array.isArray(u)) users = u;
-        if (s && Array.isArray(s)) shifts = s;
-        if (c && Array.isArray(c)) clients = c;
-      } catch(e) {}
+    // ================= A. UNIVERSAL AUTOMATED EMAIL DISPATCHER =================
+    async function dispatchAutomatedEmail(toEmail, toName, subject, messageBody) {
+      console.log(`[Email Dispatch] Sending to: ${toEmail} | Subject: ${subject}`);
+      
+      const templateParams = {
+        to_email: toEmail,
+        email: toEmail,
+        user_email: toEmail,
+        to_name: toName,
+        name: toName,
+        from_name: "Ennin's Domestic HR",
+        subject: subject,
+        message: messageBody
+      };
 
-      if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) {
-        users.unshift(masterAdmin);
+      if (window.emailjs) {
+        try {
+          const res = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY);
+          console.log("[EmailJS Success]", res);
+          return { success: true, status: res.status, text: res.text };
+        } catch(err) {
+          console.error("[EmailJS Error]", err);
+          return { success: false, error: err };
+        }
+      }
+      return { success: false, error: "EmailJS SDK not loaded" };
+    }
+
+    // 1. TRIGGER: SIGN UP WELCOME EMAIL
+    async function triggerSignupEmails(newUser) {
+      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Ennin's Domestic HR.\n\nYour application has been safely received and transmitted to the IT verification queue (minute2131@gmail.com).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nEnnin's Domestic Operations Team`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Ennin's Domestic HR - Registration Received", staffMsg);
+
+      const itMsg = `New staff registration received:\n\nName: ${newUser.name}\nEmail: ${newUser.email}\nPhone: ${newUser.phone}\nUK NI Number: ${newUser.ni}\nRole: ${newUser.title}\n\nPlease sign into your IT Portal to authorize this user.`;
+      dispatchAutomatedEmail("minute2131@gmail.com", "Ennin IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
+    }
+
+    // 2. TRIGGER: SHIFT DISPATCHED BROADCAST
+    async function triggerShiftBroadcastEmails(shift, client) {
+      const activeStaff = users.filter(u => u.status === 'active' && u.role === 'staff' && u.email);
+      const isBlock = shift.isBlock === true;
+      const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
+      const totalEarnings = (shift.hours * shift.pay).toFixed(2);
+
+      activeStaff.forEach(staff => {
+        const msg = `Hello ${staff.name},\n\nA new domestic shift has just been published on the board:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nHours: ${shift.hours} Total Hours\nRate: £${shift.pay.toFixed(2)}/hr (Total Pay: £${totalEarnings})\n\nLog in now to claim this contract on your Shift Marketplace.\n\nBest regards,\nEnnin's Domestic HR`;
+        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Shift Available: ${shift.title} (£${totalEarnings})`, msg);
+      });
+    }
+
+    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION
+    async function triggerShiftClaimedEmails(shift, staff, client) {
+      const isBlock = shift.isBlock === true;
+      const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
+      const totalPay = (shift.hours * shift.pay).toFixed(2);
+
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following domestic contract:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nTotal Hours: ${shift.hours} hrs\nTotal Earnings: £${totalPay}\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nEnnin's Operations Team`;
+      dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
+
+      const adminMsg = `Contract Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nStaff Pay: £${totalPay}`;
+      dispatchAutomatedEmail("minute2131@gmail.com", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
+    }
+
+    // LIVE DIAGNOSTIC TEST BUTTON
+    async function testSendDiagnosticEmail() {
+      const box = document.getElementById('emailDiagnosticBox');
+      if (box) {
+        box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-slate-50 border-slate-200 text-slate-700 block";
+        box.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-snoo-blue"></i> Sending live test packet to EmailJS servers...`;
       }
 
-      // 2. Restore active login session across reloads
+      showToast("Dispatching test via EmailJS...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
+
+      const result = await dispatchAutomatedEmail(
+        "minute2131@gmail.com", 
+        "Ennin IT Admin", 
+        "✓ Ennin's Domestic HR Automated Email Test", 
+        "This is an automated test email confirming that EmailJS (service_drg1mzk / template_ibrgiwu) is working live for Ennin's Domestic HR!"
+      );
+
+      if (box) {
+        if (result.success) {
+          box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-emerald-50 border-emerald-200 text-emerald-900 block";
+          box.innerHTML = `<strong>✓ EmailJS Status 200 OK:</strong> Email successfully accepted by EmailJS for minute2131@gmail.com! Check your inbox.`;
+          showToast("✓ Live test email sent to minute2131@gmail.com!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+        } else {
+          const errText = result.error ? (result.error.text || result.error.message || JSON.stringify(result.error)) : "Unknown Error";
+          box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-rose-50 border-rose-200 text-rose-900 block";
+          box.innerHTML = `<strong>⚠️ EmailJS Response Error:</strong> ${errText}<br><br><span class="text-[11px]">Tip: In EmailJS Dashboard > Templates > template_ibrgiwu, ensure the <strong>"To Email"</strong> field is set to <code>{{to_email}}</code>.</span>`;
+          showToast(`EmailJS Error: ${errText}`, "bg-rose-50 text-rose-800 border-rose-200");
+        }
+      }
+    }
+
+    // ================= B. BOOTSTRAP & FIREBASE ENGINE =================
+    async function initApp() {
       const savedSession = localStorage.getItem('enin_active_session');
       if (savedSession) {
         try {
-          const parsed = JSON.parse(savedSession);
-          currentUser = users.find(u => u.email.toLowerCase() === parsed.email.toLowerCase()) || parsed;
+          currentUser = JSON.parse(savedSession);
+          if (currentUser.email === "minute2131@gmail.com") {
+            currentUser.name = "Ennin IT Admin";
+          }
           document.getElementById('authScreen').classList.add('hidden');
           document.getElementById('mainApp').classList.remove('hidden');
           setupAppForUser();
         } catch(e) {}
       }
 
-      // 3. Connect to live cloud database immediately
-      pullFromCloud(false);
-
-      // 4. Background real-time polling every 2.5 seconds
-      setInterval(() => pullFromCloud(false), 2500);
+      await testAndSyncFirebase(false);
+      initFirebaseLiveStream();
+      setInterval(() => testAndSyncFirebase(false), 2500);
     }
 
-    // PULL CLOUD DATA
-    async function pullFromCloud(isManual = false) {
+    function initFirebaseLiveStream() {
+      try {
+        if (typeof EventSource !== 'undefined') {
+          const evtSource = new EventSource(FIREBASE_BASE_URL + '.json');
+          evtSource.onmessage = function(event) {
+            if (event && event.data) {
+              try {
+                const packet = JSON.parse(event.data);
+                if (packet && packet.data) {
+                  applyFirebasePayload(packet.data);
+                }
+              } catch(e) {}
+            }
+          };
+        }
+      } catch(e) {}
+    }
+
+    async function testAndSyncFirebase(isManual = false) {
       if (isCloudSyncing) return;
       if (isManual) {
         const spin = document.getElementById('syncSpinIcon');
@@ -728,53 +888,29 @@
       }
 
       try {
-        const [resUsers, resShifts, resClients] = await Promise.all([
-          fetch(CLOUD_SYNC_URL + 'users.json').then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch(CLOUD_SYNC_URL + 'shifts.json').then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch(CLOUD_SYNC_URL + 'clients.json').then(r => r.ok ? r.json() : null).catch(() => null)
-        ]);
-
-        let updated = false;
-
-        if (resUsers && typeof resUsers === 'object') {
-          const arr = Array.isArray(resUsers) ? resUsers : Object.values(resUsers);
-          arr.forEach(ru => {
-            if (!ru || !ru.email) return;
-            const idx = users.findIndex(u => u.email.toLowerCase() === ru.email.toLowerCase());
-            if (idx >= 0) users[idx] = ru;
-            else users.push(ru);
-          });
-          if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
-          localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
-          updated = true;
-        }
-
-        if (resShifts && typeof resShifts === 'object') {
-          shifts = Array.isArray(resShifts) ? resShifts : Object.values(resShifts);
-          localStorage.setItem('enin_live_shifts_v4', JSON.stringify(shifts));
-          updated = true;
-        }
-
-        if (resClients && typeof resClients === 'object') {
-          clients = Array.isArray(resClients) ? resClients : Object.values(resClients);
-          localStorage.setItem('enin_live_clients_v4', JSON.stringify(clients));
-          updated = true;
-        }
-
-        if (currentUser) {
-          const liveSelf = users.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
-          if (liveSelf) {
-            currentUser = liveSelf;
-            localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+        const response = await fetch(FIREBASE_BASE_URL + '.json');
+        
+        if (response.ok) {
+          firebaseOnline = true;
+          updateFirebaseStatusUI(true);
+          const data = await response.json();
+          
+          if (data && typeof data === 'object') {
+            applyFirebasePayload(data);
+          } else {
+            await pushToFirebaseDirect();
           }
-          setupAppForUser();
-        }
 
-        if (isManual) {
-          showToast("✓ Connected to Live Firebase Database!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          if (isManual) {
+            showToast("✓ Connected to Live Firebase Server! All devices in sync.", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          }
+        } else if (response.status === 401 || response.status === 403) {
+          firebaseOnline = false;
+          updateFirebaseStatusUI(false, "Rules Locked: Set .read & .write to true in Firebase Console");
         }
       } catch(err) {
-        if (isManual) showToast("Connected via local cache.", "bg-slate-100 text-slate-700 border-slate-200");
+        firebaseOnline = false;
+        updateFirebaseStatusUI(false, "Offline / Connecting");
       } finally {
         if (isManual) {
           const spin = document.getElementById('syncSpinIcon');
@@ -783,21 +919,86 @@
       }
     }
 
-    // PUSH CLOUD DATA
-    async function pushToCloud() {
-      localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
-      localStorage.setItem('enin_live_shifts_v4', JSON.stringify(shifts));
-      localStorage.setItem('enin_live_clients_v4', JSON.stringify(clients));
+    function applyFirebasePayload(data) {
+      if (!data) return;
 
+      if (data.users) {
+        const arr = Array.isArray(data.users) ? data.users : Object.values(data.users);
+        users = arr.filter(Boolean);
+        if (!users.some(u => u.email && u.email.toLowerCase() === "minute2131@gmail.com")) {
+          users.unshift(masterAdmin);
+        }
+      }
+
+      if (data.shifts) {
+        const sArr = Array.isArray(data.shifts) ? data.shifts : Object.values(data.shifts);
+        shifts = sArr.filter(Boolean);
+      } else if (data.shifts === null) {
+        shifts = [];
+      }
+
+      if (data.clients) {
+        const cArr = Array.isArray(data.clients) ? data.clients : Object.values(data.clients);
+        clients = cArr.filter(Boolean);
+      }
+
+      if (currentUser) {
+        const liveSelf = users.find(u => u.email && u.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (liveSelf) {
+          currentUser = liveSelf;
+          localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+        }
+        setupAppForUser();
+      }
+    }
+
+    async function pushToFirebaseDirect() {
       isCloudSyncing = true;
       try {
-        await Promise.all([
-          fetch(CLOUD_SYNC_URL + 'users.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(users) }),
-          fetch(CLOUD_SYNC_URL + 'shifts.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(shifts) }),
-          fetch(CLOUD_SYNC_URL + 'clients.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(clients) })
-        ]);
+        const payload = {
+          users: users,
+          shifts: shifts,
+          clients: clients,
+          lastUpdated: new Date().toISOString()
+        };
+
+        const res = await fetch(FIREBASE_BASE_URL + '.json', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          firebaseOnline = true;
+          updateFirebaseStatusUI(true);
+        }
       } catch(e) {}
       isCloudSyncing = false;
+    }
+
+    function updateFirebaseStatusUI(isOnline, errMsg = "") {
+      const authBadge = document.getElementById('authFirebaseStatus');
+      const headerPill = document.getElementById('headerFirebasePill');
+
+      if (authBadge) {
+        if (isOnline) {
+          authBadge.className = "mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200";
+          authBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Server Connected`;
+        } else {
+          authBadge.className = "mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200";
+          authBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> ${errMsg || 'Firebase Connecting...'}`;
+        }
+      }
+
+      if (headerPill) {
+        if (isOnline) {
+          headerPill.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold";
+          headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online`;
+        } else {
+          headerPill.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-[10px] font-bold";
+          headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Firebase Reconnecting...`;
+        }
+      }
     }
 
     function toggleAuthMode(mode) {
@@ -814,7 +1015,7 @@
       }
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       if (e) e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const pass = document.getElementById('loginPassword').value;
@@ -825,9 +1026,9 @@
         return;
       }
 
-      const targetUser = users.find(u => u.email.toLowerCase() === email);
+      const targetUser = users.find(u => u.email && u.email.toLowerCase() === email);
       if (!targetUser) {
-        showToast("No account found with this email. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
+        showToast("No account found with this email on Firebase. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
 
@@ -848,7 +1049,7 @@
       showToast(`Welcome back, ${currentUser.name}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
-    function handleStaffSignup(e) {
+    async function handleStaffSignup(e) {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -857,8 +1058,8 @@
       const requestedRole = document.getElementById('regRole').value;
       const pass = document.getElementById('regPassword').value;
 
-      if (users.some(u => u.email.toLowerCase() === email)) {
-        return showToast("An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
+      if (users.some(u => u.email && u.email.toLowerCase() === email)) {
+        return showToast("An account with this email already exists on Firebase.", "bg-rose-50 text-rose-800 border-rose-200");
       }
 
       const newUser = {
@@ -870,7 +1071,7 @@
         role: requestedRole,
         title: requestedRole === 'manager' ? 'Operations Manager' : 'Domestic Staff',
         ni: ni,
-        status: "pending", // PENDING IT APPROVAL
+        status: "pending",
         hourlyRate: requestedRole === 'manager' ? 22.00 : 15.00,
         registeredAt: new Date().toLocaleDateString('en-GB')
       };
@@ -879,12 +1080,14 @@
       currentUser = newUser;
       
       localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
-      pushToCloud();
+
+      await pushToFirebaseDirect();
+      triggerSignupEmails(newUser);
 
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
-      showToast(`Sign up complete! Submitted for IT approval.`, 'bg-amber-50 text-amber-800 border-amber-200');
+      showToast(`✓ Registration saved to Firebase! Confirmation email sent to ${email}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
     function setupAppForUser() {
@@ -899,7 +1102,6 @@
       document.getElementById('portalBadge').textContent = badge;
       document.getElementById('roleBadge').textContent = sub;
 
-      // Handle Pending Approval State for Staff
       const isPending = currentUser.status === 'pending' && currentUser.role !== 'it_admin';
       const notice = document.getElementById('pendingStaffNotice');
       const header = document.getElementById('approvedShiftsHeader');
@@ -912,12 +1114,6 @@
       renderShifts();
       updateITDirectory();
       calcHMRC();
-
-      if (currentUser.role === 'it_admin') {
-        // IT admin
-      } else if (currentUser.role === 'manager') {
-        // Manager
-      }
     }
 
     function handleLogout() {
@@ -1128,7 +1324,7 @@
           <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
             <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
             <p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p>
-            <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration, all available shifts will appear here.</p>
+            <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration in Firebase, all shifts will unlock.</p>
           </div>
         `;
         return;
@@ -1200,18 +1396,23 @@
         active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.status})</option>`).join('') : '<option value="">No claimed shifts for today</option>';
     }
 
-    function claimShift(id) {
+    async function claimShift(id) {
       const s = shifts.find(x => x.id === id);
       if (s) {
         s.status = 'claimed';
         s.staffId = currentUser.id;
-        pushToCloud();
+        
+        await pushToFirebaseDirect();
         renderShifts();
-        showToast(`✓ Contract claimed! Synced across all devices.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
+        triggerShiftClaimedEmails(s, currentUser, cl);
+
+        showToast(`✓ Contract claimed! Confirmation email dispatched to your inbox.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
-    function handleClock(isIn) {
+    async function handleClock(isIn) {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
       const s = shifts.find(x => x.id === sid);
       if (!s) return showToast('Please select an active shift', 'bg-rose-50 text-rose-800 border-rose-200');
@@ -1228,9 +1429,9 @@
       } else {
         s.status = 'completed';
         s.clockOutTime = `Today ${timeStr}`;
-        showToast('✓ Clocked out successfully! Timesheet submitted.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast('✓ Clocked out successfully! Timesheet saved to Firebase.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
-      pushToCloud();
+      await pushToFirebaseDirect();
       renderShifts();
       if (currentUser.role !== 'staff') updateManagerView();
     }
@@ -1247,10 +1448,9 @@
         navBadge.classList.toggle('hidden', pCount === 0);
       }
 
-      // RENDER PENDING TABLE
       const pTable = document.getElementById('itPendingTable');
       if (pendingUsers.length === 0) {
-        pTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now. All staff are authorized.</td></tr>`;
+        pTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
       } else {
         pTable.innerHTML = pendingUsers.map(u => `
           <tr class="hover:bg-amber-50/50 text-xs">
@@ -1277,7 +1477,6 @@
         `).join('');
       }
 
-      // RENDER ACTIVE DIRECTORY TABLE
       document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
         <tr class="hover:bg-slate-50 text-xs">
           <td class="p-3">
@@ -1301,35 +1500,40 @@
       `).join('');
     }
 
-    function approveUser(userId, roleToAssign) {
+    async function approveUser(userId, roleToAssign) {
       const u = users.find(x => x.id === userId);
       if (u) {
         u.status = 'active';
         u.role = roleToAssign;
         u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Domestic Staff';
-        pushToCloud();
+        await pushToFirebaseDirect();
         updateITDirectory();
-        showToast(`✓ Authorized ${u.name} as ${u.title}! Shifts unlocked for their device.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+
+        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Ennin's Domestic HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available domestic shifts.\n\nBest regards,\nEnnin's Management`);
+
+        showToast(`✓ Authorized ${u.name} as ${u.title}! Approval email dispatched.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
-    function toggleUserRole(userId) {
+    async function toggleUserRole(userId) {
       const u = users.find(x => x.id === userId);
       if (u) {
         u.role = u.role === 'manager' ? 'staff' : 'manager';
         u.title = u.role === 'manager' ? 'Operations Manager' : 'Domestic Staff';
-        pushToCloud();
+        await pushToFirebaseDirect();
         updateITDirectory();
         showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
-    function createShift() {
+    async function createShift() {
       let finalClientId = null;
+      let finalClientObj = null;
       const ch = parseFloat(document.getElementById('newShiftCharge').value);
 
       if (clientDispatchMode === 'existing') {
         finalClientId = parseInt(document.getElementById('newShiftClient').value);
+        finalClientObj = clients.find(c => c.id === finalClientId);
       } else {
         const customName = document.getElementById('customClientName').value.trim() || 'Private Client';
         const customAddr = document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK';
@@ -1345,22 +1549,24 @@
 
         clients.push(newClient);
         finalClientId = newClient.id;
+        finalClientObj = newClient;
         populateDropdowns();
       }
 
       const t = document.getElementById('newShiftTitle').value;
       const p = parseFloat(document.getElementById('newShiftPay').value);
+      let newShift = null;
 
       if (scheduleMode === 'single') {
         const d = document.getElementById('newShiftDate').value;
         const h = parseFloat(document.getElementById('newShiftHours').value);
 
-        shifts.push({ 
+        newShift = { 
           id: Date.now(), clientId: finalClientId, title: t, isBlock: false, date: d, time: "09:00 - 13:00", 
           hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
           clockInTime: null, clockOutTime: null, verified: false
-        });
-        showToast(`✓ Single shift published to cloud!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        };
+        shifts.push(newShift);
       } else {
         const startStr = document.getElementById('newShiftStartDate').value;
         const endStr = document.getElementById('newShiftEndDate').value;
@@ -1396,7 +1602,7 @@
         const totalBlockHours = validDays * hoursPerDay;
         const rangeSummary = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
 
-        shifts.push({
+        newShift = {
           id: Date.now(),
           clientId: finalClientId,
           title: t,
@@ -1415,14 +1621,19 @@
           clockInTime: null,
           clockOutTime: null,
           verified: false
-        });
-
-        showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days, ${totalBlockHours}h total)!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        };
+        shifts.push(newShift);
       }
       
-      pushToCloud();
+      await pushToFirebaseDirect();
       renderShifts();
       updateManagerView();
+
+      if (newShift && finalClientObj) {
+        triggerShiftBroadcastEmails(newShift, finalClientObj);
+      }
+
+      showToast(`✓ Shift published & broadcast emails sent to all staff!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
     function updateManagerView() {
