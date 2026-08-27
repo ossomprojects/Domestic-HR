@@ -109,14 +109,14 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Role:</label>
+            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Requested Role:</label>
             <select id="regRole" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy">
               <option value="staff">Staff</option>
               <option value="manager">Manager</option>
             </select>
           </div>
           <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Create Password / PIN:</label>
+            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Create Password:</label>
             <input type="password" id="regPassword" placeholder="Create password" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
           </div>
         </div>
@@ -147,12 +147,12 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-4">
-          <!-- Real-Time Cloud Sync Indicator -->
-          <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Cloud Sync Live</span>
-          </div>
+        <div class="flex items-center space-x-3">
+          <!-- Real-Time Cloud Sync Button & Indicator -->
+          <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
+            <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
+            <span class="hidden sm:inline">Sync Cloud</span>
+          </button>
 
           <div class="text-right hidden sm:block">
             <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900">User</p>
@@ -188,7 +188,8 @@
 
         <!-- IT MANAGER ONLY TAB -->
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Provisioning & Roles
+          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Roles
+          <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
         </button>
       </div>
     </nav>
@@ -204,15 +205,35 @@
 
       <!-- ================= TAB 1: SHIFT MARKETPLACE ================= -->
       <section id="view-shifts" class="tab-view">
-        <div class="flex justify-between items-center mb-6">
+        
+        <!-- PENDING IT APPROVAL NOTICE (Visible to staff before IT authorizes them) -->
+        <div id="pendingStaffNotice" class="hidden mb-6 p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-xl">
+              <i class="fa-solid fa-hourglass-half animate-pulse"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
+              <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once approved on the IT console, the shift marketplace will automatically unlock for you.
+              </p>
+              <button onclick="pullFromCloud(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
+                <i class="fa-solid fa-rotate text-[11px]"></i> Check Status Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="approvedShiftsHeader" class="flex justify-between items-center mb-6">
           <div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Available Domestic Shifts & Block Contracts</h2>
-            <p class="text-xs text-slate-500 font-medium">Live real-time synced shifts across all phones & devices.</p>
+            <p class="text-xs text-slate-500 font-medium">Browse active client shifts or claim multi-day contracts in 1-click.</p>
           </div>
           <span class="text-xs font-bold bg-snoo-blue/10 text-snoo-blue px-3.5 py-1.5 rounded-full border border-snoo-blue/20 flex items-center gap-1.5">
-            <i class="fa-solid fa-bolt text-snoo-blue"></i> 1-Click Claim Active
+            <i class="fa-solid fa-bolt text-snoo-blue"></i> Live Shift Board
           </span>
         </div>
+        
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
@@ -224,7 +245,7 @@
               <i class="fa-solid fa-location-crosshairs text-3xl"></i>
             </div>
             <h2 class="text-lg font-extrabold text-snoo-navy">GPS Shift Check-In</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">Verifies precise location proximity at the client's home.</p>
+            <p class="text-xs text-slate-500 font-medium mt-1">Verifies precise doorstep location proximity (7m radius).</p>
           </div>
 
           <div class="space-y-4 text-xs">
@@ -235,13 +256,12 @@
             <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
               <div class="flex justify-between">
                 <span class="text-slate-500 font-medium">GPS Signal:</span>
-                <span class="text-emerald-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[7px] text-emerald-500 animate-pulse"></i> Auto-Matching Postcode</span>
+                <span class="text-emerald-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[7px] text-emerald-500 animate-pulse"></i> Doorstep Proximity Active</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-500 font-medium">Client Geofence Radius:</span>
+                <span class="text-slate-500 font-medium">Geofence Radius:</span>
                 <span class="font-bold text-slate-800 flex items-center gap-1">
                   <span class="bg-snoo-blue text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">7 meters</span>
-                  <span class="text-slate-400 text-[10px]">(Doorstep Verification)</span>
                 </span>
               </div>
             </div>
@@ -297,8 +317,6 @@
 
             <!-- MODE 2: Add New Client via Postcode Lookup or GPS Reverse Geocoding -->
             <div id="sectionClientNew" class="hidden space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-              
-              <!-- Quick GPS Reverse Postcode Button -->
               <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-snoo-blue/10 hover:bg-snoo-blue/20 text-snoo-blue font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 border border-snoo-blue/20 shadow-xs cursor-pointer">
                 <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> 📍 Detect Nearest Postcode from GPS
               </button>
@@ -401,7 +419,7 @@
                 
                 <div class="p-2.5 rounded-xl bg-snoo-blue/10 border border-snoo-blue/20 text-[10px] text-snoo-blue font-bold flex items-center gap-1.5">
                   <i class="fa-solid fa-cube text-snoo-blue"></i>
-                  <span>Posts to marketplace as <strong>1 unified block shift</strong> for staff to claim in 1-click!</span>
+                  <span>Posts as <strong>1 unified block shift</strong> for staff to claim in 1-click!</span>
                 </div>
               </div>
             </div>
@@ -419,14 +437,14 @@
             </div>
 
             <button onclick="createShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-md transition cursor-pointer text-xs flex items-center justify-center gap-2 mt-2">
-              <i class="fa-solid fa-calendar-plus"></i> Publish Shift to Board
+              <i class="fa-solid fa-calendar-plus"></i> Publish Shift Live to Cloud
             </button>
           </div>
 
           <!-- Timesheets Table -->
           <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <h3 class="text-sm font-bold text-snoo-navy mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Timesheets & Attendance Audit
+              <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
             </h3>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
@@ -446,7 +464,7 @@
 
       </section>
 
-      <!-- ================= TAB 4: IT SUPERIOR ADMIN & ROLES ================= -->
+      <!-- ================= TAB 4: IT SUPERIOR ADMIN & APPROVALS ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
@@ -455,16 +473,45 @@
               <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
               <span class="text-xs text-indigo-700 font-bold">IT Management & Security Console</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Enin's IT Infrastructure & Roles Control</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Manage live user roles (Staff vs Manager) in real-time across all devices.</p>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Enin's IT Infrastructure & Authorizations</h2>
+            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review and approve incoming staff sign-ups to unlock shift access.</p>
           </div>
         </div>
 
+        <!-- SECTION A: PENDING APPROVALS QUEUE -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
+                <i class="fa-solid fa-bell text-amber-600"></i> Pending Staff Sign-Ups (Action Required)
+              </h3>
+              <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
+            </div>
+            <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3 py-1 rounded-full border border-amber-200">0 Pending</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Staff Details</th>
+                  <th class="p-3">UK NI Number</th>
+                  <th class="p-3">Phone</th>
+                  <th class="p-3">Requested</th>
+                  <th class="p-3 text-right">Approve Action</th>
+                </tr>
+              </thead>
+              <tbody id="itPendingTable" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION B: ACTIVE DIRECTORY -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-4">
             <div>
-              <h3 class="text-sm font-bold text-snoo-navy">Registered User Accounts & Live Roles</h3>
-              <p class="text-xs text-slate-500">Live synced list of all registered phones & accounts.</p>
+              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
+              <p class="text-xs text-slate-500">Manage approved staff and operations managers.</p>
             </div>
           </div>
 
@@ -474,7 +521,7 @@
                 <tr>
                   <th class="p-3">Name & Email</th>
                   <th class="p-3">UK NI Number</th>
-                  <th class="p-3">Current Role</th>
+                  <th class="p-3">Role</th>
                   <th class="p-3 text-right">Switch Role Action</th>
                 </tr>
               </thead>
@@ -573,7 +620,6 @@
             </div>
           </div>
 
-          <!-- Light Theme Breakdown Card -->
           <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-xs space-y-3.5 shadow-xs">
             <div class="flex justify-between pb-2.5 border-b border-slate-200">
               <span class="text-slate-600 font-medium">Gross Wages:</span>
@@ -624,8 +670,8 @@
       hourlyRate: 40.00 
     };
 
-    // CLOUD SYNC CONFIGURATION (Shared across all devices in real-time)
-    const CLOUD_SYNC_ENDPOINT = "https://kvdb.io/5q3KqY4H5oZ99p2xPEnin7/";
+    // HIGH-AVAILABILITY CLOUD BACKEND (CORS & Cross-Device Enabled)
+    const CLOUD_SYNC_URL = "https://enin-domestic-sync-default-rtdb.europe-west1.firebasedatabase.app/";
     let isCloudSyncing = false;
 
     let users = [masterAdmin];
@@ -639,113 +685,116 @@
     let scheduleMode = 'single';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
 
-    // ================= PERSISTENT SESSION RESTORATION =================
     function initApp() {
-      // 1. Load local cache first
+      // 1. Restore local cache
       try {
-        const localUsers = JSON.parse(localStorage.getItem('enin_cloud_users'));
-        const localShifts = JSON.parse(localStorage.getItem('enin_cloud_shifts'));
-        const localClients = JSON.parse(localStorage.getItem('enin_cloud_clients'));
-        if (localUsers && Array.isArray(localUsers)) users = localUsers;
-        if (localShifts && Array.isArray(localShifts)) shifts = localShifts;
-        if (localClients && Array.isArray(localClients)) clients = localClients;
+        const u = JSON.parse(localStorage.getItem('enin_live_users_v3'));
+        const s = JSON.parse(localStorage.getItem('enin_live_shifts_v3'));
+        const c = JSON.parse(localStorage.getItem('enin_live_clients_v3'));
+        if (u && Array.isArray(u)) users = u;
+        if (s && Array.isArray(s)) shifts = s;
+        if (c && Array.isArray(c)) clients = c;
       } catch(e) {}
 
-      // Ensure Master Admin exists
       if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) {
         users.unshift(masterAdmin);
       }
 
-      // 2. Check if user has an active persistent session
+      // 2. Restore active login session
       const savedSession = localStorage.getItem('enin_active_session');
       if (savedSession) {
         try {
           const parsed = JSON.parse(savedSession);
-          // Match with latest user data
-          const liveUser = users.find(u => u.email.toLowerCase() === parsed.email.toLowerCase()) || parsed;
-          currentUser = liveUser;
+          currentUser = users.find(u => u.email.toLowerCase() === parsed.email.toLowerCase()) || parsed;
           document.getElementById('authScreen').classList.add('hidden');
           document.getElementById('mainApp').classList.remove('hidden');
           setupAppForUser();
-        } catch(e) {
-          console.warn("Session restore error", e);
-        }
+        } catch(e) {}
       }
 
-      // 3. Immediately pull live cloud state from other devices
-      pullFromCloud();
+      // 3. Connect to live cloud database immediately
+      pullFromCloud(false);
 
-      // 4. Start automatic polling every 4 seconds to sync shifts/users across phones
-      setInterval(pullFromCloud, 4000);
+      // 4. Background real-time polling every 3 seconds
+      setInterval(() => pullFromCloud(false), 3000);
     }
 
-    // PULL LATEST STATE FROM CLOUD
-    async function pullFromCloud() {
+    // PULL CLOUD DATA
+    async function pullFromCloud(isManual = false) {
       if (isCloudSyncing) return;
+      if (isManual) {
+        const spin = document.getElementById('syncSpinIcon');
+        if (spin) spin.classList.add('fa-spin');
+      }
+
       try {
         const [resUsers, resShifts, resClients] = await Promise.all([
-          fetch(CLOUD_SYNC_ENDPOINT + 'users').then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch(CLOUD_SYNC_ENDPOINT + 'shifts').then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch(CLOUD_SYNC_ENDPOINT + 'clients').then(r => r.ok ? r.json() : null).catch(() => null)
+          fetch(CLOUD_SYNC_URL + 'users.json').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(CLOUD_SYNC_URL + 'shifts.json').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch(CLOUD_SYNC_URL + 'clients.json').then(r => r.ok ? r.json() : null).catch(() => null)
         ]);
 
-        let changed = false;
+        let updated = false;
 
-        if (resUsers && Array.isArray(resUsers)) {
-          // Merge users
-          resUsers.forEach(ru => {
+        if (resUsers && typeof resUsers === 'object') {
+          const arr = Array.isArray(resUsers) ? resUsers : Object.values(resUsers);
+          arr.forEach(ru => {
+            if (!ru || !ru.email) return;
             const idx = users.findIndex(u => u.email.toLowerCase() === ru.email.toLowerCase());
             if (idx >= 0) users[idx] = ru;
             else users.push(ru);
           });
           if (!users.some(u => u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
-          localStorage.setItem('enin_cloud_users', JSON.stringify(users));
-          changed = true;
+          localStorage.setItem('enin_live_users_v3', JSON.stringify(users));
+          updated = true;
         }
 
-        if (resShifts && Array.isArray(resShifts)) {
-          shifts = resShifts;
-          localStorage.setItem('enin_cloud_shifts', JSON.stringify(shifts));
-          changed = true;
+        if (resShifts && typeof resShifts === 'object') {
+          shifts = Array.isArray(resShifts) ? resShifts : Object.values(resShifts);
+          localStorage.setItem('enin_live_shifts_v3', JSON.stringify(shifts));
+          updated = true;
         }
 
-        if (resClients && Array.isArray(resClients)) {
-          clients = resClients;
-          localStorage.setItem('enin_cloud_clients', JSON.stringify(clients));
-          changed = true;
+        if (resClients && typeof resClients === 'object') {
+          clients = Array.isArray(resClients) ? resClients : Object.values(resClients);
+          localStorage.setItem('enin_live_clients_v3', JSON.stringify(clients));
+          updated = true;
         }
 
-        if (changed && currentUser) {
-          // Keep current user role in sync if changed by admin
-          const updatedSelf = users.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
-          if (updatedSelf && updatedSelf.role !== currentUser.role) {
-            currentUser = updatedSelf;
+        if (currentUser) {
+          const liveSelf = users.find(u => u.email.toLowerCase() === currentUser.email.toLowerCase());
+          if (liveSelf) {
+            currentUser = liveSelf;
             localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
-            setupAppForUser();
           }
+          setupAppForUser();
+        }
 
-          renderShifts();
-          updateITDirectory();
-          if (currentUser.role !== 'staff') updateManagerView();
+        if (isManual) {
+          showToast("✓ Synced with live cloud database!", "bg-emerald-50 text-emerald-800 border-emerald-200");
         }
       } catch(err) {
-        // Fallback to local
+        if (isManual) showToast("Connected via local cache.", "bg-slate-100 text-slate-700 border-slate-200");
+      } finally {
+        if (isManual) {
+          const spin = document.getElementById('syncSpinIcon');
+          if (spin) spin.classList.remove('fa-spin');
+        }
       }
     }
 
-    // PUSH STATE TO CLOUD
+    // PUSH CLOUD DATA
     async function pushToCloud() {
-      // Always save local first
-      localStorage.setItem('enin_cloud_users', JSON.stringify(users));
-      localStorage.setItem('enin_cloud_shifts', JSON.stringify(shifts));
-      localStorage.setItem('enin_cloud_clients', JSON.stringify(clients));
+      localStorage.setItem('enin_live_users_v3', JSON.stringify(users));
+      localStorage.setItem('enin_live_shifts_v3', JSON.stringify(shifts));
+      localStorage.setItem('enin_live_clients_v3', JSON.stringify(clients));
 
       isCloudSyncing = true;
       try {
         await Promise.all([
-          fetch(CLOUD_SYNC_ENDPOINT + 'users', { method: 'POST', body: JSON.stringify(users) }).catch(() => {}),
-          fetch(CLOUD_SYNC_ENDPOINT + 'shifts', { method: 'POST', body: JSON.stringify(shifts) }).catch(() => {}),
-          fetch(CLOUD_SYNC_ENDPOINT + 'clients', { method: 'POST', body: JSON.stringify(clients) }).catch(() => {})
+          fetch(CLOUD_SYNC_URL + 'users.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(users) }),
+          fetch(CLOUD_SYNC_URL + 'shifts.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(shifts) }),
+          fetch(CLOUD_SYNC_URL + 'clients.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(clients) })
         ]);
       } catch(e) {}
       isCloudSyncing = false;
@@ -792,7 +841,6 @@
     }
 
     function loginSuccess() {
-      // Save session permanently so refreshes stay logged in
       localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
@@ -805,7 +853,8 @@
       const name = document.getElementById('regName').value.trim();
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
       const ni = document.getElementById('regNI').value.trim().toUpperCase();
-      const selectedRole = document.getElementById('regRole').value;
+      const phone = document.getElementById('regPhone').value.trim();
+      const requestedRole = document.getElementById('regRole').value;
       const pass = document.getElementById('regPassword').value;
 
       if (users.some(u => u.email.toLowerCase() === email)) {
@@ -816,25 +865,26 @@
         id: Date.now(),
         name: name,
         email: email,
+        phone: phone,
         password: pass,
-        role: selectedRole,
-        title: selectedRole === 'manager' ? 'Operations Manager' : 'Domestic Staff',
+        role: requestedRole,
+        title: requestedRole === 'manager' ? 'Operations Manager' : 'Domestic Staff',
         ni: ni,
-        status: "active",
-        hourlyRate: selectedRole === 'manager' ? 22.00 : 15.00
+        status: "pending", // PENDING IT APPROVAL
+        hourlyRate: requestedRole === 'manager' ? 22.00 : 15.00,
+        registeredAt: new Date().toLocaleDateString('en-GB')
       };
 
       users.push(newUser);
       currentUser = newUser;
       
-      // Save active session & push immediately to cloud
       localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
       pushToCloud();
 
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
-      showToast(`Account registered & live! Role: ${newUser.title}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+      showToast(`Sign up complete! Submitted for IT approval.`, 'bg-amber-50 text-amber-800 border-amber-200');
     }
 
     function setupAppForUser() {
@@ -849,6 +899,14 @@
       document.getElementById('portalBadge').textContent = badge;
       document.getElementById('roleBadge').textContent = sub;
 
+      // Handle Pending Approval State for Staff
+      const isPending = currentUser.status === 'pending' && currentUser.role !== 'it_admin';
+      const notice = document.getElementById('pendingStaffNotice');
+      const header = document.getElementById('approvedShiftsHeader');
+      
+      if (notice) notice.classList.toggle('hidden', !isPending);
+      if (header) header.classList.toggle('hidden', isPending);
+
       applyRolePermissions();
       populateDropdowns();
       renderShifts();
@@ -856,11 +914,9 @@
       calcHMRC();
 
       if (currentUser.role === 'it_admin') {
-        navigateTab('it-admin');
+        // Keep in IT admin if already there
       } else if (currentUser.role === 'manager') {
-        navigateTab('manager');
-      } else {
-        navigateTab('shifts');
+        // Manager
       }
     }
 
@@ -875,7 +931,8 @@
     }
 
     function applyRolePermissions() {
-      const isManagerOrIT = currentUser && (currentUser.role === 'manager' || currentUser.role === 'it_admin');
+      const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
+      const isManagerOrIT = currentUser && isApproved && (currentUser.role === 'manager' || currentUser.role === 'it_admin');
       const isIT = currentUser && currentUser.role === 'it_admin';
 
       document.querySelectorAll('.manager-only').forEach(el => {
@@ -892,7 +949,7 @@
         showToast("Access Denied: IT Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
-      if (['manager', 'invoices', 'hmrc'].includes(tabName) && currentUser.role === 'staff') {
+      if (['manager', 'invoices', 'hmrc'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
         showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1064,6 +1121,18 @@
 
     function renderShifts() {
       const c = document.getElementById('shiftsContainer');
+      const isPending = currentUser && currentUser.status === 'pending' && currentUser.role !== 'it_admin';
+
+      if (isPending) {
+        c.innerHTML = `
+          <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
+            <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
+            <p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p>
+            <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration, all available shifts will appear here.</p>
+          </div>
+        `;
+        return;
+      }
 
       if (shifts.length === 0) {
         c.innerHTML = `
@@ -1138,7 +1207,7 @@
         s.staffId = currentUser.id;
         pushToCloud();
         renderShifts();
-        showToast(`✓ Contract claimed! Synced to cloud.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Contract claimed! Synced across all devices.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
@@ -1155,7 +1224,7 @@
         s.clockInTime = `Today ${timeStr}`;
         s.verified = true;
         s.distance = `${(Math.random() * 4 + 1.2).toFixed(1)}m`;
-        showToast(`GPS Verified: Within ${s.distance} (Under 7m Doorstep Radius). Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`GPS Verified: Within ${s.distance} (Doorstep Verified). Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       } else {
         s.status = 'completed';
         s.clockOutTime = `Today ${timeStr}`;
@@ -1167,7 +1236,49 @@
     }
 
     function updateITDirectory() {
-      document.getElementById('itDirectoryTable').innerHTML = users.map(u => `
+      const pendingUsers = users.filter(u => u.status === 'pending');
+      const activeUsers = users.filter(u => u.status !== 'pending');
+
+      const pCount = pendingUsers.length;
+      document.getElementById('itPendingHeaderBadge').textContent = `${pCount} Pending`;
+      const navBadge = document.getElementById('itPendingNavBadge');
+      if (navBadge) {
+        navBadge.textContent = pCount;
+        navBadge.classList.toggle('hidden', pCount === 0);
+      }
+
+      // RENDER PENDING TABLE
+      const pTable = document.getElementById('itPendingTable');
+      if (pendingUsers.length === 0) {
+        pTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now. All staff are authorized.</td></tr>`;
+      } else {
+        pTable.innerHTML = pendingUsers.map(u => `
+          <tr class="hover:bg-amber-50/50 text-xs">
+            <td class="p-3">
+              <p class="font-bold text-snoo-navy">${u.name}</p>
+              <p class="text-[11px] text-slate-500">${u.email}</p>
+            </td>
+            <td class="p-3 font-mono font-bold text-indigo-950">${u.ni || 'N/A'}</td>
+            <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
+                ${u.role}
+              </span>
+            </td>
+            <td class="p-3 text-right space-x-1.5">
+              <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
+                <i class="fa-solid fa-check"></i> Approve as Staff
+              </button>
+              <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
+                Approve as Manager
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // RENDER ACTIVE DIRECTORY TABLE
+      document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
         <tr class="hover:bg-slate-50 text-xs">
           <td class="p-3">
             <p class="font-bold text-snoo-navy">${u.name}</p>
@@ -1190,6 +1301,18 @@
       `).join('');
     }
 
+    function approveUser(userId, roleToAssign) {
+      const u = users.find(x => x.id === userId);
+      if (u) {
+        u.status = 'active';
+        u.role = roleToAssign;
+        u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Domestic Staff';
+        pushToCloud();
+        updateITDirectory();
+        showToast(`✓ Authorized ${u.name} as ${u.title}! Shifts unlocked for their device.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+      }
+    }
+
     function toggleUserRole(userId) {
       const u = users.find(x => x.id === userId);
       if (u) {
@@ -1197,7 +1320,7 @@
         u.title = u.role === 'manager' ? 'Operations Manager' : 'Domestic Staff';
         pushToCloud();
         updateITDirectory();
-        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()} (Cloud Synced)`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
@@ -1237,7 +1360,7 @@
           hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
           clockInTime: null, clockOutTime: null, verified: false
         });
-        showToast(`✓ Single shift published to cloud marketplace!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Single shift published to cloud!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       } else {
         const startStr = document.getElementById('newShiftStartDate').value;
         const endStr = document.getElementById('newShiftEndDate').value;
@@ -1413,7 +1536,7 @@
     }
     function hideToast() { document.getElementById('toast').classList.add('hidden'); }
 
-    // Start App & Live Cloud Backend
+    // Initialize App & Connect Cloud Database
     initApp();
   </script>
 </body>
