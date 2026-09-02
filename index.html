@@ -209,7 +209,7 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
-      <!-- ================= TAB 1: SHIFT MARKETPLACE ================= -->
+      <!-- ================= TAB 1: SHIFT MARKETPLACE & BOOKINGS ================= -->
       <section id="view-shifts" class="tab-view">
         
         <!-- PENDING IT APPROVAL NOTICE -->
@@ -227,14 +227,25 @@
           </div>
         </div>
 
-        <div id="approvedShiftsHeader" class="flex justify-between items-center mb-6">
+        <!-- SHIFT BOARD HEADER WITH DEDICATED SECTION SWITCHER -->
+        <div id="approvedShiftsHeader" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Available Care & Domestic Shifts</h2>
-            <p class="text-xs text-slate-500 font-medium">Browse active client assignments or claim multi-day contracts in 1-click.</p>
+            <h2 id="shiftsViewTitle" class="text-xl font-extrabold text-snoo-navy">Care & Domestic Shift Board</h2>
+            <p id="shiftsViewSub" class="text-xs text-slate-500 font-medium">Browse active client assignments or manage your claimed shifts.</p>
           </div>
-          <span class="text-xs font-bold bg-snoo-blue/10 text-snoo-blue px-3.5 py-1.5 rounded-full border border-snoo-blue/20 flex items-center gap-1.5">
-            <i class="fa-solid fa-bolt text-snoo-blue"></i> Live Shift Board
-          </span>
+          
+          <!-- DEDICATED SECTIONS FOR OPEN vs CLAIMED/COMPLETED -->
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
+            <button onclick="setMarketplaceFilter('open')" id="btnFilterOpen" class="px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-bolt text-amber-500"></i> Open Shifts <span id="badgeOpenCount" class="bg-amber-100 text-amber-800 text-[10px] font-black px-2 py-0.2 rounded-full">0</span>
+            </button>
+            <button onclick="setMarketplaceFilter('my_claimed')" id="btnFilterClaimed" class="px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-calendar-check text-emerald-600"></i> <span id="labelClaimedTab">My Booked Shifts</span> <span id="badgeClaimedCount" class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.2 rounded-full">0</span>
+            </button>
+            <button onclick="setMarketplaceFilter('all')" id="btnFilterAll" class="manager-only hidden px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group text-snoo-blue"></i> All Shifts
+            </button>
+          </div>
         </div>
         
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -928,6 +939,7 @@
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
+    let marketplaceFilter = 'open'; // 'open', 'my_claimed', 'all'
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476, postcode: "E16 2DN" };
     let rosterWeekOffset = 0; // 0 = current week
     
@@ -970,12 +982,6 @@
                 Math.sin(Δλ/2) * Math.sin(Δλ/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       return R * c; // Distance in meters
-    }
-
-    // EXTRACT OUTWARD POSTCODE DISTRICT (e.g. "E16 2DN" -> "E16")
-    function getPostcodeOutwardCode(pcStr) {
-      if (!pcStr) return "";
-      return pcStr.trim().toUpperCase().split(" ")[0];
     }
 
     // DIRECT JUMP FROM MARKETPLACE CARD TO CLOCK TAB & AUTO-SELECT THAT SHIFT
@@ -1565,6 +1571,12 @@
       if (notice) notice.classList.toggle('hidden', !isPending);
       if (header) header.classList.toggle('hidden', isPending);
 
+      // Customize Claimed Filter Tab Label
+      const claimedLabel = document.getElementById('labelClaimedTab');
+      if (claimedLabel) {
+        claimedLabel.textContent = (currentUser.role === 'staff') ? 'My Booked Shifts' : 'All Claimed & Completed';
+      }
+
       applyRolePermissions();
       updateFirebaseStatusUI(firebaseOnline);
       populateDropdowns();
@@ -1623,15 +1635,35 @@
         btn.classList.add('border-snoo-blue', 'text-snoo-blue');
       }
 
+      if (tabName === 'shifts') renderShifts();
       if (tabName === 'manager') updateManagerView();
       if (tabName === 'roster') renderRosterScheduler();
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'clock') {
         updateClockShiftDetails();
-        if (currentUser.role === 'it_admin') {
+        if (currentUser && currentUser.role === 'it_admin') {
           checkLiveProximity();
         }
       }
+    }
+
+    function setMarketplaceFilter(filter) {
+      marketplaceFilter = filter;
+      const btnOpen = document.getElementById('btnFilterOpen');
+      const btnClaimed = document.getElementById('btnFilterClaimed');
+      const btnAll = document.getElementById('btnFilterAll');
+
+      [btnOpen, btnClaimed, btnAll].forEach(btn => {
+        if (btn) {
+          btn.className = "px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5";
+        }
+      });
+
+      if (filter === 'open' && btnOpen) btnOpen.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
+      if (filter === 'my_claimed' && btnClaimed) btnClaimed.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
+      if (filter === 'all' && btnAll) btnAll.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
+
+      renderShifts();
     }
 
     function setClientMode(mode) {
@@ -1784,7 +1816,7 @@
       }
     }
 
-    // ================= CREATE & DISPATCH SHIFT (SUPPORTING TIME RANGES & NEW POSTCODES) =================
+    // ================= CREATE & DISPATCH SHIFT =================
     async function createShift() {
       let finalClientId = null;
       let finalClientObj = null;
@@ -1934,10 +1966,11 @@
       showToast(`✓ Shift published for ${finalClientObj.name} (${finalClientObj.postcode || 'Site'}) & broadcasted!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
-    // ================= SHIFT MARKETPLACE (HOURLY RATE & HOURS ONLY) =================
+    // ================= SHIFT MARKETPLACE & SECTIONS (WITH STRICT STAFF PRIVACY) =================
     function renderShifts() {
       const c = document.getElementById('shiftsContainer');
       const isPending = currentUser && currentUser.status === 'pending' && currentUser.role !== 'it_admin';
+      const isManagerOrIT = currentUser && (currentUser.role === 'manager' || currentUser.role === 'it_admin');
 
       if (isPending) {
         c.innerHTML = `
@@ -1950,24 +1983,70 @@
         return;
       }
 
-      if (shifts.length === 0) {
+      // Calculate Counters for Filter Pills
+      const openCount = shifts.filter(s => s.status === 'open').length;
+      let claimedCount = 0;
+
+      if (currentUser.role === 'staff') {
+        claimedCount = shifts.filter(s => s.staffId === currentUser.id && s.status !== 'open').length;
+      } else {
+        claimedCount = shifts.filter(s => s.status !== 'open').length;
+      }
+
+      const bOpen = document.getElementById('badgeOpenCount');
+      const bClaimed = document.getElementById('badgeClaimedCount');
+      if (bOpen) bOpen.textContent = openCount;
+      if (bClaimed) bClaimed.textContent = claimedCount;
+
+      // STRICT FILTERING LOGIC
+      let displayShifts = [];
+
+      if (marketplaceFilter === 'open') {
+        // Only open, unclaimed shifts
+        displayShifts = shifts.filter(s => s.status === 'open');
+      } else if (marketplaceFilter === 'my_claimed') {
+        if (currentUser.role === 'staff') {
+          // Staff ONLY see their own claimed / in-progress / completed shifts
+          displayShifts = shifts.filter(s => s.staffId === currentUser.id && s.status !== 'open');
+        } else {
+          // Managers & IT Admin see ALL claimed and completed shifts
+          displayShifts = shifts.filter(s => s.status !== 'open');
+        }
+      } else if (marketplaceFilter === 'all') {
+        if (isManagerOrIT) {
+          displayShifts = [...shifts];
+        } else {
+          // Staff only see open + their own
+          displayShifts = shifts.filter(s => s.status === 'open' || s.staffId === currentUser.id);
+        }
+      }
+
+      if (displayShifts.length === 0) {
+        let emptyMsg = "No available open assignments right now.";
+        let emptySub = "Check back soon as managers publish new shift dispatches.";
+
+        if (marketplaceFilter === 'my_claimed') {
+          emptyMsg = (currentUser.role === 'staff') ? "You have not claimed any shifts yet." : "No shifts have been claimed across the company yet.";
+          emptySub = (currentUser.role === 'staff') ? "Switch to 'Open Shifts' above to claim available work." : "Published shifts will appear here once booked by staff.";
+        }
+
         c.innerHTML = `
           <div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400">
             <i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-300"></i>
-            <p class="font-bold text-slate-600">No assignments published yet</p>
-            <p class="text-xs text-slate-400 mt-1">Managers can dispatch single shifts or multi-day block contracts from the Operations Hub.</p>
+            <p class="font-bold text-slate-600">${emptyMsg}</p>
+            <p class="text-xs text-slate-400 mt-1">${emptySub}</p>
           </div>
         `;
-        document.getElementById('clockShiftSelect').innerHTML = '<option value="">No claimed assignments for today</option>';
         return;
       }
 
-      shifts.sort((a, b) => new Date(a.date) - new Date(b.date));
+      displayShifts.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      c.innerHTML = shifts.map(s => {
+      c.innerHTML = displayShifts.map(s => {
         const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
         const isBlock = s.isBlock === true;
+        const assignedStaff = users.find(u => u.id === s.staffId);
 
         return `
           <div class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
@@ -1975,7 +2054,9 @@
               <div class="flex justify-between items-center mb-2">
                 ${isBlock ? 
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">${s.status.replace('_', ' ')}</span>`
+                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : (s.status === 'completed' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">
+                    ${s.status === 'completed' ? '✓ Completed' : s.status.replace('_', ' ')}
+                  </span>`
                 }
                 <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} hrs (${s.time || '08:00 - 16:00'})</span>
               </div>
@@ -1995,6 +2076,17 @@
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date} (${s.time || '08:00 - 16:00'})</p>
               `}
 
+              <!-- STAFF ATTRIBUTION BADGE (VISIBLE IN CLAIMED/COMPLETED VIEW FOR MANAGERS) -->
+              ${isManagerOrIT && s.status !== 'open' ? `
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 mb-3 text-xs space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="text-slate-500 text-[10px] font-bold uppercase">Assigned Staff:</span>
+                    <span class="font-bold text-snoo-navy">${assignedStaff ? assignedStaff.name : 'Unassigned'}</span>
+                  </div>
+                  ${s.clockInTime ? `<div class="text-[10px] text-emerald-700 font-semibold"><i class="fa-solid fa-clock"></i> In: ${s.clockInTime}</div>` : ''}
+                </div>
+              ` : ''}
+
               <!-- HOURLY RATE ONLY -->
               <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
                 <span>Pay Rate:</span>
@@ -2005,13 +2097,14 @@
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}</button>` : ''}
               ${isMine && s.status === 'claimed' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Ready for Today's Check-In</button>` : ''}
               ${isMine && s.status === 'in_progress' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Clocked In - Finish Session</button>` : ''}
-              ${!isMine && s.status !== 'open' ? `<span class="block text-center text-xs text-slate-400 font-bold py-2.5 bg-slate-50 rounded-xl">Booked Assignment</span>` : ''}
+              ${isMine && s.status === 'completed' ? `<span class="block text-center text-xs text-emerald-800 font-bold py-2.5 bg-emerald-50 rounded-xl border border-emerald-200">✓ Completed (Earned: £${(s.hours * s.pay).toFixed(2)})</span>` : ''}
+              ${!isMine && s.status !== 'open' && isManagerOrIT ? `<span class="block text-center text-xs text-slate-600 font-bold py-2 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>` : ''}
             </div>
           </div>
         `;
       }).join('');
 
-      // POPULATE CLOCK-IN DROPDOWN WITH EXACT FACILITY NAME, POSTCODE & ADDRESS
+      // POPULATE CLOCK-IN DROPDOWN WITH ACTIVE BOOKINGS
       const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
       const currentSelected = document.getElementById('clockShiftSelect').value;
 
@@ -2042,7 +2135,7 @@
         const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
         triggerShiftClaimedEmails(s, currentUser, cl);
 
-        showToast(`✓ Assignment claimed! Confirmation email dispatched to your inbox.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Assignment claimed! Moved to your 'My Booked Shifts' section.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
