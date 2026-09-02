@@ -319,7 +319,7 @@
           <!-- CLIENT DROPDOWN SELECTOR & WEEK CONTROLS -->
           <div class="flex flex-wrap items-center gap-3">
             
-            <!-- SINGLE CLIENT FILTER DROPDOWN (IDENTIFIED BY NAME) -->
+            <!-- SINGLE CLIENT FILTER DROPDOWN -->
             <div class="flex items-center gap-1.5">
               <label class="text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
                 <i class="fa-solid fa-house-user text-teal-600"></i> Client:
@@ -595,7 +595,7 @@
 
       </section>
 
-      <!-- ================= TAB 5: CLIENT INVOICES ================= -->
+      <!-- ================= TAB 5: CLIENT INVOICES (WITH PERSISTENT SELECTION) ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
@@ -605,7 +605,7 @@
             
             <div>
               <label class="font-bold block mb-1 text-slate-700">Select Client / Household (By Name):</label>
-              <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy"></select>
+              <select id="invoiceClientSelect" onchange="onInvoiceClientSelectChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy"></select>
             </div>
 
             <!-- INVOICE DATE RANGE CONTROLS -->
@@ -777,7 +777,7 @@
           </div>
         </div>
 
-        <!-- SECTION A: CARE FACILITIES & CLIENT DIRECTORY (BY NAME) -->
+        <!-- SECTION A: CARE FACILITIES & CLIENT DIRECTORY -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-center">
             <div>
@@ -1010,6 +1010,7 @@
     let marketplaceFilter = 'open';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476, postcode: "E16 2DN" };
     let rosterWeekOffset = 0;
+    let activeCompiledInvoice = null;
     
     const MAX_GEOFENCE_METERS = 500; 
 
@@ -1417,7 +1418,6 @@
 
       if (data.clients) {
         const cArr = Array.isArray(data.clients) ? data.clients : Object.values(data.clients);
-        // Identify & Deduplicate strictly by Client Name
         const seenNames = new Set();
         clients = [];
         cArr.filter(Boolean).forEach(c => {
@@ -1718,6 +1718,72 @@
       }).join('');
     }
 
+    // ================= PERSISTENT DROPDOWN POPULATION =================
+    function populateDropdowns() {
+      const deduped = getDeduplicatedClients();
+      const opts = deduped.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'London'})</option>`).join('');
+      
+      const newShiftClientEl = document.getElementById('newShiftClient');
+      const invoiceClientSelectEl = document.getElementById('invoiceClientSelect');
+      const rosterClientFilterEl = document.getElementById('rosterClientFilter');
+
+      // Preserve currently selected values so background syncs NEVER reset user selection
+      if (newShiftClientEl) {
+        const prevVal = newShiftClientEl.value;
+        newShiftClientEl.innerHTML = opts;
+        if (prevVal && deduped.some(c => c.id === parseInt(prevVal))) {
+          newShiftClientEl.value = prevVal;
+        }
+      }
+
+      if (invoiceClientSelectEl) {
+        const savedInvoiceClient = localStorage.getItem('goldentree_selected_invoice_client');
+        const prevVal = invoiceClientSelectEl.value || savedInvoiceClient;
+        invoiceClientSelectEl.innerHTML = opts;
+        if (prevVal && deduped.some(c => c.id === parseInt(prevVal))) {
+          invoiceClientSelectEl.value = prevVal;
+        }
+      }
+      
+      if (rosterClientFilterEl) {
+        const prevVal = rosterClientFilterEl.value || 'all';
+        rosterClientFilterEl.innerHTML = `<option value="all">⚡ All Active Clients & Facilities</option>` +
+          deduped.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'Site'})</option>`).join('');
+        if (prevVal && (prevVal === 'all' || deduped.some(c => c.id === parseInt(prevVal)))) {
+          rosterClientFilterEl.value = prevVal;
+        }
+      }
+      
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0];
+      if (document.getElementById('newShiftDate') && !document.getElementById('newShiftDate').value) document.getElementById('newShiftDate').value = today;
+      if (document.getElementById('newShiftStartDate') && !document.getElementById('newShiftStartDate').value) document.getElementById('newShiftStartDate').value = today;
+      if (document.getElementById('newShiftEndDate') && !document.getElementById('newShiftEndDate').value) document.getElementById('newShiftEndDate').value = nextWeek;
+
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      
+      if (document.getElementById('timesheetStartDate') && !document.getElementById('timesheetStartDate').value) document.getElementById('timesheetStartDate').value = firstDayOfMonth;
+      if (document.getElementById('timesheetEndDate') && !document.getElementById('timesheetEndDate').value) document.getElementById('timesheetEndDate').value = today;
+      
+      if (document.getElementById('invoiceStartDate') && !document.getElementById('invoiceStartDate').value) document.getElementById('invoiceStartDate').value = firstDayOfMonth;
+      if (document.getElementById('invoiceEndDate') && !document.getElementById('invoiceEndDate').value) document.getElementById('invoiceEndDate').value = today;
+    }
+
+    function onExistingClientChange(clientId) {
+      const cl = clients.find(c => c.id === parseInt(clientId));
+      if (cl && cl.rate) {
+        document.getElementById('newShiftCharge').value = cl.rate.toFixed(2);
+      }
+    }
+
+    function onInvoiceClientSelectChange(val) {
+      if (val) {
+        localStorage.setItem('goldentree_selected_invoice_client', val);
+      }
+    }
+
+    // ================= APP INITIALIZATION WITH TAB PERSISTENCE =================
     function setupAppForUser() {
       document.getElementById('userNameDisplay').textContent = currentUser.name;
       document.getElementById('userRoleDisplay').textContent = currentUser.title;
@@ -1731,6 +1797,7 @@
       document.getElementById('roleBadge').textContent = sub;
 
       const isPending = currentUser.status === 'pending' && currentUser.role !== 'it_admin';
+      const isStaff = currentUser.role === 'staff';
       const notice = document.getElementById('pendingStaffNotice');
       const header = document.getElementById('approvedShiftsHeader');
       
@@ -1739,24 +1806,50 @@
 
       const claimedLabel = document.getElementById('labelClaimedTab');
       if (claimedLabel) {
-        claimedLabel.textContent = (currentUser.role === 'staff') ? 'My Booked Shifts' : 'All Claimed & Completed';
+        claimedLabel.textContent = isStaff ? 'My Booked Shifts' : 'All Claimed & Completed';
       }
 
       applyRolePermissions();
       updateFirebaseStatusUI(firebaseOnline);
       populateDropdowns();
+
+      // RESTORE SAVED TAB ON PAGE REFRESH
+      let tabToOpen = localStorage.getItem('goldentree_active_tab') || 'shifts';
+      if (['it-admin', 'clock'].includes(tabToOpen) && currentUser.role !== 'it_admin') {
+        tabToOpen = 'shifts';
+      }
+      if (['manager', 'roster', 'invoices', 'hmrc'].includes(tabToOpen) && (isStaff || isPending)) {
+        tabToOpen = 'shifts';
+      }
+
+      document.querySelectorAll('.tab-view').forEach(e => e.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(e => {
+        e.classList.remove('border-snoo-blue', 'text-snoo-blue');
+        e.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      const activeView = document.getElementById('view-' + tabToOpen);
+      if (activeView) activeView.classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabToOpen);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        activeBtn.classList.add('border-snoo-blue', 'text-snoo-blue');
+      }
+
       renderShifts();
       renderRosterScheduler();
       updateITDirectory();
       updateITClientDirectory();
       calcHMRC();
       updateClockShiftDetails();
+      if (tabToOpen === 'manager') updateManagerView();
     }
 
     function handleLogout() {
       currentUser = null;
       localStorage.removeItem('goldentree_active_session');
       localStorage.removeItem('enin_active_session');
+      localStorage.removeItem('goldentree_active_tab');
       document.getElementById('mainApp').classList.add('hidden');
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('loginEmail').value = '';
@@ -1788,13 +1881,18 @@
         return;
       }
 
+      // PERSIST TAB TO LOCALSTORAGE
+      localStorage.setItem('goldentree_active_tab', tabName);
+
       document.querySelectorAll('.tab-view').forEach(e => e.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(e => {
         e.classList.remove('border-snoo-blue', 'text-snoo-blue');
         e.classList.add('border-transparent', 'text-slate-500');
       });
 
-      document.getElementById('view-' + tabName).classList.remove('hidden');
+      const targetView = document.getElementById('view-' + tabName);
+      if (targetView) targetView.classList.remove('hidden');
+
       const btn = document.getElementById('tab-' + tabName);
       if (btn) {
         btn.classList.remove('border-transparent', 'text-slate-500');
@@ -1804,6 +1902,13 @@
       if (tabName === 'shifts') renderShifts();
       if (tabName === 'manager') updateManagerView();
       if (tabName === 'roster') renderRosterScheduler();
+      if (tabName === 'invoices') {
+        const savedInvoiceClient = localStorage.getItem('goldentree_selected_invoice_client');
+        const invoiceSelect = document.getElementById('invoiceClientSelect');
+        if (savedInvoiceClient && invoiceSelect) {
+          invoiceSelect.value = savedInvoiceClient;
+        }
+      }
       if (tabName === 'it-admin') {
         updateITDirectory();
         updateITClientDirectory();
@@ -1956,49 +2061,7 @@
       }
     }
 
-    function populateDropdowns() {
-      const deduped = getDeduplicatedClients();
-      // Dropdown identified primarily by Name
-      const opts = deduped.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'London'})</option>`).join('');
-      
-      const newShiftClientEl = document.getElementById('newShiftClient');
-      const invoiceClientSelectEl = document.getElementById('invoiceClientSelect');
-      const rosterClientFilterEl = document.getElementById('rosterClientFilter');
-
-      if (newShiftClientEl) newShiftClientEl.innerHTML = opts;
-      if (invoiceClientSelectEl) invoiceClientSelectEl.innerHTML = opts;
-      
-      if (rosterClientFilterEl) {
-        const currentRosterVal = rosterClientFilterEl.value || 'all';
-        rosterClientFilterEl.innerHTML = `<option value="all">⚡ All Active Clients & Facilities</option>` +
-          deduped.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'Site'})</option>`).join('');
-        rosterClientFilterEl.value = currentRosterVal;
-      }
-      
-      const today = new Date().toISOString().split('T')[0];
-      const nextWeek = new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0];
-      if (document.getElementById('newShiftDate')) document.getElementById('newShiftDate').value = today;
-      if (document.getElementById('newShiftStartDate')) document.getElementById('newShiftStartDate').value = today;
-      if (document.getElementById('newShiftEndDate')) document.getElementById('newShiftEndDate').value = nextWeek;
-
-      const now = new Date();
-      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-      
-      if (document.getElementById('timesheetStartDate')) document.getElementById('timesheetStartDate').value = firstDayOfMonth;
-      if (document.getElementById('timesheetEndDate')) document.getElementById('timesheetEndDate').value = today;
-      
-      if (document.getElementById('invoiceStartDate')) document.getElementById('invoiceStartDate').value = firstDayOfMonth;
-      if (document.getElementById('invoiceEndDate')) document.getElementById('invoiceEndDate').value = today;
-    }
-
-    function onExistingClientChange(clientId) {
-      const cl = clients.find(c => c.id === parseInt(clientId));
-      if (cl && cl.rate) {
-        document.getElementById('newShiftCharge').value = cl.rate.toFixed(2);
-      }
-    }
-
-    // ================= CREATE & DISPATCH SHIFT (IDENTIFY CLIENT BY UNIQUE NAME) =================
+    // ================= CREATE & DISPATCH SHIFT =================
     async function createShift() {
       if (!currentUser || (currentUser.role !== 'manager' && currentUser.role !== 'it_admin') || currentUser.status === 'pending') {
         return showToast("Access Denied: Only Managers and IT Super Admin can publish shifts.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -2011,7 +2074,6 @@
       const customNameVal = document.getElementById('customClientName') ? document.getElementById('customClientName').value.trim() : '';
       const customPCVal = document.getElementById('customPostcode') ? document.getElementById('customPostcode').value.trim() : '';
 
-      // Check if user is in 'new' mode or has specified a new client name
       if (clientDispatchMode === 'new' || (customNameVal.length > 0 && clientDispatchMode !== 'existing')) {
         if (!customNameVal) {
           return showToast("Please provide the Facility or Client Name.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -2036,20 +2098,17 @@
           } catch(e) {}
         }
 
-        // STRICT IDENTIFICATION BY CLIENT NAME (NOT BY POSTCODE)
         let existingClient = clients.find(c => 
           c.name && customName && c.name.trim().toLowerCase() === customName.trim().toLowerCase()
         );
 
         if (existingClient) {
-          // If existing client with same name found, use it and update details
           finalClientId = existingClient.id;
           finalClientObj = existingClient;
           if (customPostcode) existingClient.postcode = customPostcode;
           if (customAddr) existingClient.address = customAddr;
           if (lat && lng) { existingClient.lat = lat; existingClient.lng = lng; }
         } else {
-          // New distinct client creation
           const newClient = {
             id: Date.now(),
             name: customName,
@@ -2400,640 +2459,3 @@
             </div>
 
             <div>
-              ${s.status === 'open' ? `
-                <button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">
-                  ${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}
-                </button>
-              ` : ''}
-
-              ${isMine && s.status === 'claimed' ? `
-                <button onclick="handleDirectShiftClock(${s.id}, true)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-location-dot"></i> Clock In to Start Shift
-                </button>
-              ` : ''}
-
-              ${isMine && s.status === 'in_progress' ? `
-                <button onclick="handleDirectShiftClock(${s.id}, false)" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-flag-checkered"></i> Finish Shift & Clock Out
-                </button>
-              ` : ''}
-
-              ${isMine && s.status === 'completed' ? `
-                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-center text-xs space-y-0.5">
-                  <span class="font-extrabold text-emerald-900 block">✓ Shift Completed & Verified</span>
-                  <span class="text-[10px] text-emerald-700 block">Logged: ${s.clockInTime} to ${s.clockOutTime}</span>
-                  <span class="text-xs font-black text-emerald-800 block mt-1">Earned: £${(s.hours * s.pay).toFixed(2)}</span>
-                </div>
-              ` : ''}
-
-              ${!isMine && s.status !== 'open' && isManagerOrIT ? `
-                <span class="block text-center text-xs text-slate-600 font-bold py-2.5 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      const active = shifts.filter(s => s.status !== 'completed');
-      const currentSelected = document.getElementById('clockShiftSelect').value;
-
-      document.getElementById('clockShiftSelect').innerHTML = active.length ? 
-        active.map(s => {
-          const cl = clients.find(c => c.id === s.clientId) || { name: "Client", postcode: "UK", address: "Site" };
-          const schedStr = s.isBlock ? s.dateRangeStr : s.date;
-          return `<option value="${s.id}">${cl.name} - ${cl.postcode || cl.address} (${schedStr} | ${s.time || '08:00 - 16:00'})</option>`;
-        }).join('') : '<option value="">No claimed assignments for today</option>';
-      
-      if (currentSelected && active.some(s => s.id === parseInt(currentSelected))) {
-        document.getElementById('clockShiftSelect').value = currentSelected;
-      }
-      
-      updateClockShiftDetails();
-    }
-
-    async function claimShift(id) {
-      const s = shifts.find(x => x.id === id);
-      if (s) {
-        s.status = 'claimed';
-        s.staffId = currentUser.id;
-        
-        await pushToFirebaseDirect();
-        renderShifts();
-        renderRosterScheduler();
-        updateITClientDirectory();
-
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
-        triggerShiftClaimedEmails(s, currentUser, cl);
-
-        showToast(`✓ Assignment claimed! Moved to your 'My Booked Shifts' section.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      }
-    }
-
-    // ================= ROSTER SCHEDULER ENGINE =================
-    function changeRosterWeek(delta) {
-      rosterWeekOffset += delta;
-      renderRosterScheduler();
-    }
-
-    function resetRosterWeek() {
-      rosterWeekOffset = 0;
-      renderRosterScheduler();
-    }
-
-    function getWeekDates(offset) {
-      const curr = new Date();
-      const first = curr.getDate() - curr.getDay() + 1 + (offset * 7);
-      const week = [];
-
-      for (let i = 0; i < 7; i++) {
-        const next = new Date(curr.getFullYear(), curr.getMonth(), first + i);
-        week.push(next);
-      }
-      return week;
-    }
-
-    function renderRosterScheduler() {
-      const weekDates = getWeekDates(rosterWeekOffset);
-      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      const todayISO = new Date().toISOString().split('T')[0];
-
-      const startStr = weekDates[0].toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-      const endStr = weekDates[6].toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      document.getElementById('rosterWeekTitle').textContent = rosterWeekOffset === 0 ? `This Week (${startStr} - ${endStr})` : `${startStr} - ${endStr}`;
-
-      const headerEl = document.getElementById('rosterDaysHeader');
-      headerEl.innerHTML = weekDates.map((d, idx) => {
-        const isToday = d.toISOString().split('T')[0] === todayISO;
-        return `
-          <div class="p-2 rounded-2xl ${isToday ? 'bg-teal-50 text-teal-900 font-black border border-teal-300' : 'text-slate-600 font-bold'}">
-            <div class="text-2xl font-black">${d.getDate()}</div>
-            <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">${dayNames[idx]}</div>
-          </div>
-        `;
-      }).join('');
-
-      const dedupedClients = getDeduplicatedClients();
-      const clientFilterEl = document.getElementById('rosterClientFilter');
-      let selectedFilter = 'all';
-
-      if (clientFilterEl) {
-        selectedFilter = clientFilterEl.value || 'all';
-        const currentSelectedId = selectedFilter;
-        
-        clientFilterEl.innerHTML = `<option value="all">⚡ All Active Clients & Facilities</option>` +
-          dedupedClients.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'Site'})</option>`).join('');
-        
-        if (currentSelectedId && (currentSelectedId === 'all' || dedupedClients.some(c => c.id === parseInt(currentSelectedId)))) {
-          clientFilterEl.value = currentSelectedId;
-          selectedFilter = currentSelectedId;
-        } else {
-          clientFilterEl.value = 'all';
-          selectedFilter = 'all';
-        }
-      }
-
-      let clientsToDisplay = [];
-      if (selectedFilter !== 'all') {
-        clientsToDisplay = dedupedClients.filter(c => c.id === parseInt(selectedFilter));
-      } else {
-        clientsToDisplay = dedupedClients;
-      }
-
-      const bodyEl = document.getElementById('rosterBody');
-      if (clientsToDisplay.length === 0) {
-        bodyEl.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium">No active clients found. Select another client from the dropdown above.</div>`;
-        return;
-      }
-
-      bodyEl.innerHTML = clientsToDisplay.map(cl => {
-        const clientShifts = shifts.filter(s => {
-          if (s.clientId === cl.id) return true;
-          const shiftClient = clients.find(c => c.id === s.clientId);
-          if (shiftClient && shiftClient.name && cl.name && shiftClient.name.trim().toLowerCase() === cl.name.trim().toLowerCase()) return true;
-          return false;
-        });
-
-        const totalShiftsCount = clientShifts.length;
-
-        const dayCols = weekDates.map(d => {
-          const dayISO = d.toISOString().split('T')[0];
-
-          const dayShifts = clientShifts.filter(s => {
-            if (s.isBlock && s.datesList && Array.isArray(s.datesList)) {
-              return s.datesList.includes(dayISO);
-            }
-            return s.date === dayISO;
-          });
-
-          if (dayShifts.length === 0) {
-            return `<div class="min-h-[130px] p-2 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200/60 flex items-center justify-center text-slate-300 text-[10px]">Empty</div>`;
-          }
-
-          return `
-            <div class="space-y-2">
-              ${dayShifts.map(s => {
-                const staff = users.find(u => u.id === s.staffId);
-                const staffName = staff ? staff.name : 'Unassigned';
-
-                return `
-                  <div class="p-3 rounded-2xl bg-teal-600 text-white shadow-md shadow-teal-700/10 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer" onclick="showShiftDetailsModal(${s.id})">
-                    <div>
-                      <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-[10px] text-white tracking-wider mb-1.5">
-                        1
-                      </div>
-                      <div class="font-extrabold text-[11px] text-teal-100">${s.time || '08:00 - 16:00'}</div>
-                      <div class="text-[11px] font-bold text-white leading-tight truncate mt-0.5">${cl.name}</div>
-                    </div>
-
-                    <div class="mt-2.5 bg-white text-slate-800 py-1 px-2 rounded-xl text-[10px] font-bold flex items-center justify-between shadow-xs">
-                      <div class="flex items-center gap-1.5 truncate">
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
-                        <span class="truncate">${staffName}</span>
-                      </div>
-                      <i class="fa-solid fa-ellipsis-vertical text-slate-400 text-[10px]"></i>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          `;
-        }).join('');
-
-        return `
-          <div class="pt-4 space-y-3">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
-              <h3 class="font-extrabold text-slate-800 text-sm">${cl.name} <span class="text-xs text-indigo-700 font-bold">(${cl.postcode || 'Site'})</span></h3>
-              <span class="bg-teal-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">${totalShiftsCount} shifts</span>
-            </div>
-
-            <div class="grid grid-cols-7 gap-3">
-              ${dayCols}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function showShiftDetailsModal(shiftId) {
-      const s = shifts.find(x => x.id === shiftId);
-      if (!s) return;
-      const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", postcode: "UK", address: "UK Address" };
-      const st = users.find(u => u.id === s.staffId);
-
-      showToast(`Assignment: ${s.title} | Facility: ${cl.name} | Staff: ${st ? st.name : 'Open'} | Time: ${s.time || '08:00 - 16:00'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
-    }
-
-    // ================= MANAGER VIEW & TIMEFRAME CALCULATION =================
-    function getFilteredShifts() {
-      const timeframe = document.getElementById('timesheetTimeframe') ? document.getElementById('timesheetTimeframe').value : 'all_time';
-      const customSec = document.getElementById('timesheetCustomDateSec');
-      const now = new Date();
-
-      if (timeframe === 'custom' && customSec) {
-        customSec.classList.remove('hidden');
-        const startStr = document.getElementById('timesheetStartDate').value;
-        const endStr = document.getElementById('timesheetEndDate').value;
-
-        return shifts.filter(s => {
-          const shiftDateStr = s.date || (s.clockInTimestamp ? s.clockInTimestamp.split('T')[0] : null);
-          if (!shiftDateStr) return true;
-          if (startStr && shiftDateStr < startStr) return false;
-          if (endStr && shiftDateStr > endStr) return false;
-          return true;
-        });
-      } else {
-        if (customSec) customSec.classList.add('hidden');
-      }
-
-      return shifts.filter(s => {
-        if (timeframe === 'all_time') return true;
-
-        const shiftDate = s.date ? new Date(s.date) : (s.clockInTimestamp ? new Date(s.clockInTimestamp) : null);
-        if (!shiftDate || isNaN(shiftDate.getTime())) return true;
-
-        if (timeframe === 'this_week') {
-          const startOfWeek = new Date(now);
-          const day = startOfWeek.getDay() || 7;
-          startOfWeek.setDate(now.getDate() - day + 1);
-          startOfWeek.setHours(0, 0, 0, 0);
-          return shiftDate >= startOfWeek;
-        }
-
-        if (timeframe === 'this_month') {
-          return shiftDate.getMonth() === now.getMonth() && shiftDate.getFullYear() === now.getFullYear();
-        }
-
-        if (timeframe === 'this_year') {
-          return shiftDate.getFullYear() === now.getFullYear();
-        }
-
-        return true;
-      });
-    }
-
-    function updateManagerView() {
-      const filteredShifts = getFilteredShifts();
-      let rev = 0, wages = 0, itLevy = 0;
-      
-      filteredShifts.forEach(s => {
-        if (s.status === 'completed') {
-          const shiftGross = s.hours * s.chargeRate;
-          const shiftWage = s.hours * s.pay;
-          const shiftIT = shiftGross * 0.05;
-
-          rev += shiftGross;
-          wages += shiftWage;
-          itLevy += shiftIT;
-        }
-      });
-
-      const netProfit = rev - wages - itLevy;
-
-      document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
-      document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
-      if (document.getElementById('sumITLevy')) document.getElementById('sumITLevy').textContent = `£${itLevy.toFixed(2)}`;
-      document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
-
-      let totalAllTimeITLevy = 0;
-      shifts.forEach(s => {
-        if (s.status === 'completed') {
-          totalAllTimeITLevy += (s.hours * s.chargeRate * 0.05);
-        }
-      });
-      if (document.getElementById('itMaintenanceTotalDisplay')) {
-        document.getElementById('itMaintenanceTotalDisplay').textContent = `£${totalAllTimeITLevy.toFixed(2)}`;
-      }
-
-      const tbody = document.getElementById('managerTable');
-      if (filteredShifts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No attendance records found for this date range.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filteredShifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
-        const st = users.find(u => u.id === s.staffId);
-        const shiftGross = s.hours * s.chargeRate;
-        const staffEarned = s.hours * s.pay;
-        const shiftIT = shiftGross * 0.05;
-        const profit = shiftGross - staffEarned - shiftIT;
-
-        return `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
-              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name} (${cl.postcode || 'UK'})</p>
-              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.time || '08:00 - 16:00'} - ${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
-            </td>
-            <td class="p-3">
-              ${s.clockInTime ? `
-                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
-                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Location Verified'}</span>
-              ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
-            </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
-            </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg">£${shiftIT.toFixed(2)}</span>
-            </td>
-            <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
-            <td class="p-3 text-right">
-              <button onclick="openDeleteShiftModal(${s.id}, event)" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs flex items-center gap-1" title="Delete Shift Record">
-                <i class="fa-solid fa-trash-can"></i> Delete
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // ================= EXPORT TIMESHEET CSV =================
-    function exportTimesheetCSV() {
-      const filteredShifts = getFilteredShifts();
-      const timeframe = document.getElementById('timesheetTimeframe').value;
-      const startStr = document.getElementById('timesheetStartDate') ? document.getElementById('timesheetStartDate').value : '';
-      const endStr = document.getElementById('timesheetEndDate') ? document.getElementById('timesheetEndDate').value : '';
-      
-      if (filteredShifts.length === 0) {
-        return showToast("No attendance records to export for this timeframe.", "bg-rose-50 text-rose-800 border-rose-200");
-      }
-
-      const headers = [
-        "Shift ID",
-        "Staff Name",
-        "Staff Email",
-        "Client Name",
-        "Client Postcode",
-        "Client Address",
-        "Service Title",
-        "Time Duration",
-        "Schedule Type",
-        "Shift Date / Range",
-        "Total Hours",
-        "Staff Pay Rate (£/hr)",
-        "Staff Total Wages (£)",
-        "Client Charge Rate (£/hr)",
-        "Total Invoice Gross (£)",
-        "IT Maintenance 5% Levy (£)",
-        "Company Net Margin (£)",
-        "Clock In Time",
-        "Clock Out Time",
-        "GPS Verified",
-        "Status"
-      ];
-
-      const rows = filteredShifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client", postcode: "UK", address: "N/A" };
-        const st = users.find(u => u.id === s.staffId) || { name: "Unassigned", email: "N/A" };
-        const staffWages = (s.hours * s.pay).toFixed(2);
-        const grossCharge = (s.hours * s.chargeRate).toFixed(2);
-        const itFee = (s.hours * s.chargeRate * 0.05).toFixed(2);
-        const netMargin = (s.hours * s.chargeRate - (s.hours * s.pay) - (s.hours * s.chargeRate * 0.05)).toFixed(2);
-
-        return [
-          s.id,
-          `"${st.name.replace(/"/g, '""')}"`,
-          `"${st.email.replace(/"/g, '""')}"`,
-          `"${cl.name.replace(/"/g, '""')}"`,
-          `"${cl.postcode || 'N/A'}"`,
-          `"${cl.address.replace(/"/g, '""')}"`,
-          `"${(s.title || 'Care Service').replace(/"/g, '""')}"`,
-          `"${s.time || '08:00 - 16:00'}"`,
-          s.isBlock ? "Recurring Block Booking" : "Single Shift",
-          `"${s.isBlock ? s.dateRangeStr : s.date}"`,
-          s.hours,
-          s.pay.toFixed(2),
-          staffWages,
-          s.chargeRate.toFixed(2),
-          grossCharge,
-          itFee,
-          netMargin,
-          `"${s.clockInTime || 'N/A'}"`,
-          `"${s.clockOutTime || 'N/A'}"`,
-          s.verified ? `Yes (${s.distance || 'Location Proximity'})` : "Pending",
-          s.status
-        ];
-      });
-
-      let csvContent = "\uFEFF";
-      csvContent += headers.join(",") + "\r\n";
-      rows.forEach(r => {
-        csvContent += r.join(",") + "\r\n";
-      });
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      
-      let dateTag = timeframe;
-      if (timeframe === 'custom' && startStr && endStr) {
-        dateTag = `${startStr}_to_${endStr}`;
-      } else {
-        dateTag = `${timeframe}_${new Date().toISOString().split('T')[0]}`;
-      }
-
-      link.setAttribute("href", url);
-      link.setAttribute("download", `Golden_Tree_Care_Timesheets_${dateTag}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      showToast(`✓ Timesheet CSV downloaded (${dateTag})!`, "bg-emerald-50 text-emerald-800 border-emerald-200");
-    }
-
-    function updateITDirectory() {
-      const pendingUsers = users.filter(u => u.status === 'pending');
-      const activeUsers = users.filter(u => u.status !== 'pending');
-
-      const pCount = pendingUsers.length;
-      document.getElementById('itPendingHeaderBadge').textContent = `${pCount} Pending`;
-      const navBadge = document.getElementById('itPendingNavBadge');
-      if (navBadge) {
-        navBadge.textContent = pCount;
-        navBadge.classList.toggle('hidden', pCount === 0);
-      }
-
-      const pTable = document.getElementById('itPendingTable');
-      if (pendingUsers.length === 0) {
-        pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
-      } else {
-        pTable.innerHTML = pendingUsers.map(u => `
-          <tr class="hover:bg-amber-50/50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${u.name}</p>
-              <p class="text-[11px] text-slate-500">${u.email}</p>
-            </td>
-            <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
-                ${u.role}
-              </span>
-            </td>
-            <td class="p-3 text-right space-x-1.5">
-              <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                <i class="fa-solid fa-check"></i> Approve
-              </button>
-              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Reject Application">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
-        <tr class="hover:bg-slate-50 text-xs">
-          <td class="p-3">
-            <p class="font-bold text-snoo-navy">${u.name}</p>
-            <p class="text-[11px] text-slate-400">${u.email}</p>
-          </td>
-          <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-          <td class="p-3 font-semibold">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
-              ${u.role} (£${(u.hourlyRate || 15.00).toFixed(2)}/hr)
-            </span>
-          </td>
-          <td class="p-3 text-right space-x-1.5">
-            ${(u.email === 'admin@gtchr.co.uk' || u.email === 'minute2131@gmail.com') ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
-              <button onclick="toggleUserRole(${u.id})" class="bg-slate-100 hover:bg-snoo-blue/10 text-slate-700 hover:text-snoo-blue font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer border border-slate-200 shadow-xs">
-                Switch to ${u.role === 'manager' ? 'Staff' : 'Manager'}
-              </button>
-              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Remove Staff Member">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            `}
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    async function approveUser(userId, roleToAssign) {
-      const u = users.find(x => x.id === userId);
-      if (u) {
-        u.status = 'active';
-        u.role = roleToAssign;
-        u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
-        await pushToFirebaseDirect();
-        updateITDirectory();
-        renderRosterScheduler();
-
-        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Golden Tree Care HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available assignments.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
-
-        showToast(`✓ Authorized ${u.name} as ${u.title}! Approval email dispatched.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      }
-    }
-
-    async function toggleUserRole(userId) {
-      const u = users.find(x => x.id === userId);
-      if (u) {
-        u.role = u.role === 'manager' ? 'staff' : 'manager';
-        u.title = u.role === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
-        await pushToFirebaseDirect();
-        updateITDirectory();
-        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      }
-    }
-
-    // ================= COMPILE CLIENT INVOICE =================
-    function generateInvoice() {
-      const cid = parseInt(document.getElementById('invoiceClientSelect').value);
-      const cl = clients.find(x => x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
-      
-      const startStr = document.getElementById('invoiceStartDate') ? document.getElementById('invoiceStartDate').value : '';
-      const endStr = document.getElementById('invoiceEndDate') ? document.getElementById('invoiceEndDate').value : '';
-
-      const sList = shifts.filter(s => {
-        if (s.clientId !== cid) return false;
-
-        const shiftDateStr = s.date || (s.clockInTimestamp ? s.clockInTimestamp.split('T')[0] : null);
-        if (!shiftDateStr) return true;
-
-        if (startStr && shiftDateStr < startStr) return false;
-        if (endStr && shiftDateStr > endStr) return false;
-        return true;
-      });
-
-      let sub = 0;
-      document.getElementById('invClient').textContent = `${cl.name} (${cl.address})`;
-      
-      const periodLabel = (startStr && endStr) ? `${startStr} to ${endStr}` : (startStr ? `From ${startStr}` : (endStr ? `Up to ${endStr}` : 'All Time'));
-      document.getElementById('invPeriod').textContent = periodLabel;
-
-      if (sList.length === 0) {
-        document.getElementById('invoiceRows').innerHTML = `
-          <tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No completed shifts found for ${cl.name} between ${periodLabel}.</td></tr>
-        `;
-        document.getElementById('invSub').textContent = `£0.00`;
-        document.getElementById('invVat').textContent = `£0.00`;
-        document.getElementById('invTot').textContent = `£0.00`;
-        return showToast(`No shifts found for ${cl.name} in this date range.`, 'bg-amber-50 text-amber-800 border-amber-200');
-      }
-
-      document.getElementById('invoiceRows').innerHTML = sList.map(s => {
-        const rateToUse = s.chargeRate || cl.rate || 25.00;
-        const tot = s.hours * rateToUse;
-        sub += tot;
-        const st = users.find(u => u.id === s.staffId);
-        return `
-          <tr>
-            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'}) - ${st ? st.name : 'Care Staff'}</td>
-            <td class="py-2.5 px-2 text-right">${s.hours}</td>
-            <td class="py-2.5 px-2 text-right">£${rateToUse.toFixed(2)}</td>
-            <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
-          </tr>
-        `;
-      }).join('');
-
-      const vat = sub * 0.20;
-      document.getElementById('invSub').textContent = `£${sub.toFixed(2)}`;
-      document.getElementById('invVat').textContent = `£${vat.toFixed(2)}`;
-      document.getElementById('invTot').textContent = `£${(sub + vat).toFixed(2)}`;
-      
-      showToast(`✓ Official invoice compiled for ${cl.name} (${periodLabel})!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-    }
-
-    function calcHMRC() {
-      const gross = parseFloat(document.getElementById('hmrcGross').value) || 0;
-      const period = document.getElementById('hmrcPeriod').value;
-      const mult = period === 'weekly' ? 52 : (period === 'monthly' ? 12 : 1);
-      const annual = gross * mult;
-
-      const taxable = Math.max(0, annual - 12570);
-      let tax = 0;
-      if (taxable > 0) {
-        tax = Math.min(taxable, 37700) * 0.20 + Math.max(0, taxable - 37700) * 0.40;
-      }
-      const periodTax = tax / mult;
-
-      const weekly = annual / 52;
-      let empNI = 0, emplrNI = 0;
-      if (weekly > 242) empNI = (Math.min(weekly, 967) - 242) * 0.08 + Math.max(0, weekly - 967) * 0.02;
-      if (weekly > 175) emplrNI = (weekly - 175) * 0.138;
-
-      const pEmpNI = (empNI * 52) / mult;
-      const pEmplrNI = (emplrNI * 52) / mult;
-
-      document.getElementById('resGross').textContent = `£${gross.toFixed(2)}`;
-      document.getElementById('resTax').textContent = `- £${periodTax.toFixed(2)}`;
-      document.getElementById('resEmpNI').textContent = `- £${pEmpNI.toFixed(2)}`;
-      document.getElementById('resNet').textContent = `£${(gross - periodTax - pEmpNI).toFixed(2)}`;
-      document.getElementById('resEmplrNI').textContent = `+ £${pEmplrNI.toFixed(2)}`;
-      document.getElementById('resHMRC').textContent = `£${(periodTax + pEmpNI + pEmplrNI).toFixed(2)}`;
-    }
-
-    function showToast(m, cls) {
-      const t = document.getElementById('toast');
-      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center ${cls}`;
-      document.getElementById('toast-msg').textContent = m;
-      t.classList.remove('hidden');
-      setTimeout(hideToast, 4500);
-    }
-    function hideToast() { document.getElementById('toast').classList.add('hidden'); }
-
-    initApp();
-  </script>
-</body>
-</html>
