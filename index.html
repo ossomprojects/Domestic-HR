@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ennin's Domestic HR & Shift Logistics</title>
+  <title>Golden Tree Care HR & Shift Logistics</title>
   
   <!-- SnooCode Signature Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,11 +53,11 @@
       
       <!-- Brand Header -->
       <div class="text-center mb-6">
-        <div class="inline-flex p-3.5 rounded-2xl bg-snoo-blue/10 text-snoo-blue mb-2 shadow-sm">
-          <i class="fa-solid fa-location-crosshairs text-2xl"></i>
+        <div class="inline-flex p-3.5 rounded-2xl bg-amber-500/10 text-amber-600 mb-2 shadow-sm">
+          <i class="fa-solid fa-tree text-2xl"></i>
         </div>
-        <h1 class="text-2xl font-black text-snoo-navy tracking-tight">Ennin's Domestic HR</h1>
-        <p class="text-xs text-slate-500 font-medium mt-1">Domestic Workforce & Shift Logistics Portal</p>
+        <h1 class="text-2xl font-black text-snoo-navy tracking-tight">Golden Tree Care HR</h1>
+        <p class="text-xs text-slate-500 font-medium mt-1">Care & Domestic Workforce Logistics Portal</p>
       </div>
 
       <!-- Auth Toggle -->
@@ -133,15 +133,15 @@
     <header class="bg-white/95 backdrop-blur-md text-slate-800 shadow-sm sticky top-0 z-40 border-b border-slate-200/90">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-snoo-blue flex items-center justify-center text-white shadow-md shadow-snoo-blue/20">
-            <i class="fa-solid fa-location-dot text-lg text-snoo-mint"></i>
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/20">
+            <i class="fa-solid fa-tree text-xl"></i>
           </div>
           <div>
             <h1 class="font-black text-base tracking-tight text-snoo-navy flex items-center gap-2">
-              <span>Ennin's Domestic HR</span>
+              <span>Golden Tree Care HR</span>
               <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
             </h1>
-            <p id="roleBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Domestic Operations Portal</p>
+            <p id="roleBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Workforce & Operations Portal</p>
           </div>
         </div>
 
@@ -158,7 +158,7 @@
           </button>
 
           <div class="text-right hidden sm:block">
-            <p id="userNameDisplay" class="text-xs font-black leading-tight text-slate-900">Ennin IT Admin</p>
+            <p id="userNameDisplay" class="text-xs font-black leading-tight text-slate-900">Golden Tree IT Admin</p>
             <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Super Admin</p>
           </div>
           <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
@@ -178,7 +178,10 @@
           <i class="fa-solid fa-location-crosshairs"></i> GPS Check-In / Out
         </button>
 
-        <!-- Manager Views -->
+        <!-- MANAGER ONLY TABS -->
+        <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-week text-teal-600"></i> Roster Scheduler
+        </button>
         <button onclick="navigateTab('manager')" id="tab-manager" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
           <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
         </button>
@@ -216,9 +219,9 @@
               <i class="fa-solid fa-hourglass-half animate-pulse"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
+              <h3 class="font-extrabold text-base text-amber-950">Account Pending Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once authorized by IT admin, the shift marketplace will automatically unlock for you.
+                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once approved by management, available shifts will automatically unlock for you.
               </p>
             </div>
           </div>
@@ -226,7 +229,7 @@
 
         <div id="approvedShiftsHeader" class="flex justify-between items-center mb-6">
           <div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Available Domestic Shifts & Block Contracts</h2>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Available Care & Domestic Shifts</h2>
             <p class="text-xs text-slate-500 font-medium">Browse active client shifts or claim multi-day contracts in 1-click.</p>
           </div>
           <span class="text-xs font-bold bg-snoo-blue/10 text-snoo-blue px-3.5 py-1.5 rounded-full border border-snoo-blue/20 flex items-center gap-1.5">
@@ -277,9 +280,54 @@
         </div>
       </section>
 
-      <!-- ================= TAB 3: OPERATIONS MANAGER HUB ================= -->
+      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER (NEW!) ================= -->
+      <section id="view-roster" class="tab-view hidden space-y-6">
+        
+        <!-- Header & Week Controls -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Manager View</span>
+              <h2 class="text-xl font-extrabold text-snoo-navy">Claimed Shifts Roster & Scheduler</h2>
+            </div>
+            <p class="text-xs text-slate-500">Live multi-day schedule mapping all claimed staff shifts across care facilities and clients.</p>
+          </div>
+
+          <!-- Week Navigation Buttons -->
+          <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
+            <button onclick="changeRosterWeek(-1)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
+              <i class="fa-solid fa-chevron-left text-[10px]"></i> Prev Week
+            </button>
+            <button onclick="resetRosterWeek()" id="rosterWeekTitle" class="px-3 py-1.5 rounded-xl bg-snoo-blue text-white shadow-xs transition cursor-pointer">
+              This Week
+            </button>
+            <button onclick="changeRosterWeek(1)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
+              Next Week <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Roster Calendar Grid Container -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
+          
+          <!-- Days of the Week Header (7 Columns) -->
+          <div id="rosterDaysHeader" class="grid grid-cols-7 gap-3 min-w-[840px] pb-4 border-b border-slate-100 text-center">
+            <!-- Dynamically Rendered 7 Days -->
+          </div>
+
+          <!-- Client Shift Rows Container -->
+          <div id="rosterBody" class="min-w-[840px] divide-y divide-slate-100 mt-4 space-y-6">
+            <!-- Dynamically Populated Client Rows -->
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 4: OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
         
+        <!-- Metric Cards Filtered by Timeframe -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Client Revenue</span>
@@ -311,7 +359,7 @@
 
             <!-- MODE 1: Select Existing Client -->
             <div id="sectionClientExisting" class="space-y-1">
-              <label class="font-bold block mb-1 text-slate-700">Domestic Client:</label>
+              <label class="font-bold block mb-1 text-slate-700">Client / Household:</label>
               <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium"></select>
             </div>
 
@@ -361,7 +409,7 @@
             <!-- Service Title -->
             <div>
               <label class="font-bold block mb-1 text-slate-700">Service Description:</label>
-              <input type="text" id="newShiftTitle" value="Deep Clean" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+              <input type="text" id="newShiftTitle" value="Deep Clean & Support" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
             </div>
 
             <!-- Schedule Type (Single or Recurring Block) -->
@@ -441,11 +489,31 @@
             </button>
           </div>
 
-          <!-- Timesheets Table -->
+          <!-- Timesheets Table with Filter & CSV Export -->
           <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-            <h3 class="text-sm font-bold text-snoo-navy mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
-            </h3>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+              <div>
+                <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
+                  <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
+                </h3>
+                <p class="text-[11px] text-slate-500">Filter and export attendance records across custom timeframes.</p>
+              </div>
+
+              <!-- Timeframe Filter & Export CSV Button -->
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <select id="timesheetTimeframe" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-2 text-xs bg-slate-50 font-bold text-snoo-navy">
+                  <option value="all_time">Since Inception (All Time)</option>
+                  <option value="this_week">This Week</option>
+                  <option value="this_month">This Month</option>
+                  <option value="this_year">This Year</option>
+                </select>
+                <button onclick="exportTimesheetCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs whitespace-nowrap">
+                  <i class="fa-solid fa-file-excel"></i> Export CSV
+                </button>
+              </div>
+            </div>
+
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
@@ -464,150 +532,13 @@
 
       </section>
 
-      <!-- ================= TAB 4: IT SUPERIOR ADMIN & EMAIL SETTINGS ================= -->
-      <section id="view-it-admin" class="tab-view hidden space-y-8">
-        
-        <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
-              <span class="text-xs text-indigo-700 font-bold">IT Management & User Provisioning</span>
-            </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Ennin's IT Infrastructure & Provisioning Control</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Register staff directly, manage accounts, and monitor automated emails.</p>
-          </div>
-        </div>
-
-        <!-- SECTION A: DIRECT STAFF ONBOARDING FORM (NO NI REQUIRED) -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
-                <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct Staff & Manager Onboarding (IT Direct Register)
-              </h3>
-              <p class="text-xs text-slate-500">Register new staff directly into Firebase without waiting for manual signup.</p>
-            </div>
-          </div>
-
-          <form onsubmit="handleITDirectAddUser(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Legal Name:</label>
-              <input type="text" id="itAddName" placeholder="e.g. John Adams" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Email Address:</label>
-              <input type="email" id="itAddEmail" placeholder="john@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Phone Number:</label>
-              <input type="tel" id="itAddPhone" placeholder="07700900123" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Role:</label>
-              <select id="itAddRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy">
-                <option value="staff">Staff</option>
-                <option value="manager">Manager</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Pay Rate (£/hr):</label>
-              <input type="number" id="itAddRate" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
-            </div>
-
-            <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Password:</label>
-              <input type="text" id="itAddPass" value="welcome2026" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium font-mono text-snoo-blue">
-            </div>
-
-            <div class="col-span-full flex justify-end">
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md">
-                <i class="fa-solid fa-plus-circle"></i> Onboard Staff Now
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- SECTION B: PENDING APPROVALS QUEUE (NO NI REQUIRED) -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
-          <div class="flex justify-between items-center mb-4">
-            <div>
-              <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
-                <i class="fa-solid fa-bell text-amber-600"></i> Pending Staff Sign-Ups (Action Required)
-              </h3>
-              <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
-            </div>
-            <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3 py-1 rounded-full border border-amber-200">0 Pending</span>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
-                <tr>
-                  <th class="p-3">Staff Details</th>
-                  <th class="p-3">Phone</th>
-                  <th class="p-3">Requested Role</th>
-                  <th class="p-3 text-right">Approve / Reject Action</th>
-                </tr>
-              </thead>
-              <tbody id="itPendingTable" class="divide-y"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- SECTION C: AUTHORIZED DIRECTORY & DELETION (NO NI REQUIRED) -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-          <div class="flex justify-between items-center mb-4">
-            <div>
-              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
-              <p class="text-xs text-slate-500">Manage active staff, switch roles, or remove staff who left the company.</p>
-            </div>
-          </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
-                <tr>
-                  <th class="p-3">Name & Email</th>
-                  <th class="p-3">Phone</th>
-                  <th class="p-3">Role & Rate</th>
-                  <th class="p-3 text-right">Role / Delete Actions</th>
-                </tr>
-              </thead>
-              <tbody id="itDirectoryTable" class="divide-y"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- SECTION D: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
-                <i class="fa-solid fa-envelope-circle-check text-emerald-600"></i> Automated Email Dispatcher (EmailJS)
-              </h3>
-              <p class="text-xs text-slate-500">Service: <code class="font-mono text-snoo-blue font-bold">service_drg1mzk</code> | Template: <code class="font-mono text-snoo-blue font-bold">template_ibrgiwu</code></p>
-            </div>
-            <button onclick="testSendDiagnosticEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition">
-              <i class="fa-solid fa-paper-plane"></i> Send Test Email Now
-            </button>
-          </div>
-
-          <div id="emailDiagnosticBox" class="hidden p-3.5 rounded-2xl text-xs font-mono border"></div>
-        </div>
-
-      </section>
-
       <!-- ================= TAB 5: CLIENT INVOICES ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
             <h3 class="text-sm font-bold text-snoo-navy">Compile Client Invoice</h3>
             <div>
-              <label class="font-bold block mb-1">Select Domestic Client:</label>
+              <label class="font-bold block mb-1">Select Client / Household:</label>
               <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium"></select>
             </div>
             <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
@@ -621,7 +552,7 @@
           <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
             <div class="flex justify-between pb-6 border-b">
               <div>
-                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Ennin's Domestic Services Ltd</h2>
+                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Golden Tree Care Services Ltd</h2>
                 <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
                 <p class="text-slate-500">100 High Street, London EC1A 1AA</p>
               </div>
@@ -721,6 +652,143 @@
         </div>
       </section>
 
+      <!-- ================= TAB 7: IT SUPERIOR ADMIN & EMAIL SETTINGS ================= -->
+      <section id="view-it-admin" class="tab-view hidden space-y-8">
+        
+        <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
+              <span class="text-xs text-indigo-700 font-bold">IT Management & User Provisioning</span>
+            </div>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Golden Tree Care HR IT Infrastructure</h2>
+            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Register staff directly, manage accounts, and monitor automated emails.</p>
+          </div>
+        </div>
+
+        <!-- SECTION A: DIRECT STAFF ONBOARDING FORM -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct Staff & Manager Onboarding (IT Direct Register)
+              </h3>
+              <p class="text-xs text-slate-500">Register new staff directly into Firebase without waiting for manual signup.</p>
+            </div>
+          </div>
+
+          <form onsubmit="handleITDirectAddUser(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Legal Name:</label>
+              <input type="text" id="itAddName" placeholder="e.g. John Adams" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Email Address:</label>
+              <input type="email" id="itAddEmail" placeholder="john@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Phone Number:</label>
+              <input type="tel" id="itAddPhone" placeholder="07700900123" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Role:</label>
+              <select id="itAddRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy">
+                <option value="staff">Staff</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Pay Rate (£/hr):</label>
+              <input type="number" id="itAddRate" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Password:</label>
+              <input type="text" id="itAddPass" value="welcome2026" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium font-mono text-snoo-blue">
+            </div>
+
+            <div class="col-span-full flex justify-end">
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md">
+                <i class="fa-solid fa-plus-circle"></i> Onboard Staff Now
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SECTION B: PENDING APPROVALS QUEUE -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
+                <i class="fa-solid fa-bell text-amber-600"></i> Pending Staff Sign-Ups (Action Required)
+              </h3>
+              <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
+            </div>
+            <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3 py-1 rounded-full border border-amber-200">0 Pending</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Staff Details</th>
+                  <th class="p-3">Phone</th>
+                  <th class="p-3">Requested Role</th>
+                  <th class="p-3 text-right">Approve / Reject Action</th>
+                </tr>
+              </thead>
+              <tbody id="itPendingTable" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION C: AUTHORIZED DIRECTORY & DELETION -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
+              <p class="text-xs text-slate-500">Manage active staff, switch roles, or remove staff who left the company.</p>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Name & Email</th>
+                  <th class="p-3">Phone</th>
+                  <th class="p-3">Role & Rate</th>
+                  <th class="p-3 text-right">Role / Delete Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itDirectoryTable" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION D: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
+                <i class="fa-solid fa-envelope-circle-check text-emerald-600"></i> Automated Email Dispatcher (EmailJS)
+              </h3>
+              <p class="text-xs text-slate-500">Service: <code class="font-mono text-snoo-blue font-bold">service_drg1mzk</code> | Template: <code class="font-mono text-snoo-blue font-bold">template_ibrgiwu</code></p>
+            </div>
+            <button onclick="testSendDiagnosticEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition">
+              <i class="fa-solid fa-paper-plane"></i> Send Test Email Now
+            </button>
+          </div>
+
+          <div id="emailDiagnosticBox" class="hidden p-3.5 rounded-2xl text-xs font-mono border"></div>
+        </div>
+
+      </section>
+
     </main>
   </div>
 
@@ -729,7 +797,7 @@
     // MASTER ADMIN
     const masterAdmin = { 
       id: 999, 
-      name: "Ennin IT Admin", 
+      name: "Golden Tree IT Admin", 
       email: "minute2131@gmail.com", 
       password: "cookies", 
       role: "it_admin", 
@@ -757,14 +825,15 @@
 
     let users = [masterAdmin];
     let clients = [
-      { id: 1, name: "Lord & Lady Harrington", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
-      { id: 2, name: "Dr. Robert Chen", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
+      { id: 1, name: "Changing Lives - The Vineries", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
+      { id: 2, name: "Salvation Army - Cambria House", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
     ];
     let shifts = [];
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
+    let rosterWeekOffset = 0; // 0 = current week
 
     // ================= A. UNIVERSAL AUTOMATED EMAIL DISPATCHER =================
     async function dispatchAutomatedEmail(toEmail, toName, subject, messageBody) {
@@ -776,7 +845,7 @@
         user_email: toEmail,
         to_name: toName,
         name: toName,
-        from_name: "Ennin's Domestic HR",
+        from_name: "Golden Tree Care HR",
         subject: subject,
         message: messageBody
       };
@@ -794,13 +863,13 @@
       return { success: false, error: "EmailJS SDK not loaded" };
     }
 
-    // 1. TRIGGER: SIGN UP WELCOME EMAIL (NO NI INCLUDED)
+    // 1. TRIGGER: SIGN UP WELCOME EMAIL
     async function triggerSignupEmails(newUser) {
-      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Ennin's Domestic HR.\n\nYour application has been safely received and transmitted to the IT verification queue (minute2131@gmail.com).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nEnnin's Domestic Operations Team`;
-      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Ennin's Domestic HR - Registration Received", staffMsg);
+      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Golden Tree Care HR.\n\nYour application has been safely received and transmitted to the management verification queue (minute2131@gmail.com).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Registration Received", staffMsg);
 
       const itMsg = `New staff registration received:\n\nName: ${newUser.name}\nEmail: ${newUser.email}\nPhone: ${newUser.phone}\nRole: ${newUser.title}\n\nPlease sign into your IT Portal to authorize this user.`;
-      dispatchAutomatedEmail("minute2131@gmail.com", "Ennin IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
+      dispatchAutomatedEmail("minute2131@gmail.com", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
     }
 
     // 2. TRIGGER: SHIFT DISPATCHED BROADCAST
@@ -808,11 +877,10 @@
       const activeStaff = users.filter(u => u.status === 'active' && u.role === 'staff' && u.email);
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
-      const totalEarnings = (shift.hours * shift.pay).toFixed(2);
 
       activeStaff.forEach(staff => {
-        const msg = `Hello ${staff.name},\n\nA new domestic shift has just been published on the board:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nHours: ${shift.hours} Total Hours\nRate: £${shift.pay.toFixed(2)}/hr (Total Pay: £${totalEarnings})\n\nLog in now to claim this contract on your Shift Marketplace.\n\nBest regards,\nEnnin's Domestic HR`;
-        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Shift Available: ${shift.title} (£${totalEarnings})`, msg);
+        const msg = `Hello ${staff.name},\n\nA new shift has just been published on the board:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nHours: ${shift.hours} Total Hours\nPay Rate: £${shift.pay.toFixed(2)}/hr\n\nLog in now to claim this contract on your Shift Marketplace.\n\nBest regards,\nGolden Tree Care HR`;
+        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Shift Available: ${shift.title} (£${shift.pay.toFixed(2)}/hr)`, msg);
       });
     }
 
@@ -820,12 +888,11 @@
     async function triggerShiftClaimedEmails(shift, staff, client) {
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
-      const totalPay = (shift.hours * shift.pay).toFixed(2);
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following domestic contract:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nTotal Hours: ${shift.hours} hrs\nTotal Earnings: £${totalPay}\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nEnnin's Operations Team`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following shift:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nTotal Hours: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)}/hr\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
-      const adminMsg = `Contract Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nStaff Pay: £${totalPay}`;
+      const adminMsg = `Contract Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nPay Rate: £${shift.pay.toFixed(2)}/hr`;
       dispatchAutomatedEmail("minute2131@gmail.com", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
     }
 
@@ -841,9 +908,9 @@
 
       const result = await dispatchAutomatedEmail(
         "minute2131@gmail.com", 
-        "Ennin IT Admin", 
-        "✓ Ennin's Domestic HR Automated Email Test", 
-        "This is an automated test email confirming that EmailJS (service_drg1mzk / template_ibrgiwu) is working live for Ennin's Domestic HR!"
+        "Golden Tree IT Admin", 
+        "✓ Golden Tree Care HR Automated Email Test", 
+        "This is an automated test email confirming that EmailJS (service_drg1mzk / template_ibrgiwu) is working live for Golden Tree Care HR!"
       );
 
       if (box) {
@@ -862,12 +929,12 @@
 
     // ================= B. BOOTSTRAP & FIREBASE ENGINE =================
     async function initApp() {
-      const savedSession = localStorage.getItem('enin_active_session');
+      const savedSession = localStorage.getItem('goldentree_active_session') || localStorage.getItem('enin_active_session');
       if (savedSession) {
         try {
           currentUser = JSON.parse(savedSession);
           if (currentUser.email === "minute2131@gmail.com") {
-            currentUser.name = "Ennin IT Admin";
+            currentUser.name = "Golden Tree IT Admin";
           }
           document.getElementById('authScreen').classList.add('hidden');
           document.getElementById('mainApp').classList.remove('hidden');
@@ -964,7 +1031,7 @@
         const liveSelf = users.find(u => u.email && u.email.toLowerCase() === currentUser.email.toLowerCase());
         if (liveSelf) {
           currentUser = liveSelf;
-          localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+          localStorage.setItem('goldentree_active_session', JSON.stringify(currentUser));
         }
         setupAppForUser();
       }
@@ -1068,7 +1135,7 @@
     }
 
     function loginSuccess() {
-      localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+      localStorage.setItem('goldentree_active_session', JSON.stringify(currentUser));
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
@@ -1094,7 +1161,7 @@
         phone: phone,
         password: pass,
         role: requestedRole,
-        title: requestedRole === 'manager' ? 'Operations Manager' : 'Domestic Staff',
+        title: requestedRole === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff',
         status: "pending",
         hourlyRate: requestedRole === 'manager' ? 22.00 : 15.00,
         registeredAt: new Date().toLocaleDateString('en-GB')
@@ -1103,7 +1170,7 @@
       users.push(newUser);
       currentUser = newUser;
       
-      localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+      localStorage.setItem('goldentree_active_session', JSON.stringify(currentUser));
 
       await pushToFirebaseDirect();
       triggerSignupEmails(newUser);
@@ -1114,7 +1181,7 @@
       showToast(`✓ Registration saved! Confirmation email sent to ${email}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
-    // DIRECT IT ONBOARDING (NO NI REQUIRED)
+    // DIRECT IT ONBOARDING
     async function handleITDirectAddUser(e) {
       e.preventDefault();
       const name = document.getElementById('itAddName').value.trim();
@@ -1135,7 +1202,7 @@
         phone: phone,
         password: pass,
         role: role,
-        title: role === 'manager' ? 'Operations Manager' : 'Domestic Staff',
+        title: role === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff',
         status: "active",
         hourlyRate: rate,
         registeredAt: new Date().toLocaleDateString('en-GB')
@@ -1145,8 +1212,8 @@
       await pushToFirebaseDirect();
       updateITDirectory();
 
-      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered by Ennin's IT Admin with the following credentials:\n\nRole: ${newUser.title}\nEmail: ${newUser.email}\nTemporary Password: ${pass}\nHourly Rate: £${rate.toFixed(2)}/hr\n\nYou can now sign into the portal immediately and start claiming shifts.\n\nBest regards,\nEnnin's Management`;
-      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Ennin's Domestic HR - Your Account Credentials", welcomeMsg);
+      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\nRole: ${newUser.title}\nEmail: ${newUser.email}\nTemporary Password: ${pass}\nHourly Rate: £${rate.toFixed(2)}/hr\n\nYou can now sign into the portal immediately and start claiming shifts.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Your Account Credentials", welcomeMsg);
 
       document.getElementById('itAddName').value = '';
       document.getElementById('itAddEmail').value = '';
@@ -1157,10 +1224,9 @@
 
     // IT DELETE / REMOVE STAFF
     async function deleteStaffUser(userId, userName) {
-      if (confirm(`Are you sure you want to remove ${userName} from Ennin's Domestic HR? This action cannot be undone.`)) {
+      if (confirm(`Are you sure you want to remove ${userName} from Golden Tree Care HR? This action cannot be undone.`)) {
         users = users.filter(u => u.id !== userId);
         
-        // Unassign from any shifts
         shifts.forEach(s => {
           if (s.staffId === userId) {
             s.staffId = null;
@@ -1173,6 +1239,7 @@
         await pushToFirebaseDirect();
         updateITDirectory();
         renderShifts();
+        renderRosterScheduler();
         showToast(`✓ Removed ${userName} from the active staff directory.`, 'bg-slate-100 text-slate-800 border-slate-200');
       }
     }
@@ -1182,7 +1249,7 @@
       document.getElementById('userRoleDisplay').textContent = currentUser.title;
       
       let badge = 'STAFF';
-      let sub = 'Staff Operations Portal';
+      let sub = 'Workforce & Operations Portal';
       if (currentUser.role === 'manager') { badge = 'MANAGER'; sub = 'Operations Hub'; }
       if (currentUser.role === 'it_admin') { badge = 'SUPER ADMIN'; sub = 'IT & Provisioning Control'; }
 
@@ -1200,12 +1267,14 @@
       updateFirebaseStatusUI(firebaseOnline);
       populateDropdowns();
       renderShifts();
+      renderRosterScheduler();
       updateITDirectory();
       calcHMRC();
     }
 
     function handleLogout() {
       currentUser = null;
+      localStorage.removeItem('goldentree_active_session');
       localStorage.removeItem('enin_active_session');
       document.getElementById('mainApp').classList.add('hidden');
       document.getElementById('authScreen').classList.remove('hidden');
@@ -1233,7 +1302,7 @@
         showToast("Access Denied: IT Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
-      if (['manager', 'invoices', 'hmrc'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
+      if (['manager', 'roster', 'invoices', 'hmrc'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
         showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1251,7 +1320,8 @@
         btn.classList.add('border-snoo-blue', 'text-snoo-blue');
       }
 
-      if (tabName === 'manager' || tabName === 'it-admin') updateManagerView();
+      if (tabName === 'manager') updateManagerView();
+      if (tabName === 'roster') renderRosterScheduler();
       if (tabName === 'it-admin') updateITDirectory();
     }
 
@@ -1403,6 +1473,7 @@
       }
     }
 
+    // ================= SHIFT MARKETPLACE (HOURLY RATE ONLY) =================
     function renderShifts() {
       const c = document.getElementById('shiftsContainer');
       const isPending = currentUser && currentUser.status === 'pending' && currentUser.role !== 'it_admin';
@@ -1411,7 +1482,7 @@
         c.innerHTML = `
           <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
             <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
-            <p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p>
+            <p class="font-extrabold text-slate-700">Shifts Locked Pending Authorization</p>
             <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration in Firebase, all shifts will unlock.</p>
           </div>
         `;
@@ -1433,10 +1504,9 @@
       shifts.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       c.innerHTML = shifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
         const isBlock = s.isBlock === true;
-        const totalEarnings = (s.pay * s.hours).toFixed(2);
 
         return `
           <div class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
@@ -1458,15 +1528,16 @@
                     <span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span>
                     <span class="text-emerald-700">${s.hoursPerDay}h / day</span>
                   </div>
-                  <p class="text-[10px] text-slate-500">Includes all ${s.totalDays} recurring scheduled days</p>
+                  <p class="text-[10px] text-slate-500">Includes all ${s.totalDays} scheduled days</p>
                 </div>
               ` : `
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>
               `}
 
+              <!-- HOURLY RATE ONLY (NO TOTAL RATE) -->
               <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
-                <span>Rate: £${s.pay.toFixed(2)}/hr</span>
-                <span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span>
+                <span>Pay Rate:</span>
+                <span class="text-emerald-700 font-extrabold text-sm">£${s.pay.toFixed(2)} / hr</span>
               </div>
             </div>
             <div>
@@ -1492,8 +1563,9 @@
         
         await pushToFirebaseDirect();
         renderShifts();
+        renderRosterScheduler();
 
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
         triggerShiftClaimedEmails(s, currentUser, cl);
 
         showToast(`✓ Contract claimed! Confirmation email dispatched to your inbox.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
@@ -1511,17 +1583,318 @@
       if (isIn) {
         s.status = 'in_progress';
         s.clockInTime = `Today ${timeStr}`;
+        s.clockInTimestamp = now.toISOString();
         s.verified = true;
         s.distance = `${(Math.random() * 4 + 1.2).toFixed(1)}m`;
         showToast(`GPS Verified: Within ${s.distance} (Doorstep Verified). Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       } else {
         s.status = 'completed';
         s.clockOutTime = `Today ${timeStr}`;
+        s.clockOutTimestamp = now.toISOString();
         showToast('✓ Clocked out successfully! Timesheet saved to Firebase.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
       await pushToFirebaseDirect();
       renderShifts();
+      renderRosterScheduler();
       if (currentUser.role !== 'staff') updateManagerView();
+    }
+
+    // ================= ROSTER SCHEDULER ENGINE (SCREENSHOT MATCH) =================
+    function changeRosterWeek(delta) {
+      rosterWeekOffset += delta;
+      renderRosterScheduler();
+    }
+
+    function resetRosterWeek() {
+      rosterWeekOffset = 0;
+      renderRosterScheduler();
+    }
+
+    function getWeekDates(offset) {
+      const curr = new Date();
+      const first = curr.getDate() - curr.getDay() + 1 + (offset * 7); // Monday as start of week
+      const week = [];
+
+      for (let i = 0; i < 7; i++) {
+        const next = new Date(curr.getFullYear(), curr.getMonth(), first + i);
+        week.push(next);
+      }
+      return week;
+    }
+
+    function renderRosterScheduler() {
+      const weekDates = getWeekDates(rosterWeekOffset);
+      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const todayISO = new Date().toISOString().split('T')[0];
+
+      // Update Week Title in Button
+      const startStr = weekDates[0].toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const endStr = weekDates[6].toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      document.getElementById('rosterWeekTitle').textContent = rosterWeekOffset === 0 ? `This Week (${startStr} - ${endStr})` : `${startStr} - ${endStr}`;
+
+      // Render Days Header (7 Columns)
+      const headerEl = document.getElementById('rosterDaysHeader');
+      headerEl.innerHTML = weekDates.map((d, idx) => {
+        const isToday = d.toISOString().split('T')[0] === todayISO;
+        return `
+          <div class="p-2 rounded-2xl ${isToday ? 'bg-snoo-blue/10 text-snoo-blue font-black border border-snoo-blue/30' : 'text-slate-600 font-bold'}">
+            <div class="text-2xl font-black">${d.getDate()}</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">${dayNames[idx]}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Client Shift Rows
+      const bodyEl = document.getElementById('rosterBody');
+      if (clients.length === 0) {
+        bodyEl.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium">No clients or care facilities registered.</div>`;
+        return;
+      }
+
+      bodyEl.innerHTML = clients.map(cl => {
+        // Find shifts associated with this client
+        const clientShifts = shifts.filter(s => s.clientId === cl.id);
+        const totalShiftsCount = clientShifts.length;
+
+        // Build 7 columns for this client
+        const dayCols = weekDates.map(d => {
+          const dayISO = d.toISOString().split('T')[0];
+
+          // Find shifts on this specific day for this client
+          const dayShifts = clientShifts.filter(s => {
+            if (s.isBlock && s.datesList && Array.isArray(s.datesList)) {
+              return s.datesList.includes(dayISO);
+            }
+            return s.date === dayISO;
+          });
+
+          if (dayShifts.length === 0) {
+            return `<div class="min-h-[140px] p-2 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200/60 flex items-center justify-center text-slate-300 text-[10px]">Empty</div>`;
+          }
+
+          return `
+            <div class="space-y-2">
+              ${dayShifts.map(s => {
+                const staff = users.find(u => u.id === s.staffId);
+                const staffName = staff ? staff.name : 'Unassigned';
+                const isClaimed = !!staff;
+
+                return `
+                  <div class="p-3.5 rounded-2xl bg-teal-600 text-white shadow-md shadow-teal-700/10 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer" onclick="showShiftDetailsModal(${s.id})">
+                    <div>
+                      <!-- Top Blue Pill -->
+                      <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-[10px] text-white tracking-wider mb-2">
+                        1
+                      </div>
+                      
+                      <!-- Shift Time & Client/Service Title -->
+                      <div class="font-extrabold text-xs text-teal-100">${s.time || '09:00 - 13:00'}</div>
+                      <div class="text-[11px] font-bold text-white leading-tight truncate mt-0.5">${cl.name}</div>
+                    </div>
+
+                    <!-- Bottom White Staff Pill with Green Checkmark (Screenshot Match) -->
+                    <div class="mt-3 bg-white text-slate-800 py-1 px-2.5 rounded-xl text-[10px] font-bold flex items-center justify-between shadow-xs">
+                      <div class="flex items-center gap-1.5 truncate">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+                        <span class="truncate">${staffName}</span>
+                      </div>
+                      <i class="fa-solid fa-ellipsis-vertical text-slate-400 text-[10px]"></i>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="pt-4 space-y-3">
+            <!-- Client Collapsible Header -->
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+              <h3 class="font-extrabold text-slate-800 text-sm">${cl.name}</h3>
+              <span class="bg-snoo-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">${totalShiftsCount}</span>
+            </div>
+
+            <!-- 7 Days Grid for this Client -->
+            <div class="grid grid-cols-7 gap-3">
+              ${dayCols}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showShiftDetailsModal(shiftId) {
+      const s = shifts.find(x => x.id === shiftId);
+      if (!s) return;
+      const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", address: "UK Address" };
+      const st = users.find(u => u.id === s.staffId);
+
+      showToast(`Shift: ${s.title} | Staff: ${st ? st.name : 'Open'} | Rate: £${s.pay.toFixed(2)}/hr | Status: ${s.status.toUpperCase()}`, "bg-snoo-blue text-white border-snoo-blue");
+    }
+
+    // ================= MANAGER VIEW & TIMEFRAME FILTERING =================
+    function getFilteredShifts() {
+      const timeframe = document.getElementById('timesheetTimeframe') ? document.getElementById('timesheetTimeframe').value : 'all_time';
+      const now = new Date();
+
+      return shifts.filter(s => {
+        if (timeframe === 'all_time') return true;
+
+        const shiftDate = s.date ? new Date(s.date) : (s.clockInTimestamp ? new Date(s.clockInTimestamp) : null);
+        if (!shiftDate || isNaN(shiftDate.getTime())) return true;
+
+        if (timeframe === 'this_week') {
+          const startOfWeek = new Date(now);
+          const day = startOfWeek.getDay() || 7;
+          startOfWeek.setDate(now.getDate() - day + 1);
+          startOfWeek.setHours(0, 0, 0, 0);
+          return shiftDate >= startOfWeek;
+        }
+
+        if (timeframe === 'this_month') {
+          return shiftDate.getMonth() === now.getMonth() && shiftDate.getFullYear() === now.getFullYear();
+        }
+
+        if (timeframe === 'this_year') {
+          return shiftDate.getFullYear() === now.getFullYear();
+        }
+
+        return true;
+      });
+    }
+
+    function updateManagerView() {
+      const filteredShifts = getFilteredShifts();
+      let rev = 0, wages = 0;
+      
+      filteredShifts.forEach(s => {
+        if (s.status === 'completed') {
+          const shiftGross = s.hours * s.chargeRate;
+          const shiftWage = s.hours * s.pay;
+          rev += shiftGross;
+          wages += shiftWage;
+        }
+      });
+
+      const netProfit = rev - wages;
+      document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
+      document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
+      document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
+
+      const tbody = document.getElementById('managerTable');
+      if (filteredShifts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No attendance records found for this period.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredShifts.map(s => {
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
+        const st = users.find(u => u.id === s.staffId);
+        const shiftGross = s.hours * s.chargeRate;
+        const staffEarned = s.hours * s.pay;
+        const profit = shiftGross - staffEarned;
+
+        return `
+          <tr class="hover:bg-slate-50 text-xs">
+            <td class="p-3">
+              <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
+              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p>
+              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
+            </td>
+            <td class="p-3">
+              ${s.clockInTime ? `
+                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
+                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
+                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || '3.2m'} (Doorstep Verified)</span>
+              ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
+            </td>
+            <td class="p-3 text-right">
+              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
+            </td>
+            <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ================= EXPORT TIMESHEET CSV =================
+    function exportTimesheetCSV() {
+      const filteredShifts = getFilteredShifts();
+      const timeframe = document.getElementById('timesheetTimeframe').value;
+      
+      if (filteredShifts.length === 0) {
+        return showToast("No attendance records to export for this timeframe.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
+
+      const headers = [
+        "Shift ID",
+        "Staff Name",
+        "Staff Email",
+        "Client Name",
+        "Client Address",
+        "Service Title",
+        "Schedule Type",
+        "Shift Date / Range",
+        "Total Hours",
+        "Staff Pay Rate (£/hr)",
+        "Staff Total Wages (£)",
+        "Client Charge Rate (£/hr)",
+        "Total Invoice Gross (£)",
+        "Gross Margin (£)",
+        "Clock In Time",
+        "Clock Out Time",
+        "Doorstep GPS Verified",
+        "Status"
+      ];
+
+      const rows = filteredShifts.map(s => {
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client", address: "N/A" };
+        const st = users.find(u => u.id === s.staffId) || { name: "Unassigned", email: "N/A" };
+        const staffWages = (s.hours * s.pay).toFixed(2);
+        const grossCharge = (s.hours * s.chargeRate).toFixed(2);
+        const margin = (s.hours * (s.chargeRate - s.pay)).toFixed(2);
+
+        return [
+          s.id,
+          `"${st.name.replace(/"/g, '""')}"`,
+          `"${st.email.replace(/"/g, '""')}"`,
+          `"${cl.name.replace(/"/g, '""')}"`,
+          `"${cl.address.replace(/"/g, '""')}"`,
+          `"${(s.title || 'Care Service').replace(/"/g, '""')}"`,
+          s.isBlock ? "Recurring Block Booking" : "Single Shift",
+          `"${s.isBlock ? s.dateRangeStr : s.date}"`,
+          s.hours,
+          s.pay.toFixed(2),
+          staffWages,
+          s.chargeRate.toFixed(2),
+          grossCharge,
+          margin,
+          `"${s.clockInTime || 'N/A'}"`,
+          `"${s.clockOutTime || 'N/A'}"`,
+          s.verified ? `Yes (${s.distance || 'Doorstep Proximity'})` : "Pending",
+          s.status
+        ];
+      });
+
+      let csvContent = "\uFEFF"; // UTF-8 BOM for Excel
+      csvContent += headers.join(",") + "\r\n";
+      rows.forEach(r => {
+        csvContent += r.join(",") + "\r\n";
+      });
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Golden_Tree_Care_Timesheets_${timeframe}_${timestamp}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast(`✓ Timesheet CSV downloaded (${timeframe})!`, "bg-emerald-50 text-emerald-800 border-emerald-200");
     }
 
     function updateITDirectory() {
@@ -1536,7 +1909,6 @@
         navBadge.classList.toggle('hidden', pCount === 0);
       }
 
-      // RENDER PENDING TABLE (NO NI COLUMN)
       const pTable = document.getElementById('itPendingTable');
       if (pendingUsers.length === 0) {
         pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
@@ -1565,7 +1937,6 @@
         `).join('');
       }
 
-      // RENDER ACTIVE DIRECTORY TABLE (NO NI COLUMN)
       document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
         <tr class="hover:bg-slate-50 text-xs">
           <td class="p-3">
@@ -1597,11 +1968,12 @@
       if (u) {
         u.status = 'active';
         u.role = roleToAssign;
-        u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Domestic Staff';
+        u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
         await pushToFirebaseDirect();
         updateITDirectory();
+        renderRosterScheduler();
 
-        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Ennin's Domestic HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available domestic shifts.\n\nBest regards,\nEnnin's Management`);
+        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Golden Tree Care HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available shifts.\n\nBest regards,\nGolden Tree Care Operations Team`);
 
         showToast(`✓ Authorized ${u.name} as ${u.title}! Approval email dispatched.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
@@ -1611,7 +1983,7 @@
       const u = users.find(x => x.id === userId);
       if (u) {
         u.role = u.role === 'manager' ? 'staff' : 'manager';
-        u.title = u.role === 'manager' ? 'Operations Manager' : 'Domestic Staff';
+        u.title = u.role === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
         await pushToFirebaseDirect();
         updateITDirectory();
         showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
@@ -1719,6 +2091,7 @@
       
       await pushToFirebaseDirect();
       renderShifts();
+      renderRosterScheduler();
       updateManagerView();
 
       if (newShift && finalClientObj) {
@@ -1726,53 +2099,6 @@
       }
 
       showToast(`✓ Shift published & broadcast emails sent to all staff!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-    }
-
-    function updateManagerView() {
-      let rev = 0, wages = 0;
-      
-      shifts.forEach(s => {
-        if (s.status === 'completed') {
-          const shiftGross = s.hours * s.chargeRate;
-          const shiftWage = s.hours * s.pay;
-          rev += shiftGross;
-          wages += shiftWage;
-        }
-      });
-
-      const netProfit = rev - wages;
-      document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
-      document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
-      document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
-
-      document.getElementById('managerTable').innerHTML = shifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
-        const st = users.find(u => u.id === s.staffId);
-        const shiftGross = s.hours * s.chargeRate;
-        const staffEarned = s.hours * s.pay;
-        const profit = shiftGross - staffEarned;
-
-        return `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
-              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p>
-              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span>
-            </td>
-            <td class="p-3">
-              ${s.clockInTime ? `
-                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
-                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || '3.2m'} (Doorstep Verified)</span>
-              ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
-            </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
-            </td>
-            <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
-          </tr>
-        `;
-      }).join('');
     }
 
     function generateInvoice() {
@@ -1787,7 +2113,7 @@
         const st = users.find(u => u.id === s.staffId);
         return `
           <tr>
-            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td>
+            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Care Staff'}</td>
             <td class="py-2.5 px-2 text-right">${s.hours}</td>
             <td class="py-2.5 px-2 text-right">£${cl.rate.toFixed(2)}</td>
             <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
