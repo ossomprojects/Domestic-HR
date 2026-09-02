@@ -221,7 +221,7 @@
             <div>
               <h3 class="font-extrabold text-base text-amber-950">Account Pending Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>admin@gtchr.co.uk</strong>. Once approved by management, available shifts will automatically unlock for you.
+                Your sign-up has been transmitted to <strong>admin@gtchr.co.uk</strong>. Once approved by management, available assignments will automatically unlock for you.
               </p>
             </div>
           </div>
@@ -874,27 +874,27 @@
       dispatchAutomatedEmail("admin@gtchr.co.uk", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
     }
 
-    // 2. TRIGGER: SHIFT DISPATCHED BROADCAST (HOURLY RATE & DURATION ONLY + UPDATED CALL TO ACTION)
+    // 2. TRIGGER: SHIFT DISPATCHED BROADCAST
     async function triggerShiftBroadcastEmails(shift, client) {
       const activeStaff = users.filter(u => u.status === 'active' && u.role === 'staff' && u.email);
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
 
       activeStaff.forEach(staff => {
-        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nDuration: ${shift.hours} Total Hours\nPay Rate: £${shift.pay.toFixed(2)}/hr\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR`;
-        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)}/hr)`, msg);
+        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} Total Hours\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
+        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)} per hour)`, msg);
       });
     }
 
-    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION (HOURLY RATE & DURATION ONLY)
+    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION
     async function triggerShiftClaimedEmails(shift, staff, client) {
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\nService: ${shift.title}\nClient: ${client.name}\nAddress: ${client.address}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)}/hr\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} hrs\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
-      const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)}/hr`;
+      const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
       dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
     }
 
@@ -912,7 +912,7 @@
         "admin@gtchr.co.uk", 
         "Golden Tree IT Admin", 
         "✓ Golden Tree Care HR Automated Email Test", 
-        "This is an automated test email confirming that Brevo (service_affajui / template_ibrgiwu) is working live for Golden Tree Care HR!"
+        "This is an automated test email confirming that Brevo (service_affajui / template_ibrgiwu) is working live for Golden Tree Care HR with the official logo!"
       );
 
       if (box) {
@@ -1215,7 +1215,7 @@
       await pushToFirebaseDirect();
       updateITDirectory();
 
-      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\nRole: ${newUser.title}\nEmail: ${newUser.email}\nTemporary Password: ${pass}\nHourly Rate: £${rate.toFixed(2)}/hr\n\nYou can now sign into the portal immediately and start claiming shifts.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\n• Role: ${newUser.title}\n• Email: ${newUser.email}\n• Temporary Password: ${pass}\n• Hourly Rate: £${rate.toFixed(2)} per hour\n\nYou can now sign into the portal immediately and start claiming assignments.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Your Account Credentials", welcomeMsg);
 
       document.getElementById('itAddName').value = '';
@@ -1537,7 +1537,7 @@
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>
               `}
 
-              <!-- HOURLY RATE ONLY (NO TOTAL CALCULATION) -->
+              <!-- HOURLY RATE ONLY -->
               <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
                 <span>Pay Rate:</span>
                 <span class="text-emerald-700 font-extrabold text-sm">£${s.pay.toFixed(2)} / hr</span>
