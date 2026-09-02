@@ -364,35 +364,35 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          <!-- Dispatch Form with Postcode Auto-Lookup & Block Shift Scheduler -->
+          <!-- Dispatch Form with Start/End Time Auto-Hours & Postcode Auto-Lookup -->
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
                 <i class="fa-solid fa-plus-circle text-snoo-blue"></i> Dispatch New Shift
               </h3>
               <div class="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
-                <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs">Existing</button>
-                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2 py-1 rounded-md text-slate-500 hover:text-slate-900">+ Postcode / GPS</button>
+                <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer">Existing</button>
+                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">+ New Postcode</button>
               </div>
             </div>
 
             <!-- MODE 1: Select Existing Client -->
             <div id="sectionClientExisting" class="space-y-1">
-              <label class="font-bold block mb-1 text-slate-700">Client / Household:</label>
+              <label class="font-bold block mb-1 text-slate-700">Client / Care Facility:</label>
               <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium"></select>
             </div>
 
-            <!-- MODE 2: Add New Client via Postcode Lookup or GPS Reverse Geocoding -->
+            <!-- MODE 2: Add New Client via Postcode Lookup or Manual Entry -->
             <div id="sectionClientNew" class="hidden space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-snoo-blue/10 hover:bg-snoo-blue/20 text-snoo-blue font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 border border-snoo-blue/20 shadow-xs cursor-pointer">
+              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-snoo-blue/10 hover:bg-snoo-blue/20 text-snoo-blue font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-2 border border-snoo-blue/20 shadow-xs cursor-pointer">
                 <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> 📍 Detect Nearest Postcode from GPS
               </button>
 
-              <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider my-1">— OR TYPE POSTCODE MANUALLY —</div>
+              <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider my-0.5">— OR ENTER POSTCODE —</div>
 
               <div>
-                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Client / Household Name:</label>
-                <input type="text" id="customClientName" placeholder="e.g. 21 Wythes Road" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Facility / Client Name:</label>
+                <input type="text" id="customClientName" placeholder="e.g. Amber Court Care" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
 
               <div class="grid grid-cols-3 gap-2">
@@ -410,18 +410,7 @@
 
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
-                <input type="text" id="customAddress" placeholder="e.g. Wythes Road, Newham, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
-              </div>
-
-              <div class="p-2.5 bg-white rounded-xl border border-slate-100 text-[10px] space-y-1">
-                <div class="flex justify-between text-slate-500">
-                  <span>Detected Region:</span>
-                  <span id="geoRegion" class="font-bold text-slate-800">Auto-detected upon search</span>
-                </div>
-                <div class="flex justify-between text-slate-500">
-                  <span>GPS Coordinates:</span>
-                  <span id="geoCoords" class="font-mono text-snoo-blue font-bold">51.5026, 0.0476</span>
-                </div>
+                <input type="text" id="customAddress" placeholder="e.g. Wythes Road, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
             </div>
 
@@ -431,6 +420,27 @@
               <input type="text" id="newShiftTitle" value="Deep Clean & Support" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
             </div>
 
+            <!-- TIME DURATION SELECTOR (8am to 4pm -> 8 hours) -->
+            <div class="border border-slate-200 p-3.5 rounded-2xl bg-slate-50 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-regular fa-clock text-snoo-blue"></i> Shift Time & Duration
+                </label>
+                <span id="calculatedHoursBadge" class="bg-snoo-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">8.0 hrs</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] font-bold text-slate-500 block mb-0.5 uppercase">Start Time:</label>
+                  <input type="time" id="newShiftStartTime" value="08:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                </div>
+                <div>
+                  <label class="text-[10px] font-bold text-slate-500 block mb-0.5 uppercase">End Time:</label>
+                  <input type="time" id="newShiftEndTime" value="16:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                </div>
+              </div>
+            </div>
+
             <!-- Schedule Type (Single or Recurring Block) -->
             <div class="border border-slate-200 p-3.5 rounded-2xl bg-slate-50 space-y-2.5">
               <div class="flex justify-between items-center">
@@ -438,21 +448,16 @@
                   <i class="fa-regular fa-calendar-days text-snoo-blue"></i> Schedule Type
                 </label>
                 <div class="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-bold">
-                  <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs">Single Day</button>
-                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900">📦 Recurring Block Shift</button>
+                  <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer">Single Day</button>
+                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer">📦 Recurring Block</button>
                 </div>
               </div>
 
               <!-- Option 1: Single Date -->
-              <div id="sectionSchedSingle" class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Date:</label>
-                  <input type="date" id="newShiftDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
-                </div>
-                <div>
-                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Hours:</label>
-                  <input type="number" id="newShiftHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
-                </div>
+              <div id="sectionSchedSingle" class="space-y-1">
+                <label class="font-bold block mb-1 text-slate-700 text-[11px]">Shift Date:</label>
+                <input type="date" id="newShiftDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <input type="hidden" id="newShiftHours" value="8.0">
               </div>
 
               <!-- Option 2: Recurring Block Shift -->
@@ -468,26 +473,17 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                  <div>
-                    <label class="font-bold block mb-1 text-slate-700 text-[11px]">Repeat Days:</label>
-                    <select id="newShiftRepeatPattern" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium text-[11px]">
-                      <option value="daily">Every Day (Daily)</option>
-                      <option value="weekdays">Weekdays Only (Mon-Fri)</option>
-                      <option value="weekends">Weekends Only (Sat-Sun)</option>
-                      <option value="weekly">Same Day Every Week</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="font-bold block mb-1 text-slate-700 text-[11px]">Hours / Day:</label>
-                    <input type="number" id="newShiftRangeHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
-                  </div>
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Repeat Days:</label>
+                  <select id="newShiftRepeatPattern" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium text-[11px]">
+                    <option value="daily">Every Day (Daily)</option>
+                    <option value="weekdays">Weekdays Only (Mon-Fri)</option>
+                    <option value="weekends">Weekends Only (Sat-Sun)</option>
+                    <option value="weekly">Same Day Every Week</option>
+                  </select>
                 </div>
                 
-                <div class="p-2.5 rounded-xl bg-snoo-blue/10 border border-snoo-blue/20 text-[10px] text-snoo-blue font-bold flex items-center gap-1.5">
-                  <i class="fa-solid fa-cube text-snoo-blue"></i>
-                  <span>Posts as <strong>1 unified block shift</strong> & sends email alert to all staff!</span>
-                </div>
+                <input type="hidden" id="newShiftRangeHours" value="8.0">
               </div>
             </div>
 
@@ -495,11 +491,11 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="font-bold block mb-1 text-slate-700">Staff Pay (£/hr):</label>
-                <input type="number" id="newShiftPay" value="15.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+                <input type="number" id="newShiftPay" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
               </div>
               <div>
                 <label class="font-bold block mb-1 text-slate-700">Client Rate (£/hr):</label>
-                <input type="number" id="newShiftCharge" value="26.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+                <input type="number" id="newShiftCharge" value="26.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
               </div>
             </div>
 
@@ -855,6 +851,29 @@
     let rosterWeekOffset = 0; // 0 = current week
     const MAX_GEOFENCE_METERS = 50; // Maximum allowed distance to clock in/out (50 meters)
 
+    // ================= REAL-WORLD TIME DURATION CALCULATOR =================
+    function recalcShiftHours() {
+      const start = document.getElementById('newShiftStartTime').value;
+      const end = document.getElementById('newShiftEndTime').value;
+      if (!start || !end) return;
+
+      const [sH, sM] = start.split(':').map(Number);
+      const [eH, eM] = end.split(':').map(Number);
+
+      let diffMinutes = (eH * 60 + eM) - (sH * 60 + sM);
+      if (diffMinutes <= 0) {
+        diffMinutes += 24 * 60; // Overnight shift calculation (e.g. 20:00 to 08:00)
+      }
+
+      const hours = (diffMinutes / 60);
+      const hoursFormatted = hours % 1 === 0 ? hours.toFixed(1) : hours.toFixed(2);
+
+      document.getElementById('newShiftHours').value = hoursFormatted;
+      document.getElementById('calculatedHoursBadge').textContent = `${hoursFormatted} hrs`;
+      const rangeH = document.getElementById('newShiftRangeHours');
+      if (rangeH) rangeH.value = hoursFormatted;
+    }
+
     // ================= REAL-WORLD HAVERSINE DISTANCE CALCULATOR =================
     function calculateDistanceInMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3; // Earth's radius in meters
@@ -956,7 +975,7 @@
           const userLng = position.coords.longitude;
           const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
 
-          // STRICT GEOFENCE VERIFICATION
+          // STRICT GEOFENCE VERIFICATION (50 METERS)
           if (distanceMeters > MAX_GEOFENCE_METERS) {
             const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
             
@@ -1053,7 +1072,7 @@
       const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
 
       activeStaff.forEach(staff => {
-        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} Total Hours\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
+        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
         dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)} per hour)`, msg);
       });
     }
@@ -1063,7 +1082,7 @@
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} hrs\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically at ${client.postcode || 'the client postcode'} (within 50 meters) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically at ${client.postcode || 'the client postcode'} (within 50 meters) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
       const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
@@ -1120,6 +1139,7 @@
       await testAndSyncFirebase(false);
       initFirebaseLiveStream();
       setInterval(() => testAndSyncFirebase(false), 2500);
+      recalcShiftHours();
     }
 
     function initFirebaseLiveStream() {
@@ -1513,13 +1533,13 @@
       const secNew = document.getElementById('sectionClientNew');
 
       if (mode === 'existing') {
-        btnEx.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs";
-        btnNew.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
+        btnEx.className = "px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer";
+        btnNew.className = "px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer";
         secEx.classList.remove('hidden');
         secNew.classList.add('hidden');
       } else {
-        btnNew.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs";
-        btnEx.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
+        btnNew.className = "px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer";
+        btnEx.className = "px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer";
         secNew.classList.remove('hidden');
         secEx.classList.add('hidden');
       }
@@ -1533,13 +1553,13 @@
       const secR = document.getElementById('sectionSchedRange');
 
       if (mode === 'single') {
-        btnS.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs";
-        btnR.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
+        btnS.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnR.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
         secS.classList.remove('hidden');
         secR.classList.add('hidden');
       } else {
-        btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs";
-        btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
+        btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
         secR.classList.remove('hidden');
         secS.classList.add('hidden');
       }
@@ -1581,9 +1601,6 @@
           
           document.getElementById('customPostcode').value = closest.postcode;
           document.getElementById('customAddress').value = `${closest.parish || closest.admin_ward || 'Doorstep Location'}, ${closest.admin_district || ''}, ${closest.postcode}`;
-          document.getElementById('geoRegion').textContent = `${closest.admin_district || ''}, ${closest.region || closest.country}`;
-          document.getElementById('geoCoords').textContent = `${closest.latitude.toFixed(4)}, ${closest.longitude.toFixed(4)}`;
-
           showToast(`✓ Nearest Postcode: ${closest.postcode} (GPS Matched)`, "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
           fallbackReverseGeocode(lat, lng);
@@ -1597,8 +1614,6 @@
       currentResolvedCoords = { lat: lat, lng: lng, postcode: "E16 2DN" };
       document.getElementById('customPostcode').value = "E16 2DN";
       document.getElementById('customAddress').value = "21 Wythes Road, Newham, London E16 2DN";
-      document.getElementById('geoRegion').textContent = "Newham, London";
-      document.getElementById('geoCoords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       showToast("✓ Closest Postcode Matched: E16 2DN (Newham, London)", "bg-emerald-50 text-emerald-800 border-emerald-200");
     }
 
@@ -1616,9 +1631,6 @@
         if (data.status === 200 && data.result) {
           const r = data.result;
           currentResolvedCoords = { lat: r.latitude, lng: r.longitude, postcode: r.postcode };
-          
-          document.getElementById('geoRegion').textContent = `${r.admin_district || ''}, ${r.region || r.country}`;
-          document.getElementById('geoCoords').textContent = `${r.latitude.toFixed(4)}, ${r.longitude.toFixed(4)}`;
           
           const currentAddr = document.getElementById('customAddress').value.trim();
           if (!currentAddr) {
@@ -1651,6 +1663,156 @@
       if (cl && cl.rate) {
         document.getElementById('newShiftCharge').value = cl.rate.toFixed(2);
       }
+    }
+
+    // ================= CREATE & DISPATCH SHIFT (SUPPORTING TIME RANGES & NEW POSTCODES) =================
+    async function createShift() {
+      let finalClientId = null;
+      let finalClientObj = null;
+      const ch = parseFloat(document.getElementById('newShiftCharge').value);
+
+      const customNameVal = document.getElementById('customClientName') ? document.getElementById('customClientName').value.trim() : '';
+      const customPCVal = document.getElementById('customPostcode') ? document.getElementById('customPostcode').value.trim() : '';
+
+      // Check if user is in 'new' mode or has typed in custom postcode fields
+      if (clientDispatchMode === 'new' || (customPCVal.length > 0 && clientDispatchMode !== 'existing')) {
+        let customName = customNameVal || (customPCVal ? `Client (${customPCVal.toUpperCase()})` : 'Private Client');
+        let customPostcode = customPCVal.toUpperCase() || 'E16 2DN';
+        let customAddr = document.getElementById('customAddress').value.trim() || `${customName}, ${customPostcode}`;
+        
+        let lat = currentResolvedCoords.lat;
+        let lng = currentResolvedCoords.lng;
+
+        // Auto-geocode postcode on-the-fly
+        if (customPostcode) {
+          try {
+            const cleanPC = customPostcode.replace(/\s+/g, '');
+            const res = await fetch(`https://api.postcodes.io/postcodes/${cleanPC}`);
+            const data = await res.json();
+            if (data.status === 200 && data.result) {
+              lat = data.result.latitude;
+              lng = data.result.longitude;
+            }
+          } catch(e) {}
+        }
+
+        const newClient = {
+          id: Date.now(),
+          name: customName,
+          postcode: customPostcode,
+          address: customAddr,
+          lat: lat,
+          lng: lng,
+          rate: ch
+        };
+
+        clients.push(newClient);
+        finalClientId = newClient.id;
+        finalClientObj = newClient;
+        populateDropdowns();
+      } else {
+        finalClientId = parseInt(document.getElementById('newShiftClient').value);
+        finalClientObj = clients.find(c => c.id === finalClientId);
+      }
+
+      if (!finalClientObj) {
+        return showToast('Please select or enter a client / care facility.', 'bg-rose-50 text-rose-800 border-rose-200');
+      }
+
+      // Calculate Time Range
+      recalcShiftHours();
+      const startTime = document.getElementById('newShiftStartTime').value || "08:00";
+      const endTime = document.getElementById('newShiftEndTime').value || "16:00";
+      const timeRangeString = `${startTime} - ${endTime}`;
+
+      const t = document.getElementById('newShiftTitle').value;
+      const p = parseFloat(document.getElementById('newShiftPay').value);
+      let newShift = null;
+
+      if (scheduleMode === 'single') {
+        const d = document.getElementById('newShiftDate').value;
+        const h = parseFloat(document.getElementById('newShiftHours').value) || 8.0;
+
+        newShift = { 
+          id: Date.now(), clientId: finalClientId, title: t, isBlock: false, date: d, time: timeRangeString, 
+          hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
+          clockInTime: null, clockOutTime: null, verified: false
+        };
+        shifts.push(newShift);
+      } else {
+        const startStr = document.getElementById('newShiftStartDate').value;
+        const endStr = document.getElementById('newShiftEndDate').value;
+        const pattern = document.getElementById('newShiftRepeatPattern').value;
+        const hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value) || 8.0;
+
+        if (!startStr || !endStr) return showToast('Please choose both start and end dates', 'bg-rose-50 text-rose-800 border-rose-200');
+
+        let cur = new Date(startStr);
+        const end = new Date(endStr);
+        const startDayOfWeek = cur.getDay();
+        let validDays = 0;
+        let datesList = [];
+
+        while (cur <= end) {
+          const dayOfWeek = cur.getDay();
+          let shouldInclude = false;
+
+          if (pattern === 'daily') shouldInclude = true;
+          else if (pattern === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) shouldInclude = true;
+          else if (pattern === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6)) shouldInclude = true;
+          else if (pattern === 'weekly' && dayOfWeek === startDayOfWeek) shouldInclude = true;
+
+          if (shouldInclude) {
+            validDays++;
+            datesList.push(cur.toISOString().split('T')[0]);
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
+
+        if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800 border-rose-200');
+
+        const totalBlockHours = validDays * hoursPerDay;
+        const rangeSummary = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
+
+        newShift = {
+          id: Date.now(),
+          clientId: finalClientId,
+          title: t,
+          isBlock: true,
+          totalDays: validDays,
+          dateRangeStr: rangeSummary,
+          date: startStr,
+          datesList: datesList,
+          time: timeRangeString,
+          hoursPerDay: hoursPerDay,
+          hours: totalBlockHours,
+          pay: p,
+          chargeRate: ch,
+          status: "open",
+          staffId: null,
+          clockInTime: null,
+          clockOutTime: null,
+          verified: false
+        };
+        shifts.push(newShift);
+      }
+      
+      await pushToFirebaseDirect();
+      renderShifts();
+      renderRosterScheduler();
+      updateManagerView();
+
+      if (newShift && finalClientObj) {
+        triggerShiftBroadcastEmails(newShift, finalClientObj);
+      }
+
+      // Reset Form fields
+      if (document.getElementById('customClientName')) document.getElementById('customClientName').value = '';
+      if (document.getElementById('customPostcode')) document.getElementById('customPostcode').value = '';
+      if (document.getElementById('customAddress')) document.getElementById('customAddress').value = '';
+      setClientMode('existing');
+
+      showToast(`✓ Shift published for ${finalClientObj.name} (${finalClientObj.postcode || 'Site'}) & broadcasted!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
     // ================= SHIFT MARKETPLACE (HOURLY RATE & HOURS ONLY) =================
@@ -1696,7 +1858,7 @@
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">${s.status.replace('_', ' ')}</span>`
                 }
-                <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} Total hrs</span>
+                <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} hrs (${s.time || '08:00 - 16:00'})</span>
               </div>
               <h3 class="font-extrabold text-snoo-navy text-base">${s.title}</h3>
               <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
@@ -1708,10 +1870,10 @@
                     <span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span>
                     <span class="text-emerald-700">${s.hoursPerDay}h / day</span>
                   </div>
-                  <p class="text-[10px] text-slate-500">Includes all ${s.totalDays} scheduled days</p>
+                  <p class="text-[10px] text-slate-500">Hours: ${s.time || '08:00 - 16:00'}</p>
                 </div>
               ` : `
-                <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>
+                <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date} (${s.time || '08:00 - 16:00'})</p>
               `}
 
               <!-- HOURLY RATE ONLY -->
@@ -1732,7 +1894,7 @@
 
       const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
       document.getElementById('clockShiftSelect').innerHTML = active.length ? 
-        active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.status})</option>`).join('') : '<option value="">No claimed assignments for today</option>';
+        active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'})</option>`).join('') : '<option value="">No claimed assignments for today</option>';
       
       updateClockShiftDetails();
     }
@@ -1836,7 +1998,7 @@
                       <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-[10px] text-white tracking-wider mb-2">
                         1
                       </div>
-                      <div class="font-extrabold text-xs text-teal-100">${s.time || '09:00 - 13:00'}</div>
+                      <div class="font-extrabold text-xs text-teal-100">${s.time || '08:00 - 16:00'}</div>
                       <div class="text-[11px] font-bold text-white leading-tight truncate mt-0.5">${cl.name}</div>
                     </div>
 
@@ -1858,7 +2020,7 @@
           <div class="pt-4 space-y-3">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
-              <h3 class="font-extrabold text-slate-800 text-sm">${cl.name}</h3>
+              <h3 class="font-extrabold text-slate-800 text-sm">${cl.name} <span class="text-xs text-indigo-700 font-bold">(${cl.postcode || 'Site'})</span></h3>
               <span class="bg-snoo-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">${totalShiftsCount}</span>
             </div>
 
@@ -1876,7 +2038,7 @@
       const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", postcode: "UK", address: "UK Address" };
       const st = users.find(u => u.id === s.staffId);
 
-      showToast(`Assignment: ${s.title} | Staff: ${st ? st.name : 'Open'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
+      showToast(`Assignment: ${s.title} | Staff: ${st ? st.name : 'Open'} | Time: ${s.time || '08:00 - 16:00'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
     }
 
     // ================= MANAGER VIEW & TIMEFRAME FILTERING =================
@@ -1946,7 +2108,7 @@
             <td class="p-3">
               <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
               <p class="text-[11px] text-snoo-blue font-semibold">${cl.name} (${cl.postcode || 'UK'})</p>
-              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
+              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.time || '08:00 - 16:00'} - ${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
             </td>
             <td class="p-3">
               ${s.clockInTime ? `
@@ -1981,6 +2143,7 @@
         "Client Postcode",
         "Client Address",
         "Service Title",
+        "Time Duration",
         "Schedule Type",
         "Shift Date / Range",
         "Total Hours",
@@ -2010,6 +2173,7 @@
           `"${cl.postcode || 'N/A'}"`,
           `"${cl.address.replace(/"/g, '""')}"`,
           `"${(s.title || 'Care Service').replace(/"/g, '""')}"`,
+          `"${s.time || '08:00 - 16:00'}"`,
           s.isBlock ? "Recurring Block Booking" : "Single Shift",
           `"${s.isBlock ? s.dateRangeStr : s.date}"`,
           s.hours,
@@ -2137,119 +2301,6 @@
       }
     }
 
-    async function createShift() {
-      let finalClientId = null;
-      let finalClientObj = null;
-      const ch = parseFloat(document.getElementById('newShiftCharge').value);
-
-      if (clientDispatchMode === 'existing') {
-        finalClientId = parseInt(document.getElementById('newShiftClient').value);
-        finalClientObj = clients.find(c => c.id === finalClientId);
-      } else {
-        const customName = document.getElementById('customClientName').value.trim() || 'Private Client';
-        const customPostcode = document.getElementById('customPostcode').value.trim() || 'E16 2DN';
-        const customAddr = document.getElementById('customAddress').value.trim() || customPostcode;
-        
-        const newClient = {
-          id: Date.now(),
-          name: customName,
-          postcode: customPostcode,
-          address: customAddr,
-          lat: currentResolvedCoords.lat,
-          lng: currentResolvedCoords.lng,
-          rate: ch
-        };
-
-        clients.push(newClient);
-        finalClientId = newClient.id;
-        finalClientObj = newClient;
-        populateDropdowns();
-      }
-
-      const t = document.getElementById('newShiftTitle').value;
-      const p = parseFloat(document.getElementById('newShiftPay').value);
-      let newShift = null;
-
-      if (scheduleMode === 'single') {
-        const d = document.getElementById('newShiftDate').value;
-        const h = parseFloat(document.getElementById('newShiftHours').value);
-
-        newShift = { 
-          id: Date.now(), clientId: finalClientId, title: t, isBlock: false, date: d, time: "09:00 - 13:00", 
-          hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
-          clockInTime: null, clockOutTime: null, verified: false
-        };
-        shifts.push(newShift);
-      } else {
-        const startStr = document.getElementById('newShiftStartDate').value;
-        const endStr = document.getElementById('newShiftEndDate').value;
-        const pattern = document.getElementById('newShiftRepeatPattern').value;
-        const hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value);
-
-        if (!startStr || !endStr) return showToast('Please choose both start and end dates', 'bg-rose-50 text-rose-800 border-rose-200');
-
-        let cur = new Date(startStr);
-        const end = new Date(endStr);
-        const startDayOfWeek = cur.getDay();
-        let validDays = 0;
-        let datesList = [];
-
-        while (cur <= end) {
-          const dayOfWeek = cur.getDay();
-          let shouldInclude = false;
-
-          if (pattern === 'daily') shouldInclude = true;
-          else if (pattern === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) shouldInclude = true;
-          else if (pattern === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6)) shouldInclude = true;
-          else if (pattern === 'weekly' && dayOfWeek === startDayOfWeek) shouldInclude = true;
-
-          if (shouldInclude) {
-            validDays++;
-            datesList.push(cur.toISOString().split('T')[0]);
-          }
-          cur.setDate(cur.getDate() + 1);
-        }
-
-        if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800 border-rose-200');
-
-        const totalBlockHours = validDays * hoursPerDay;
-        const rangeSummary = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
-
-        newShift = {
-          id: Date.now(),
-          clientId: finalClientId,
-          title: t,
-          isBlock: true,
-          totalDays: validDays,
-          dateRangeStr: rangeSummary,
-          date: startStr,
-          datesList: datesList,
-          time: "09:00 - 13:00",
-          hoursPerDay: hoursPerDay,
-          hours: totalBlockHours,
-          pay: p,
-          chargeRate: ch,
-          status: "open",
-          staffId: null,
-          clockInTime: null,
-          clockOutTime: null,
-          verified: false
-        };
-        shifts.push(newShift);
-      }
-      
-      await pushToFirebaseDirect();
-      renderShifts();
-      renderRosterScheduler();
-      updateManagerView();
-
-      if (newShift && finalClientObj) {
-        triggerShiftBroadcastEmails(newShift, finalClientObj);
-      }
-
-      showToast(`✓ Assignment published & broadcast emails sent to all staff!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-    }
-
     function generateInvoice() {
       const cid = parseInt(document.getElementById('invoiceClientSelect').value);
       const cl = clients.find(x => x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
@@ -2262,7 +2313,7 @@
         const st = users.find(u => u.id === s.staffId);
         return `
           <tr>
-            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Care Staff'}</td>
+            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'}) - ${st ? st.name : 'Care Staff'}</td>
             <td class="py-2.5 px-2 text-right">${s.hours}</td>
             <td class="py-2.5 px-2 text-right">£${cl.rate.toFixed(2)}</td>
             <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
