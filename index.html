@@ -146,12 +146,12 @@
         </div>
 
         <div class="flex items-center space-x-3">
-          <!-- Real-Time Firebase Status Pill (ONLY VISIBLE TO IT ADMIN) -->
+          <!-- Real-Time Firebase Status Pill -->
           <div id="headerFirebasePill" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online
           </div>
 
-          <!-- Real-Time Cloud Sync Button (ONLY VISIBLE TO IT ADMIN) -->
+          <!-- Real-Time Cloud Sync Button -->
           <button id="headerSyncBtn" onclick="testAndSyncFirebase(true)" title="Force sync live database" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
             <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
             <span class="hidden sm:inline">Sync Cloud</span>
@@ -227,14 +227,14 @@
           </div>
         </div>
 
-        <!-- SHIFT BOARD HEADER WITH DEDICATED SECTION SWITCHER -->
+        <!-- SHIFT BOARD HEADER -->
         <div id="approvedShiftsHeader" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <h2 id="shiftsViewTitle" class="text-xl font-extrabold text-snoo-navy">Care & Domestic Shift Board</h2>
             <p id="shiftsViewSub" class="text-xs text-slate-500 font-medium">Browse active client assignments or manage your claimed shifts.</p>
           </div>
           
-          <!-- DEDICATED SECTIONS FOR OPEN vs CLAIMED/COMPLETED -->
+          <!-- SECTIONS FOR OPEN vs CLAIMED -->
           <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
             <button onclick="setMarketplaceFilter('open')" id="btnFilterOpen" class="px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5">
               <i class="fa-solid fa-bolt text-amber-500"></i> Open Shifts <span id="badgeOpenCount" class="bg-amber-100 text-amber-800 text-[10px] font-black px-2 py-0.2 rounded-full">0</span>
@@ -303,7 +303,7 @@
         </div>
       </section>
 
-      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER (UNDER ONE CLEAN DROPDOWN) ================= -->
+      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER ================= -->
       <section id="view-roster" class="tab-view hidden space-y-6">
         
         <!-- Header & Controls with Unified Client Dropdown -->
@@ -319,7 +319,7 @@
           <!-- CLIENT DROPDOWN SELECTOR & WEEK CONTROLS -->
           <div class="flex flex-wrap items-center gap-3">
             
-            <!-- SINGLE CLIENT FILTER DROPDOWN -->
+            <!-- SINGLE CLIENT FILTER DROPDOWN (IDENTIFIED BY NAME) -->
             <div class="flex items-center gap-1.5">
               <label class="text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
                 <i class="fa-solid fa-house-user text-teal-600"></i> Client:
@@ -348,12 +348,10 @@
         <!-- Roster Calendar Grid Container -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
           
-          <!-- Days of the Week Header (7 Columns) -->
           <div id="rosterDaysHeader" class="grid grid-cols-7 gap-3 min-w-[840px] pb-4 border-b border-slate-100 text-center">
             <!-- Dynamically Rendered 7 Days -->
           </div>
 
-          <!-- Client Shift Rows Container -->
           <div id="rosterBody" class="min-w-[840px] divide-y divide-slate-100 mt-4 space-y-6">
             <!-- Dynamically Populated Client Rows -->
           </div>
@@ -362,10 +360,10 @@
 
       </section>
 
-      <!-- ================= TAB 4: OPERATIONS MANAGER HUB (WITH 5% IT MAINTENANCE) ================= -->
+      <!-- ================= TAB 4: OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
         
-        <!-- Metric Cards Filtered by Timeframe (4 Cards Grid) -->
+        <!-- Metric Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Client Revenue</span>
@@ -398,27 +396,21 @@
               </h3>
               <div class="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
                 <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer">Existing</button>
-                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">+ New Postcode</button>
+                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">+ New Facility</button>
               </div>
             </div>
 
-            <!-- MODE 1: Select Existing Client -->
+            <!-- MODE 1: Select Existing Client (By Name) -->
             <div id="sectionClientExisting" class="space-y-1">
-              <label class="font-bold block mb-1 text-slate-700">Client / Care Facility:</label>
-              <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium"></select>
+              <label class="font-bold block mb-1 text-slate-700">Client / Care Facility (Select by Name):</label>
+              <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy"></select>
             </div>
 
-            <!-- MODE 2: Add New Client via Postcode Lookup -->
+            <!-- MODE 2: Add New Client by Name & Postcode -->
             <div id="sectionClientNew" class="hidden space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-snoo-blue/10 hover:bg-snoo-blue/20 text-snoo-blue font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-2 border border-snoo-blue/20 shadow-xs cursor-pointer">
-                <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> 📍 Detect Nearest Postcode from GPS
-              </button>
-
-              <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider my-0.5">— OR ENTER POSTCODE —</div>
-
               <div>
-                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Facility / Client Name:</label>
-                <input type="text" id="customClientName" placeholder="e.g. Amber Court Care" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Facility / Client Name (Unique Identifier): <span class="text-rose-600">*</span></label>
+                <input type="text" id="customClientName" placeholder="e.g. Amber Court Care" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
               </div>
 
               <div class="grid grid-cols-3 gap-2">
@@ -438,6 +430,10 @@
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
                 <input type="text" id="customAddress" placeholder="e.g. 469a Romford Road, London, England, E7 8AB" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
+
+              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-slate-200/70 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-xl transition flex items-center justify-center gap-1.5 text-[11px] cursor-pointer">
+                <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> Detect GPS Coordinates
+              </button>
             </div>
 
             <!-- Service Title -->
@@ -608,8 +604,8 @@
             </h3>
             
             <div>
-              <label class="font-bold block mb-1 text-slate-700">Select Client / Household:</label>
-              <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium"></select>
+              <label class="font-bold block mb-1 text-slate-700">Select Client / Household (By Name):</label>
+              <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy"></select>
             </div>
 
             <!-- INVOICE DATE RANGE CONTROLS -->
@@ -781,14 +777,14 @@
           </div>
         </div>
 
-        <!-- SECTION A: CARE FACILITIES & CLIENT DIRECTORY (IT MANAGEMENT) -->
+        <!-- SECTION A: CARE FACILITIES & CLIENT DIRECTORY (BY NAME) -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-center">
             <div>
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
                 <i class="fa-solid fa-house-chimney-medical text-teal-600"></i> Care Facilities & Client Directory
               </h3>
-              <p class="text-xs text-slate-500">Manage, inspect, and remove existing care homes, client facilities, and registered postcodes.</p>
+              <p class="text-xs text-slate-500">Clients identified by their unique Name. Allows multiple distinct facilities per postcode.</p>
             </div>
             <span id="itClientCountBadge" class="bg-teal-50 text-teal-800 font-extrabold text-xs px-3 py-1 rounded-full border border-teal-200">0 Facilities</span>
           </div>
@@ -982,7 +978,7 @@
       hourlyRate: 40.00 
     };
 
-    // YOUR PRIVATE LIVE FIREBASE CLOUD DATABASE
+    // LIVE FIREBASE CLOUD DATABASE
     const FIREBASE_BASE_URL = "https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app/";
     
     // BREVO EMAIL SERVICE CONFIGURATION
@@ -1017,14 +1013,17 @@
     
     const MAX_GEOFENCE_METERS = 500; 
 
-    // CLIENT DEDUPLICATION HELPER
+    // CLIENT DEDUPLICATION & IDENTIFICATION STRICTLY BY NAME
     function getDeduplicatedClients() {
       const unique = [];
-      const seen = new Set();
+      const seenNames = new Set();
       clients.forEach(c => {
-        const key = `${(c.name || '').trim().toLowerCase()}_${(c.postcode || '').trim().toUpperCase()}`;
-        if (!seen.has(key)) {
-          seen.add(key);
+        const nameKey = (c.name || '').trim().toLowerCase();
+        if (nameKey && !seenNames.has(nameKey)) {
+          seenNames.add(nameKey);
+          unique.push(c);
+        } else if (!nameKey && !seenNames.has(c.id)) {
+          seenNames.add(c.id);
           unique.push(c);
         }
       });
@@ -1079,7 +1078,7 @@
         return showToast('Target client location is missing coordinates.', 'bg-rose-50 text-rose-800 border-rose-200');
       }
 
-      showToast(`📍 Verifying GPS proximity to ${cl.postcode || cl.name}...`, "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
+      showToast(`📍 Verifying GPS proximity to ${cl.name} (${cl.postcode || 'Site'})...`, "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
 
       if (!navigator.geolocation) {
         return showToast("Geolocation services are not supported by this device.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -1096,9 +1095,9 @@
             const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
             
             if (isIT) {
-              showToast(`✕ Clock-In Blocked: You are ${distDisplay} away from ${cl.postcode || cl.name} (Tolerance: ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
+              showToast(`✕ Clock-In Blocked: You are ${distDisplay} away from ${cl.name} (${cl.postcode || 'Site'}) (Tolerance: ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
             } else {
-              showToast(`✕ Clock-In Failed: You must be physically at ${cl.name} (${cl.postcode || 'client postcode'}) to clock in/out.`, "bg-rose-50 text-rose-800 border-rose-200");
+              showToast(`✕ Clock-In Failed: You must be physically at ${cl.name} (${cl.postcode || 'Site'}) to clock in/out.`, "bg-rose-50 text-rose-800 border-rose-200");
             }
             return;
           }
@@ -1111,7 +1110,7 @@
             s.clockInTime = `Today ${timeStr}`;
             s.clockInTimestamp = now.toISOString();
             s.verified = true;
-            s.distance = `${cl.postcode || 'Site'} Verified (${distanceMeters < 50 ? 'On-Site' : `${distanceMeters.toFixed(0)}m`})`;
+            s.distance = `${cl.name} Verified (${distanceMeters < 50 ? 'On-Site' : `${distanceMeters.toFixed(0)}m`})`;
             s.gpsCoords = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
             showToast(`✓ Clocked in successfully at ${cl.name} (${cl.postcode || 'Site'})!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
           } else {
@@ -1167,7 +1166,7 @@
       if (radar) radar.className = "fa-solid fa-spinner fa-spin text-snoo-blue";
       
       const txt = document.getElementById('proximityLiveText');
-      if (txt) txt.textContent = "Acquiring device GPS sensors within the postcode zone...";
+      if (txt) txt.textContent = "Acquiring device GPS sensors within the target zone...";
 
       if (!navigator.geolocation) {
         if (radar) radar.className = "fa-solid fa-satellite-dish text-rose-500";
@@ -1185,10 +1184,10 @@
           if (radar) radar.className = isWithin ? "fa-solid fa-circle-check text-emerald-600" : "fa-solid fa-triangle-exclamation text-amber-600";
           if (txt) {
             if (isWithin) {
-              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site in Postcode Area:</strong> You are within the registered postcode zone for <strong class="text-emerald-800">${cl.postcode || cl.name}</strong> (${distMeters < 50 ? 'Immediate Doorstep' : `${distMeters.toFixed(0)}m away`}). Ready to clock in/out!`;
+              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site at ${cl.name}:</strong> You are within the perimeter for <strong class="text-emerald-800">${cl.name}</strong> (${distMeters < 50 ? 'Immediate Doorstep' : `${distMeters.toFixed(0)}m away`}). Ready to clock in/out!`;
             } else {
               const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
-              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Postcode Zone:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). (Geofence: ${MAX_GEOFENCE_METERS}m).`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Perimeter:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). (Geofence: ${MAX_GEOFENCE_METERS}m).`;
             }
           }
         },
@@ -1264,7 +1263,7 @@
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
       const directShiftUrl = `${COMPANY_BASE_DOMAIN}/?shift=${shift.id}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: You can clock in directly from the shift card on gtchr.co.uk on the day. Ensure you are physically at ${client.postcode || client.name}.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: You can clock in directly from the shift card on gtchr.co.uk on the day. Ensure you are physically at ${client.name} (${client.postcode || 'Site'}).\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg, directShiftUrl, "View My Assignment on gtchr.co.uk");
 
       const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
@@ -1418,12 +1417,16 @@
 
       if (data.clients) {
         const cArr = Array.isArray(data.clients) ? data.clients : Object.values(data.clients);
-        const seenKeys = new Set();
+        // Identify & Deduplicate strictly by Client Name
+        const seenNames = new Set();
         clients = [];
         cArr.filter(Boolean).forEach(c => {
-          const key = `${(c.name || '').trim().toLowerCase()}_${(c.postcode || '').trim().toUpperCase()}`;
-          if (!seenKeys.has(key)) {
-            seenKeys.add(key);
+          const nameKey = (c.name || '').trim().toLowerCase();
+          if (nameKey && !seenNames.has(nameKey)) {
+            seenNames.add(nameKey);
+            clients.push(c);
+          } else if (!nameKey && !seenNames.has(c.id)) {
+            seenNames.add(c.id);
             clients.push(c);
           }
         });
@@ -1955,6 +1958,7 @@
 
     function populateDropdowns() {
       const deduped = getDeduplicatedClients();
+      // Dropdown identified primarily by Name
       const opts = deduped.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'London'})</option>`).join('');
       
       const newShiftClientEl = document.getElementById('newShiftClient');
@@ -1994,7 +1998,7 @@
       }
     }
 
-    // ================= CREATE & DISPATCH SHIFT =================
+    // ================= CREATE & DISPATCH SHIFT (IDENTIFY CLIENT BY UNIQUE NAME) =================
     async function createShift() {
       if (!currentUser || (currentUser.role !== 'manager' && currentUser.role !== 'it_admin') || currentUser.status === 'pending') {
         return showToast("Access Denied: Only Managers and IT Super Admin can publish shifts.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -2002,13 +2006,18 @@
 
       let finalClientId = null;
       let finalClientObj = null;
-      const ch = parseFloat(document.getElementById('newShiftCharge').value);
+      const ch = parseFloat(document.getElementById('newShiftCharge').value) || 26.00;
 
       const customNameVal = document.getElementById('customClientName') ? document.getElementById('customClientName').value.trim() : '';
       const customPCVal = document.getElementById('customPostcode') ? document.getElementById('customPostcode').value.trim() : '';
 
-      if (clientDispatchMode === 'new' || (customPCVal.length > 0 && clientDispatchMode !== 'existing')) {
-        let customName = customNameVal || (customPCVal ? `Client (${customPCVal.toUpperCase()})` : 'Private Client');
+      // Check if user is in 'new' mode or has specified a new client name
+      if (clientDispatchMode === 'new' || (customNameVal.length > 0 && clientDispatchMode !== 'existing')) {
+        if (!customNameVal) {
+          return showToast("Please provide the Facility or Client Name.", "bg-rose-50 text-rose-800 border-rose-200");
+        }
+
+        let customName = customNameVal;
         let customPostcode = customPCVal.toUpperCase() || 'E16 2DN';
         let customAddr = document.getElementById('customAddress').value.trim() || `${customName}, ${customPostcode}`;
         
@@ -2027,15 +2036,20 @@
           } catch(e) {}
         }
 
+        // STRICT IDENTIFICATION BY CLIENT NAME (NOT BY POSTCODE)
         let existingClient = clients.find(c => 
-          (c.postcode && customPostcode && c.postcode.replace(/\s+/g,'').toUpperCase() === customPostcode.replace(/\s+/g,'').toUpperCase()) ||
-          (c.name && customName && c.name.toLowerCase() === customName.toLowerCase())
+          c.name && customName && c.name.trim().toLowerCase() === customName.trim().toLowerCase()
         );
 
         if (existingClient) {
+          // If existing client with same name found, use it and update details
           finalClientId = existingClient.id;
           finalClientObj = existingClient;
+          if (customPostcode) existingClient.postcode = customPostcode;
+          if (customAddr) existingClient.address = customAddr;
+          if (lat && lng) { existingClient.lat = lat; existingClient.lng = lng; }
         } else {
+          // New distinct client creation
           const newClient = {
             id: Date.now(),
             name: customName,
@@ -2375,7 +2389,7 @@
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-blue-600 animate-pulse"></i> Shift Active (Clocked In)</span>
                     <span class="text-blue-700 text-[10px]">${s.clockInTime}</span>
                   </div>
-                  <p class="text-[10px] text-blue-700">GPS verified at ${cl.postcode || cl.name}. Tap below when your shift finishes.</p>
+                  <p class="text-[10px] text-blue-700">GPS verified at ${cl.name}. Tap below when your shift finishes.</p>
                 </div>
               ` : ''}
 
@@ -2535,7 +2549,7 @@
         const clientShifts = shifts.filter(s => {
           if (s.clientId === cl.id) return true;
           const shiftClient = clients.find(c => c.id === s.clientId);
-          if (shiftClient && shiftClient.name && cl.name && shiftClient.name.toLowerCase() === cl.name.toLowerCase()) return true;
+          if (shiftClient && shiftClient.name && cl.name && shiftClient.name.trim().toLowerCase() === cl.name.trim().toLowerCase()) return true;
           return false;
         });
 
@@ -2607,7 +2621,7 @@
       const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", postcode: "UK", address: "UK Address" };
       const st = users.find(u => u.id === s.staffId);
 
-      showToast(`Assignment: ${s.title} | Staff: ${st ? st.name : 'Open'} | Time: ${s.time || '08:00 - 16:00'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
+      showToast(`Assignment: ${s.title} | Facility: ${cl.name} | Staff: ${st ? st.name : 'Open'} | Time: ${s.time || '08:00 - 16:00'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
     }
 
     // ================= MANAGER VIEW & TIMEFRAME CALCULATION =================
@@ -2716,7 +2730,7 @@
               ${s.clockInTime ? `
                 <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
                 <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Postcode Verified'}</span>
+                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Location Verified'}</span>
               ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
             </td>
             <td class="p-3 text-right">
@@ -2767,7 +2781,7 @@
         "Company Net Margin (£)",
         "Clock In Time",
         "Clock Out Time",
-        "Postcode GPS Verified",
+        "GPS Verified",
         "Status"
       ];
 
@@ -2799,7 +2813,7 @@
           netMargin,
           `"${s.clockInTime || 'N/A'}"`,
           `"${s.clockOutTime || 'N/A'}"`,
-          s.verified ? `Yes (${s.distance || 'Postcode Proximity'})` : "Pending",
+          s.verified ? `Yes (${s.distance || 'Location Proximity'})` : "Pending",
           s.status
         ];
       });
