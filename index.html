@@ -240,40 +240,59 @@
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 2: GPS CLOCK-IN/OUT (7 METERS) ================= -->
+      <!-- ================= TAB 2: GPS CLOCK-IN/OUT WITH REAL POSTCODE GEOFENCING ================= -->
       <section id="view-clock" class="tab-view hidden">
         <div class="max-w-md mx-auto bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
           <div class="text-center mb-6">
             <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
               <i class="fa-solid fa-location-crosshairs text-3xl"></i>
             </div>
-            <h2 class="text-lg font-extrabold text-snoo-navy">GPS Shift Check-In</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">Verifies precise doorstep location proximity (7m radius).</p>
+            <h2 class="text-lg font-extrabold text-snoo-navy">Real-World GPS Check-In</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">Requires physical presence at the registered client postcode.</p>
           </div>
 
           <div class="space-y-4 text-xs">
             <div>
-              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Active Shift / Today's Session:</label>
-              <select id="clockShiftSelect" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
+              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Active Assignment:</label>
+              <select id="clockShiftSelect" onchange="updateClockShiftDetails()" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
             </div>
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-              <div class="flex justify-between">
-                <span class="text-slate-500 font-medium">GPS Signal:</span>
-                <span class="text-emerald-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[7px] text-emerald-500 animate-pulse"></i> Doorstep Proximity Active</span>
+
+            <!-- Client Postcode & Location Target Display -->
+            <div id="clockTargetCard" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+              <div class="flex justify-between items-start">
+                <span class="text-slate-500 font-medium">Assigned Postcode:</span>
+                <span id="targetPostcode" class="font-mono text-snoo-blue font-extrabold text-sm uppercase">E16 2DN</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500 font-medium">Geofence Radius:</span>
-                <span class="font-bold text-slate-800 flex items-center gap-1">
-                  <span class="bg-snoo-blue text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">7 meters</span>
+              <div class="flex justify-between items-start">
+                <span class="text-slate-500 font-medium">Facility / Address:</span>
+                <span id="targetAddress" class="font-bold text-slate-800 text-right text-[11px] max-w-[200px]">14 Kensington Sq, London</span>
+              </div>
+              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2">
+                <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
+                <span class="bg-snoo-blue text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">50 meters</span>
+              </div>
+            </div>
+
+            <!-- Live Proximity Scan Status Box -->
+            <div id="proximityLiveBox" class="p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="font-bold flex items-center gap-1.5">
+                  <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue"></i> Live GPS Status:
                 </span>
+                <button type="button" onclick="checkLiveProximity()" class="text-snoo-blue font-black underline hover:text-snoo-lightBlue cursor-pointer">
+                  Test Distance
+                </button>
               </div>
+              <p id="proximityLiveText" class="text-slate-600 font-medium">Click below to verify your physical presence using device GPS.</p>
             </div>
+
+            <!-- Clock Buttons -->
             <div class="grid grid-cols-2 gap-3 pt-2">
-              <button onclick="handleClock(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Clock In
+              <button onclick="handleRealGpsClock(true)" id="btnClockIn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Verify & Clock In
               </button>
-              <button onclick="handleClock(false)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Clock Out
+              <button onclick="handleRealGpsClock(false)" id="btnClockOut" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Verify & Clock Out
               </button>
             </div>
           </div>
@@ -792,7 +811,7 @@
     </main>
   </div>
 
-  <!-- ================= 4. FIREBASE CLOUD & AUTOMATED EMAIL ENGINE ================= -->
+  <!-- ================= 4. FIREBASE CLOUD & REAL GPS ENGINE ================= -->
   <script>
     // MASTER ADMIN
     const masterAdmin = { 
@@ -809,7 +828,7 @@
     // YOUR PRIVATE LIVE FIREBASE CLOUD DATABASE
     const FIREBASE_BASE_URL = "https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app/";
     
-    // YOUR NEW BREVO EMAIL CONFIGURATION
+    // BREVO EMAIL SERVICE CONFIGURATION
     const EMAILJS_SERVICE_ID = "service_affajui";
     const EMAILJS_TEMPLATE_ID = "template_ibrgiwu";
     const EMAILJS_PUBLIC_KEY = "n6n7McPNxCnLKVX7A";
@@ -825,15 +844,168 @@
 
     let users = [masterAdmin];
     let clients = [
-      { id: 1, name: "Changing Lives - The Vineries", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
-      { id: 2, name: "Salvation Army - Cambria House", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
+      { id: 1, name: "Changing Lives - The Vineries", postcode: "W8 5HH", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
+      { id: 2, name: "Salvation Army - Cambria House", postcode: "TW10 6RN", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
     ];
     let shifts = [];
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
-    let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
+    let currentResolvedCoords = { lat: 51.5026, lng: 0.0476, postcode: "E16 2DN" };
     let rosterWeekOffset = 0; // 0 = current week
+    const MAX_GEOFENCE_METERS = 50; // Maximum allowed distance to clock in/out (50 meters)
+
+    // ================= REAL-WORLD HAVERSINE DISTANCE CALCULATOR =================
+    function calculateDistanceInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // Earth's radius in meters
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = lat2 * Math.PI / 180;
+      const Δφ = (lat2 - lat1) * Math.PI / 180;
+      const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c; // Distance in meters
+    }
+
+    // UPDATE SELECTED SHIFT DETAILS IN CLOCK TAB
+    function updateClockShiftDetails() {
+      const sid = parseInt(document.getElementById('clockShiftSelect').value);
+      const s = shifts.find(x => x.id === sid);
+      const targetPostcode = document.getElementById('targetPostcode');
+      const targetAddress = document.getElementById('targetAddress');
+
+      if (s) {
+        const cl = clients.find(c => c.id === s.clientId) || { postcode: "E16 2DN", address: "UK Address" };
+        if (targetPostcode) targetPostcode.textContent = cl.postcode || "E16 2DN";
+        if (targetAddress) targetAddress.textContent = `${cl.name} (${cl.address})`;
+      } else {
+        if (targetPostcode) targetPostcode.textContent = "N/A";
+        if (targetAddress) targetAddress.textContent = "No assignment selected";
+      }
+    }
+
+    // CHECK LIVE PROXIMITY TEST
+    function checkLiveProximity() {
+      const sid = parseInt(document.getElementById('clockShiftSelect').value);
+      const s = shifts.find(x => x.id === sid);
+      if (!s) return showToast("Please select an active assignment first.", "bg-rose-50 text-rose-800 border-rose-200");
+
+      const cl = clients.find(c => c.id === s.clientId);
+      if (!cl || !cl.lat || !cl.lng) return showToast("Client GPS coordinates missing.", "bg-rose-50 text-rose-800 border-rose-200");
+
+      const radar = document.getElementById('gpsRadarIcon');
+      if (radar) radar.className = "fa-solid fa-spinner fa-spin text-snoo-blue";
+      
+      const txt = document.getElementById('proximityLiveText');
+      if (txt) txt.textContent = "Acquiring high-accuracy GPS coordinates from device sensors...";
+
+      if (!navigator.geolocation) {
+        if (radar) radar.className = "fa-solid fa-satellite-dish text-rose-500";
+        if (txt) txt.innerHTML = "<span class='text-rose-600 font-bold'>GPS not supported on this browser/device.</span>";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const distMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
+          const isWithin = distMeters <= MAX_GEOFENCE_METERS;
+
+          if (radar) radar.className = isWithin ? "fa-solid fa-circle-check text-emerald-600" : "fa-solid fa-triangle-exclamation text-amber-600";
+          if (txt) {
+            if (isWithin) {
+              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site Verified:</strong> You are <strong class="text-emerald-800">${distMeters.toFixed(1)}m</strong> from ${cl.postcode || 'the doorstep'} (Within ${MAX_GEOFENCE_METERS}m geofence). Ready to clock!`;
+            } else {
+              const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Range:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.postcode || cl.name}. You must be physically at the client location.`;
+            }
+          }
+        },
+        (err) => {
+          if (radar) radar.className = "fa-solid fa-circle-exclamation text-rose-600";
+          if (txt) txt.innerHTML = `<strong class="text-rose-700">GPS Permission Blocked:</strong> Please allow Location Access in your browser settings.`;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT
+    async function handleRealGpsClock(isIn) {
+      const sid = parseInt(document.getElementById('clockShiftSelect').value);
+      const s = shifts.find(x => x.id === sid);
+      if (!s) return showToast('Please select an active assignment', 'bg-rose-50 text-rose-800 border-rose-200');
+
+      const cl = clients.find(c => c.id === s.clientId);
+      if (!cl || !cl.lat || !cl.lng) {
+        return showToast('Target client location is missing coordinates.', 'bg-rose-50 text-rose-800 border-rose-200');
+      }
+
+      showToast("📍 Querying real-time device GPS sensors...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
+
+      if (!navigator.geolocation) {
+        return showToast("Geolocation services are not supported by this device.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
+
+          // STRICT GEOFENCE VERIFICATION
+          if (distanceMeters > MAX_GEOFENCE_METERS) {
+            const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
+            
+            showToast(`✕ Location Verification Failed: You are ${distDisplay} away from ${cl.postcode || cl.name}. You must be physically on-site (within ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
+            
+            const txt = document.getElementById('proximityLiveText');
+            if (txt) {
+              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.postcode}. You must be physically at the doorstep to ${isIn ? 'clock in' : 'clock out'}.`;
+            }
+            return;
+          }
+
+          // SUCCESS: PERSON IS PHYSICALLY PRESENT
+          const now = new Date();
+          const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+          
+          if (isIn) {
+            s.status = 'in_progress';
+            s.clockInTime = `Today ${timeStr}`;
+            s.clockInTimestamp = now.toISOString();
+            s.verified = true;
+            s.distance = `${distanceMeters.toFixed(1)}m from ${cl.postcode || 'Site'}`;
+            s.gpsCoords = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+            showToast(`✓ GPS Verified: Within ${distanceMeters.toFixed(1)}m of ${cl.postcode}. Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+          } else {
+            s.status = 'completed';
+            s.clockOutTime = `Today ${timeStr}`;
+            s.clockOutTimestamp = now.toISOString();
+            s.verified = true;
+            showToast(`✓ GPS Verified: Within ${distanceMeters.toFixed(1)}m of ${cl.postcode}. Clocked out! Timesheet saved.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+          }
+
+          await pushToFirebaseDirect();
+          renderShifts();
+          renderRosterScheduler();
+          if (currentUser.role !== 'staff') updateManagerView();
+          checkLiveProximity();
+        },
+        (error) => {
+          let errDetail = "Please allow location access in your device settings.";
+          if (error.code === error.PERMISSION_DENIED) errDetail = "Location permission was denied. Please enable GPS permissions for this site.";
+          else if (error.code === error.POSITION_UNAVAILABLE) errDetail = "GPS location is currently unavailable. Please ensure GPS is turned on.";
+          else if (error.code === error.TIMEOUT) errDetail = "GPS request timed out. Please try again.";
+
+          showToast(`✕ Location Access Required: ${errDetail}`, "bg-rose-50 text-rose-800 border-rose-200");
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    }
 
     // ================= A. UNIVERSAL AUTOMATED EMAIL DISPATCHER =================
     async function dispatchAutomatedEmail(toEmail, toName, subject, messageBody) {
@@ -881,7 +1053,7 @@
       const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
 
       activeStaff.forEach(staff => {
-        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} Total Hours\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
+        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} Total Hours\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
         dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)} per hour)`, msg);
       });
     }
@@ -891,7 +1063,7 @@
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} hrs\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Please ensure you are within 7 meters of the doorstep to complete your GPS clock-in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Schedule: ${shiftType}\n• Duration: ${shift.hours} hrs\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically at ${client.postcode || 'the client postcode'} (within 50 meters) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
       const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
@@ -1273,6 +1445,7 @@
       renderRosterScheduler();
       updateITDirectory();
       calcHMRC();
+      updateClockShiftDetails();
     }
 
     function handleLogout() {
@@ -1326,6 +1499,10 @@
       if (tabName === 'manager') updateManagerView();
       if (tabName === 'roster') renderRosterScheduler();
       if (tabName === 'it-admin') updateITDirectory();
+      if (tabName === 'clock') {
+        updateClockShiftDetails();
+        checkLiveProximity();
+      }
     }
 
     function setClientMode(mode) {
@@ -1400,7 +1577,7 @@
 
         if (data.status === 200 && data.result && data.result.length > 0) {
           const closest = data.result[0];
-          currentResolvedCoords = { lat: closest.latitude, lng: closest.longitude };
+          currentResolvedCoords = { lat: closest.latitude, lng: closest.longitude, postcode: closest.postcode };
           
           document.getElementById('customPostcode').value = closest.postcode;
           document.getElementById('customAddress').value = `${closest.parish || closest.admin_ward || 'Doorstep Location'}, ${closest.admin_district || ''}, ${closest.postcode}`;
@@ -1417,7 +1594,7 @@
     }
 
     function fallbackReverseGeocode(lat, lng) {
-      currentResolvedCoords = { lat: lat, lng: lng };
+      currentResolvedCoords = { lat: lat, lng: lng, postcode: "E16 2DN" };
       document.getElementById('customPostcode').value = "E16 2DN";
       document.getElementById('customAddress').value = "21 Wythes Road, Newham, London E16 2DN";
       document.getElementById('geoRegion').textContent = "Newham, London";
@@ -1438,7 +1615,7 @@
 
         if (data.status === 200 && data.result) {
           const r = data.result;
-          currentResolvedCoords = { lat: r.latitude, lng: r.longitude };
+          currentResolvedCoords = { lat: r.latitude, lng: r.longitude, postcode: r.postcode };
           
           document.getElementById('geoRegion').textContent = `${r.admin_district || ''}, ${r.region || r.country}`;
           document.getElementById('geoCoords').textContent = `${r.latitude.toFixed(4)}, ${r.longitude.toFixed(4)}`;
@@ -1458,7 +1635,7 @@
     }
 
     function populateDropdowns() {
-      const opts = clients.map(c => `<option value="${c.id}">${c.name} (${c.address})</option>`).join('');
+      const opts = clients.map(c => `<option value="${c.id}">${c.name} (${c.postcode || 'London'})</option>`).join('');
       document.getElementById('newShiftClient').innerHTML = opts;
       document.getElementById('invoiceClientSelect').innerHTML = opts;
       
@@ -1507,7 +1684,7 @@
       shifts.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       c.innerHTML = shifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
         const isBlock = s.isBlock === true;
 
@@ -1523,7 +1700,7 @@
               </div>
               <h3 class="font-extrabold text-snoo-navy text-base">${s.title}</h3>
               <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
-              <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address}</p>
+              <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address} <span class="font-mono font-bold text-indigo-900">(${cl.postcode || 'UK'})</span></p>
               
               ${isBlock ? `
                 <div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs">
@@ -1556,6 +1733,8 @@
       const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
       document.getElementById('clockShiftSelect').innerHTML = active.length ? 
         active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.status})</option>`).join('') : '<option value="">No claimed assignments for today</option>';
+      
+      updateClockShiftDetails();
     }
 
     async function claimShift(id) {
@@ -1568,38 +1747,11 @@
         renderShifts();
         renderRosterScheduler();
 
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
         triggerShiftClaimedEmails(s, currentUser, cl);
 
         showToast(`✓ Assignment claimed! Confirmation email dispatched to your inbox.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
-    }
-
-    async function handleClock(isIn) {
-      const sid = parseInt(document.getElementById('clockShiftSelect').value);
-      const s = shifts.find(x => x.id === sid);
-      if (!s) return showToast('Please select an active shift', 'bg-rose-50 text-rose-800 border-rose-200');
-      
-      const now = new Date();
-      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-      
-      if (isIn) {
-        s.status = 'in_progress';
-        s.clockInTime = `Today ${timeStr}`;
-        s.clockInTimestamp = now.toISOString();
-        s.verified = true;
-        s.distance = `${(Math.random() * 4 + 1.2).toFixed(1)}m`;
-        showToast(`GPS Verified: Within ${s.distance} (Doorstep Verified). Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      } else {
-        s.status = 'completed';
-        s.clockOutTime = `Today ${timeStr}`;
-        s.clockOutTimestamp = now.toISOString();
-        showToast('✓ Clocked out successfully! Timesheet saved to Firebase.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      }
-      await pushToFirebaseDirect();
-      renderShifts();
-      renderRosterScheduler();
-      if (currentUser.role !== 'staff') updateManagerView();
     }
 
     // ================= ROSTER SCHEDULER ENGINE =================
@@ -1721,10 +1873,10 @@
     function showShiftDetailsModal(shiftId) {
       const s = shifts.find(x => x.id === shiftId);
       if (!s) return;
-      const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", address: "UK Address" };
+      const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Facility", postcode: "UK", address: "UK Address" };
       const st = users.find(u => u.id === s.staffId);
 
-      showToast(`Assignment: ${s.title} | Staff: ${st ? st.name : 'Open'} | Duration: ${s.hours} hrs | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
+      showToast(`Assignment: ${s.title} | Staff: ${st ? st.name : 'Open'} | Postcode: ${cl.postcode || 'UK'} | Rate: £${s.pay.toFixed(2)}/hr`, "bg-snoo-blue text-white border-snoo-blue");
     }
 
     // ================= MANAGER VIEW & TIMEFRAME FILTERING =================
@@ -1783,7 +1935,7 @@
       }
 
       tbody.innerHTML = filteredShifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
         const st = users.find(u => u.id === s.staffId);
         const shiftGross = s.hours * s.chargeRate;
         const staffEarned = s.hours * s.pay;
@@ -1793,14 +1945,14 @@
           <tr class="hover:bg-slate-50 text-xs">
             <td class="p-3">
               <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
-              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p>
+              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name} (${cl.postcode || 'UK'})</p>
               <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
             </td>
             <td class="p-3">
               ${s.clockInTime ? `
                 <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
                 <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || '3.2m'} (Doorstep Verified)</span>
+                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Doorstep Verified'}</span>
               ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
             </td>
             <td class="p-3 text-right">
@@ -1826,6 +1978,7 @@
         "Staff Name",
         "Staff Email",
         "Client Name",
+        "Client Postcode",
         "Client Address",
         "Service Title",
         "Schedule Type",
@@ -1843,7 +1996,7 @@
       ];
 
       const rows = filteredShifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Client", address: "N/A" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Client", postcode: "UK", address: "N/A" };
         const st = users.find(u => u.id === s.staffId) || { name: "Unassigned", email: "N/A" };
         const staffWages = (s.hours * s.pay).toFixed(2);
         const grossCharge = (s.hours * s.chargeRate).toFixed(2);
@@ -1854,6 +2007,7 @@
           `"${st.name.replace(/"/g, '""')}"`,
           `"${st.email.replace(/"/g, '""')}"`,
           `"${cl.name.replace(/"/g, '""')}"`,
+          `"${cl.postcode || 'N/A'}"`,
           `"${cl.address.replace(/"/g, '""')}"`,
           `"${(s.title || 'Care Service').replace(/"/g, '""')}"`,
           s.isBlock ? "Recurring Block Booking" : "Single Shift",
@@ -1993,11 +2147,13 @@
         finalClientObj = clients.find(c => c.id === finalClientId);
       } else {
         const customName = document.getElementById('customClientName').value.trim() || 'Private Client';
-        const customAddr = document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK';
+        const customPostcode = document.getElementById('customPostcode').value.trim() || 'E16 2DN';
+        const customAddr = document.getElementById('customAddress').value.trim() || customPostcode;
         
         const newClient = {
           id: Date.now(),
           name: customName,
+          postcode: customPostcode,
           address: customAddr,
           lat: currentResolvedCoords.lat,
           lng: currentResolvedCoords.lng,
