@@ -240,7 +240,7 @@
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 2: GPS CLOCK-IN/OUT WITH REAL POSTCODE GEOFENCING ================= -->
+      <!-- ================= TAB 2: GPS CLOCK-IN/OUT (CLEAN FOR STAFF, DIAGNOSTICS FOR IT ADMIN) ================= -->
       <section id="view-clock" class="tab-view hidden">
         <div class="max-w-md mx-auto bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
           <div class="text-center mb-6">
@@ -267,7 +267,9 @@
                 <span class="text-slate-500 font-medium">Facility / Address:</span>
                 <span id="targetAddress" class="font-bold text-slate-800 text-right text-[11px] max-w-[200px]">14 Kensington Sq, London</span>
               </div>
-              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2">
+              
+              <!-- GEOFENCE PERIMETER BADGE (HIDDEN FROM STAFF - ONLY VISIBLE TO IT ADMIN) -->
+              <div class="it-only flex justify-between items-center border-t border-slate-200/80 pt-2">
                 <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
                 <span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
                   <i class="fa-solid fa-shield-check"></i> Postcode Zone (500m)
@@ -275,8 +277,8 @@
               </div>
             </div>
 
-            <!-- Live Proximity Scan Status Box -->
-            <div id="proximityLiveBox" class="p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
+            <!-- LIVE PROXIMITY SCAN STATUS BOX (HIDDEN FROM STAFF - ONLY VISIBLE TO IT ADMIN) -->
+            <div id="proximityLiveBox" class="it-only p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
               <div class="flex justify-between items-center">
                 <span class="font-bold flex items-center gap-1.5">
                   <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue"></i> Live GPS Status:
@@ -285,7 +287,7 @@
                   Test Distance
                 </button>
               </div>
-              <p id="proximityLiveText" class="text-slate-600 font-medium">Click below to verify your physical presence within the client postcode.</p>
+              <p id="proximityLiveText" class="text-slate-600 font-medium">Click above to verify physical proximity to client coordinates.</p>
             </div>
 
             <!-- Clock Buttons -->
@@ -983,7 +985,9 @@
       if (sel) {
         sel.value = shiftId;
         updateClockShiftDetails();
-        checkLiveProximity();
+        if (currentUser && currentUser.role === 'it_admin') {
+          checkLiveProximity();
+        }
       }
     }
 
@@ -1004,7 +1008,7 @@
       }
     }
 
-    // CHECK LIVE PROXIMITY TEST
+    // CHECK LIVE PROXIMITY TEST (IT ADMIN ONLY)
     function checkLiveProximity() {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
       const s = shifts.find(x => x.id === sid);
@@ -1038,7 +1042,7 @@
               txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site in Postcode Area:</strong> You are within the registered postcode zone for <strong class="text-emerald-800">${cl.postcode || cl.name}</strong> (${distMeters < 50 ? 'Immediate Doorstep' : `${distMeters.toFixed(0)}m away`}). Ready to clock in/out!`;
             } else {
               const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
-              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Postcode Zone:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). You must be within the client postcode area.`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Postcode Zone:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). (Geofence: ${MAX_GEOFENCE_METERS}m).`;
             }
           }
         },
@@ -1050,7 +1054,7 @@
       );
     }
 
-    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT WITH POSTCODE TOLERANCE
+    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT (POSTCODE GEOFENCED)
     async function handleRealGpsClock(isIn) {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
       const s = shifts.find(x => x.id === sid);
@@ -1061,7 +1065,7 @@
         return showToast('Target client location is missing coordinates.', 'bg-rose-50 text-rose-800 border-rose-200');
       }
 
-      showToast("📍 Querying real-time device GPS sensors...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
+      showToast("📍 Verifying location sensors...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
 
       if (!navigator.geolocation) {
         return showToast("Geolocation services are not supported by this device.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -1072,16 +1076,21 @@
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
           const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
+          const isIT = currentUser && currentUser.role === 'it_admin';
 
           // VERIFICATION WITH 500M POSTCODE TOLERANCE
           if (distanceMeters > MAX_GEOFENCE_METERS) {
             const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
             
-            showToast(`✕ Outside Postcode: You are ${distDisplay} away from ${cl.postcode || cl.name}. You must be physically within the client postcode zone.`, "bg-rose-50 text-rose-800 border-rose-200");
+            if (isIT) {
+              showToast(`✕ Outside Postcode: You are ${distDisplay} away from ${cl.postcode || cl.name} (Tolerance: ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
+            } else {
+              showToast(`✕ Location Verification Failed: You must be physically at ${cl.name} (${cl.postcode || 'client location'}) to check in.`, "bg-rose-50 text-rose-800 border-rose-200");
+            }
             
             const txt = document.getElementById('proximityLiveText');
-            if (txt) {
-              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}). Please be in the postcode area to ${isIn ? 'clock in' : 'clock out'}.`;
+            if (txt && isIT) {
+              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}).`;
             }
             return;
           }
@@ -1110,7 +1119,7 @@
           renderShifts();
           renderRosterScheduler();
           if (currentUser.role !== 'staff') updateManagerView();
-          checkLiveProximity();
+          if (isIT) checkLiveProximity();
         },
         (error) => {
           let errDetail = "Please allow location access in your device settings.";
@@ -1187,7 +1196,7 @@
       dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
     }
 
-    // LIVE DIAGNOSTIC TEST BUTTON
+    // LIVE DIAGNOSTIC TEST BUTTON (IT ADMIN)
     async function testSendDiagnosticEmail() {
       const box = document.getElementById('emailDiagnosticBox');
       if (box) {
@@ -1619,7 +1628,9 @@
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'clock') {
         updateClockShiftDetails();
-        checkLiveProximity();
+        if (currentUser.role === 'it_admin') {
+          checkLiveProximity();
+        }
       }
     }
 
