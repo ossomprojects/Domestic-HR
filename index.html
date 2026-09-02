@@ -174,9 +174,6 @@
         <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2">
           <i class="fa-regular fa-calendar-check"></i> Shift Marketplace
         </button>
-        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-location-crosshairs"></i> GPS Check-In / Out
-        </button>
 
         <!-- MANAGER ONLY TABS -->
         <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
@@ -192,7 +189,10 @@
           <i class="fa-solid fa-calculator text-amber-600"></i> HMRC Taxes & PAYE
         </button>
 
-        <!-- IT MANAGER ONLY TAB -->
+        <!-- IT MANAGER ONLY TABS (GPS DIAGNOSTIC IS HIDDEN FROM STAFF/MANAGERS) -->
+        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn it-only hidden py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-location-crosshairs text-sky-600"></i> GPS Diagnostic Portal
+        </button>
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
           <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Email Settings
           <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
@@ -209,7 +209,7 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
-      <!-- ================= TAB 1: SHIFT MARKETPLACE & BOOKINGS ================= -->
+      <!-- ================= TAB 1: SHIFT MARKETPLACE & DIRECT CLOCK-IN ================= -->
       <section id="view-shifts" class="tab-view">
         
         <!-- PENDING IT APPROVAL NOTICE -->
@@ -251,15 +251,15 @@
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 2: GPS CLOCK-IN/OUT (CLEAN FOR STAFF, DIAGNOSTICS FOR IT ADMIN) ================= -->
+      <!-- ================= TAB 2: GPS DIAGNOSTIC PORTAL (IT ADMIN ONLY) ================= -->
       <section id="view-clock" class="tab-view hidden">
         <div class="max-w-md mx-auto bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
           <div class="text-center mb-6">
             <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
               <i class="fa-solid fa-location-crosshairs text-3xl"></i>
             </div>
-            <h2 class="text-lg font-extrabold text-snoo-navy">Postcode Area Check-In</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">Requires physical presence within the client postcode area.</p>
+            <h2 class="text-lg font-extrabold text-snoo-navy">GPS Postcode Diagnostic Console</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">IT Admin Diagnostic Tool for Real-Time Geofence Testing.</p>
           </div>
 
           <div class="space-y-4 text-xs">
@@ -279,8 +279,7 @@
                 <span id="targetAddress" class="font-bold text-slate-800 text-right text-[11px] max-w-[200px]">14 Kensington Sq, London</span>
               </div>
               
-              <!-- GEOFENCE PERIMETER BADGE (HIDDEN FROM STAFF - ONLY VISIBLE TO IT ADMIN) -->
-              <div class="it-only flex justify-between items-center border-t border-slate-200/80 pt-2">
+              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2">
                 <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
                 <span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
                   <i class="fa-solid fa-shield-check"></i> Postcode Zone (500m)
@@ -288,8 +287,8 @@
               </div>
             </div>
 
-            <!-- LIVE PROXIMITY SCAN STATUS BOX (HIDDEN FROM STAFF - ONLY VISIBLE TO IT ADMIN) -->
-            <div id="proximityLiveBox" class="it-only p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
+            <!-- LIVE PROXIMITY SCAN STATUS BOX -->
+            <div id="proximityLiveBox" class="p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
               <div class="flex justify-between items-center">
                 <span class="font-bold flex items-center gap-1.5">
                   <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue"></i> Live GPS Status:
@@ -299,16 +298,6 @@
                 </button>
               </div>
               <p id="proximityLiveText" class="text-slate-600 font-medium">Click above to verify physical proximity to client coordinates.</p>
-            </div>
-
-            <!-- Clock Buttons -->
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <button onclick="handleRealGpsClock(true)" id="btnClockIn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Verify & Clock In
-              </button>
-              <button onclick="handleRealGpsClock(false)" id="btnClockOut" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Verify & Clock Out
-              </button>
             </div>
           </div>
         </div>
@@ -432,7 +421,7 @@
 
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
-                <input type="text" id="customAddress" placeholder="e.g. Wythes Road, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <input type="text" id="customAddress" placeholder="e.g. 469a Romford Road, London, England, E7 8AB" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
             </div>
 
@@ -591,7 +580,7 @@
 
       </section>
 
-      <!-- ================= TAB 5: CLIENT INVOICES WITH DATE RANGE (NO IT FEE SHOWN) ================= -->
+      <!-- ================= TAB 5: CLIENT INVOICES (WITH NEW COMPANY ADDRESS) ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
@@ -634,7 +623,8 @@
               <div>
                 <h2 class="font-black text-snoo-navy text-xl tracking-tight">Golden Tree Care Services Ltd</h2>
                 <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
-                <p class="text-slate-500">100 High Street, London EC1A 1AA</p>
+                <!-- NEW COMPANY ADDRESS -->
+                <p class="text-slate-600 font-bold mt-0.5">469a Romford Road, London, England, E7 8AB</p>
               </div>
               <div class="text-right">
                 <span class="text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">Official Invoice</span>
@@ -920,6 +910,8 @@
     const EMAILJS_SERVICE_ID = "service_affajui";
     const EMAILJS_TEMPLATE_ID = "template_ibrgiwu";
     const EMAILJS_PUBLIC_KEY = "n6n7McPNxCnLKVX7A";
+    const COMPANY_BASE_DOMAIN = "https://gtchr.co.uk";
+    const COMPANY_FULL_ADDRESS = "469a Romford Road, London, England, E7 8AB";
 
     try {
       if (window.emailjs) {
@@ -984,20 +976,79 @@
       return R * c; // Distance in meters
     }
 
-    // DIRECT JUMP FROM MARKETPLACE CARD TO CLOCK TAB & AUTO-SELECT THAT SHIFT
-    function goToClockForShift(shiftId) {
-      navigateTab('clock');
-      const sel = document.getElementById('clockShiftSelect');
-      if (sel) {
-        sel.value = shiftId;
-        updateClockShiftDetails();
-        if (currentUser && currentUser.role === 'it_admin') {
-          checkLiveProximity();
-        }
+    // DIRECT IN-PLACE SHIFT CLOCK IN / OUT WITH REAL GPS VERIFICATION
+    async function handleDirectShiftClock(shiftId, isIn) {
+      const s = shifts.find(x => x.id === shiftId);
+      if (!s) return showToast('Assignment not found.', 'bg-rose-50 text-rose-800 border-rose-200');
+
+      const cl = clients.find(c => c.id === s.clientId);
+      if (!cl || !cl.lat || !cl.lng) {
+        return showToast('Target client location is missing coordinates.', 'bg-rose-50 text-rose-800 border-rose-200');
       }
+
+      showToast(`📍 Verifying GPS proximity to ${cl.postcode || cl.name}...`, "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
+
+      if (!navigator.geolocation) {
+        return showToast("Geolocation services are not supported by this device.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
+          const isIT = currentUser && currentUser.role === 'it_admin';
+
+          // VERIFICATION WITH 500M POSTCODE TOLERANCE
+          if (distanceMeters > MAX_GEOFENCE_METERS) {
+            const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
+            
+            if (isIT) {
+              showToast(`✕ Clock-In Blocked: You are ${distDisplay} away from ${cl.postcode || cl.name} (Tolerance: ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
+            } else {
+              showToast(`✕ Clock-In Failed: You must be physically at ${cl.name} (${cl.postcode || 'client postcode'}) to clock in/out.`, "bg-rose-50 text-rose-800 border-rose-200");
+            }
+            return;
+          }
+
+          // SUCCESS: PERSON IS PHYSICALLY IN THE POSTCODE
+          const now = new Date();
+          const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+          
+          if (isIn) {
+            s.status = 'in_progress';
+            s.clockInTime = `Today ${timeStr}`;
+            s.clockInTimestamp = now.toISOString();
+            s.verified = true;
+            s.distance = `${cl.postcode || 'Site'} Verified (${distanceMeters < 50 ? 'On-Site' : `${distanceMeters.toFixed(0)}m`})`;
+            s.gpsCoords = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+            showToast(`✓ Clocked in successfully at ${cl.name} (${cl.postcode || 'Site'})!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+          } else {
+            s.status = 'completed';
+            s.clockOutTime = `Today ${timeStr}`;
+            s.clockOutTimestamp = now.toISOString();
+            s.verified = true;
+            showToast(`✓ Shift finished! Clocked out successfully at ${cl.name}. Timesheet logged.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+          }
+
+          await pushToFirebaseDirect();
+          renderShifts();
+          renderRosterScheduler();
+          if (currentUser.role !== 'staff') updateManagerView();
+        },
+        (error) => {
+          let errDetail = "Please allow location access in your device settings.";
+          if (error.code === error.PERMISSION_DENIED) errDetail = "Location permission denied. Please allow browser location to clock in.";
+          else if (error.code === error.POSITION_UNAVAILABLE) errDetail = "GPS unavailable. Please enable device GPS.";
+          else if (error.code === error.TIMEOUT) errDetail = "GPS request timed out. Please try again.";
+
+          showToast(`✕ Location Access Required: ${errDetail}`, "bg-rose-50 text-rose-800 border-rose-200");
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
     }
 
-    // UPDATE SELECTED SHIFT DETAILS IN CLOCK TAB
+    // UPDATE SELECTED SHIFT DETAILS IN CLOCK TAB (IT ADMIN ONLY)
     function updateClockShiftDetails() {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
       const s = shifts.find(x => x.id === sid);
@@ -1060,88 +1111,9 @@
       );
     }
 
-    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT (POSTCODE GEOFENCED)
-    async function handleRealGpsClock(isIn) {
-      const sid = parseInt(document.getElementById('clockShiftSelect').value);
-      const s = shifts.find(x => x.id === sid);
-      if (!s) return showToast('Please select an active assignment', 'bg-rose-50 text-rose-800 border-rose-200');
-
-      const cl = clients.find(c => c.id === s.clientId);
-      if (!cl || !cl.lat || !cl.lng) {
-        return showToast('Target client location is missing coordinates.', 'bg-rose-50 text-rose-800 border-rose-200');
-      }
-
-      showToast("📍 Verifying location sensors...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
-
-      if (!navigator.geolocation) {
-        return showToast("Geolocation services are not supported by this device.", "bg-rose-50 text-rose-800 border-rose-200");
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-          const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
-          const isIT = currentUser && currentUser.role === 'it_admin';
-
-          // VERIFICATION WITH 500M POSTCODE TOLERANCE
-          if (distanceMeters > MAX_GEOFENCE_METERS) {
-            const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
-            
-            if (isIT) {
-              showToast(`✕ Outside Postcode: You are ${distDisplay} away from ${cl.postcode || cl.name} (Tolerance: ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
-            } else {
-              showToast(`✕ Location Verification Failed: You must be physically at ${cl.name} (${cl.postcode || 'client location'}) to check in.`, "bg-rose-50 text-rose-800 border-rose-200");
-            }
-            
-            const txt = document.getElementById('proximityLiveText');
-            if (txt && isIT) {
-              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}).`;
-            }
-            return;
-          }
-
-          // SUCCESS: PERSON IS PHYSICALLY IN THE POSTCODE
-          const now = new Date();
-          const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-          
-          if (isIn) {
-            s.status = 'in_progress';
-            s.clockInTime = `Today ${timeStr}`;
-            s.clockInTimestamp = now.toISOString();
-            s.verified = true;
-            s.distance = `${cl.postcode || 'Site'} Verified (${distanceMeters < 50 ? 'On-Site' : `${distanceMeters.toFixed(0)}m`})`;
-            s.gpsCoords = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
-            showToast(`✓ Postcode Verified: Clocked in at ${cl.postcode || cl.name}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-          } else {
-            s.status = 'completed';
-            s.clockOutTime = `Today ${timeStr}`;
-            s.clockOutTimestamp = now.toISOString();
-            s.verified = true;
-            showToast(`✓ Postcode Verified: Clocked out at ${cl.postcode || cl.name}! Timesheet saved.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-          }
-
-          await pushToFirebaseDirect();
-          renderShifts();
-          renderRosterScheduler();
-          if (currentUser.role !== 'staff') updateManagerView();
-          if (isIT) checkLiveProximity();
-        },
-        (error) => {
-          let errDetail = "Please allow location access in your device settings.";
-          if (error.code === error.PERMISSION_DENIED) errDetail = "Location permission was denied. Please enable GPS permissions for this site.";
-          else if (error.code === error.POSITION_UNAVAILABLE) errDetail = "GPS location is currently unavailable. Please ensure GPS is turned on.";
-          else if (error.code === error.TIMEOUT) errDetail = "GPS request timed out. Please try again.";
-
-          showToast(`✕ Location Access Required: ${errDetail}`, "bg-rose-50 text-rose-800 border-rose-200");
-        },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-      );
-    }
-
-    // ================= A. UNIVERSAL AUTOMATED EMAIL DISPATCHER =================
-    async function dispatchAutomatedEmail(toEmail, toName, subject, messageBody) {
-      console.log(`[Email Dispatch] Sending to: ${toEmail} | Subject: ${subject}`);
+    // ================= A. UNIVERSAL AUTOMATED EMAIL DISPATCHER WITH DEEP LINKS =================
+    async function dispatchAutomatedEmail(toEmail, toName, subject, messageBody, actionUrl = COMPANY_BASE_DOMAIN, actionText = "Log In to Golden Tree Care HR") {
+      console.log(`[Email Dispatch] Sending to: ${toEmail} | Subject: ${subject} | Action: ${actionUrl}`);
       
       const templateParams = {
         to_email: toEmail,
@@ -1153,7 +1125,13 @@
         from_email: "admin@gtchr.co.uk",
         reply_to: "admin@gtchr.co.uk",
         subject: subject,
-        message: messageBody
+        message: messageBody,
+        action_url: actionUrl,
+        link_url: actionUrl,
+        shift_url: actionUrl,
+        login_url: actionUrl,
+        action_text: actionText,
+        company_address: COMPANY_FULL_ADDRESS
       };
 
       if (window.emailjs) {
@@ -1171,35 +1149,37 @@
 
     // 1. TRIGGER: SIGN UP WELCOME EMAIL
     async function triggerSignupEmails(newUser) {
-      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Golden Tree Care HR.\n\nYour application has been safely received and transmitted to the management verification queue (admin@gtchr.co.uk).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nGolden Tree Care Operations Team`;
-      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Registration Received", staffMsg);
+      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Golden Tree Care HR.\n\nYour application has been safely received and transmitted to the management verification queue (admin@gtchr.co.uk).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Registration Received", staffMsg, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
 
       const itMsg = `New staff registration received:\n\nName: ${newUser.name}\nEmail: ${newUser.email}\nPhone: ${newUser.phone}\nRole: ${newUser.title}\n\nPlease sign into your IT Portal to authorize this user.`;
-      dispatchAutomatedEmail("admin@gtchr.co.uk", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
+      dispatchAutomatedEmail("admin@gtchr.co.uk", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg, `${COMPANY_BASE_DOMAIN}`, "Open IT Authorizations Portal");
     }
 
-    // 2. TRIGGER: SHIFT DISPATCHED BROADCAST
+    // 2. TRIGGER: SHIFT DISPATCHED BROADCAST (WITH DIRECT SHIFT LINK)
     async function triggerShiftBroadcastEmails(shift, client) {
       const activeStaff = users.filter(u => u.status === 'active' && u.role === 'staff' && u.email);
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.totalDays} Days)` : `Single Shift (${shift.date})`;
+      const directShiftUrl = `${COMPANY_BASE_DOMAIN}/?shift=${shift.id}`;
 
       activeStaff.forEach(staff => {
-        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nLog in now to claim this assignment if you are available.\n\nBest regards,\nGolden Tree Care HR Team`;
-        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)} per hour)`, msg);
+        const msg = `Hello ${staff.name},\n\nA new assignment has just been published on the board:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nClick the button below to view and claim this assignment immediately on gtchr.co.uk.\n\nBest regards,\nGolden Tree Care HR Team\n${COMPANY_FULL_ADDRESS}`;
+        dispatchAutomatedEmail(staff.email, staff.name, `⚡ New Assignment Available: ${shift.title} (£${shift.pay.toFixed(2)} per hour)`, msg, directShiftUrl, "View & Claim Assignment on gtchr.co.uk");
       });
     }
 
-    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION
+    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION (WITH DIRECT SHIFT LINK)
     async function triggerShiftClaimedEmails(shift, staff, client) {
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
+      const directShiftUrl = `${COMPANY_BASE_DOMAIN}/?shift=${shift.id}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically within the client postcode area (${client.postcode || 'registered postcode'}) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
-      dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: You can clock in directly from the shift card on gtchr.co.uk on the day. Ensure you are physically at ${client.postcode || client.name}.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
+      dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg, directShiftUrl, "View My Assignment on gtchr.co.uk");
 
       const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
-      dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
+      dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg, directShiftUrl, "View Shift in Operations Hub");
     }
 
     // LIVE DIAGNOSTIC TEST BUTTON (IT ADMIN)
@@ -1216,13 +1196,15 @@
         "admin@gtchr.co.uk", 
         "Golden Tree IT Admin", 
         "✓ Golden Tree Care HR Automated Email Test", 
-        "This is an automated test email confirming that Brevo (service_affajui / template_ibrgiwu) is working live for Golden Tree Care HR with the official logo!"
+        `This is an automated test email confirming that Brevo (service_affajui / template_ibrgiwu) is working live for Golden Tree Care HR with direct links to gtchr.co.uk!\n\nRegistered Office: ${COMPANY_FULL_ADDRESS}`,
+        `${COMPANY_BASE_DOMAIN}`,
+        "Log In to Golden Tree Care HR"
       );
 
       if (box) {
         if (result.success) {
           box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-emerald-50 border-emerald-200 text-emerald-900 block";
-          box.innerHTML = `<strong>✓ Brevo Status 200 OK:</strong> Email successfully dispatched via Brevo for admin@gtchr.co.uk! Check your inbox.`;
+          box.innerHTML = `<strong>✓ Brevo Status 200 OK:</strong> Email successfully dispatched via Brevo for admin@gtchr.co.uk! Link pointing to <code>${COMPANY_BASE_DOMAIN}</code>.`;
           showToast("✓ Live test email sent to admin@gtchr.co.uk!", "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
           const errText = result.error ? (result.error.text || result.error.message || JSON.stringify(result.error)) : "Unknown Error";
@@ -1253,6 +1235,22 @@
       initFirebaseLiveStream();
       setInterval(() => testAndSyncFirebase(false), 2500);
       recalcShiftHours();
+
+      // AUTO-SCROLL TO DEEP LINKED SHIFT IF URL CONTAINS '?shift=...'
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetShiftId = urlParams.get('shift');
+        if (targetShiftId && currentUser) {
+          const s = shifts.find(x => x.id === parseInt(targetShiftId));
+          if (s) {
+            if (s.staffId === currentUser.id) {
+              setMarketplaceFilter('my_claimed');
+            } else {
+              setMarketplaceFilter('open');
+            }
+          }
+        }
+      } catch(e) {}
     }
 
     function initFirebaseLiveStream() {
@@ -1520,8 +1518,8 @@
       await pushToFirebaseDirect();
       updateITDirectory();
 
-      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\n• Role: ${newUser.title}\n• Email: ${newUser.email}\n• Temporary Password: ${pass}\n• Hourly Rate: £${rate.toFixed(2)} per hour\n\nYou can now sign into the portal immediately and start claiming assignments.\n\nBest regards,\nGolden Tree Care Operations Team`;
-      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Your Account Credentials", welcomeMsg);
+      const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\n• Role: ${newUser.title}\n• Email: ${newUser.email}\n• Temporary Password: ${pass}\n• Hourly Rate: £${rate.toFixed(2)} per hour\n\nYou can now sign into the portal immediately and start claiming assignments.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
+      dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Your Account Credentials", welcomeMsg, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
 
       document.getElementById('itAddName').value = '';
       document.getElementById('itAddEmail').value = '';
@@ -1613,7 +1611,7 @@
     }
 
     function navigateTab(tabName) {
-      if (tabName === 'it-admin' && currentUser.role !== 'it_admin') {
+      if (['it-admin', 'clock'].includes(tabName) && currentUser.role !== 'it_admin') {
         showToast("Access Denied: IT Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1966,7 +1964,7 @@
       showToast(`✓ Shift published for ${finalClientObj.name} (${finalClientObj.postcode || 'Site'}) & broadcasted!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
-    // ================= SHIFT MARKETPLACE & SECTIONS (WITH STRICT STAFF PRIVACY) =================
+    // ================= SHIFT MARKETPLACE (NEWEST TO OLDEST & DIRECT IN-PLACE CLOCKING) =================
     function renderShifts() {
       const c = document.getElementById('shiftsContainer');
       const isPending = currentUser && currentUser.status === 'pending' && currentUser.role !== 'it_admin';
@@ -2040,7 +2038,12 @@
         return;
       }
 
-      displayShifts.sort((a, b) => new Date(a.date) - new Date(b.date));
+      // REQUIREMENT 1: ARRANGE SHIFTS FROM NEWEST TO OLDEST ACCORDING TO DATES
+      displayShifts.sort((a, b) => {
+        const dateA = new Date(a.date || a.id);
+        const dateB = new Date(b.date || b.id);
+        return dateB - dateA; // Newest first
+      });
 
       c.innerHTML = displayShifts.map(s => {
         const cl = clients.find(x => x.id === s.clientId) || { name: "Client / Household", postcode: "UK", address: "UK Address" };
@@ -2049,13 +2052,13 @@
         const assignedStaff = users.find(u => u.id === s.staffId);
 
         return `
-          <div class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
+          <div id="shift-card-${s.id}" class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
             <div>
               <div class="flex justify-between items-center mb-2">
                 ${isBlock ? 
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : (s.status === 'completed' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">
-                    ${s.status === 'completed' ? '✓ Completed' : s.status.replace('_', ' ')}
+                    ${s.status === 'completed' ? '✓ Completed' : (s.status === 'in_progress' ? '● In Progress' : s.status.replace('_', ' '))}
                   </span>`
                 }
                 <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} hrs (${s.time || '08:00 - 16:00'})</span>
@@ -2076,7 +2079,7 @@
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date} (${s.time || '08:00 - 16:00'})</p>
               `}
 
-              <!-- STAFF ATTRIBUTION BADGE (VISIBLE IN CLAIMED/COMPLETED VIEW FOR MANAGERS) -->
+              <!-- STAFF ATTRIBUTION (FOR MANAGERS) -->
               ${isManagerOrIT && s.status !== 'open' ? `
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 mb-3 text-xs space-y-1">
                   <div class="flex justify-between items-center">
@@ -2087,25 +2090,62 @@
                 </div>
               ` : ''}
 
+              <!-- IN-PROGRESS STATUS DISPLAY -->
+              ${isMine && s.status === 'in_progress' ? `
+                <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-3 mb-3 text-xs space-y-1 text-blue-950">
+                  <div class="flex justify-between items-center font-bold">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-blue-600 animate-pulse"></i> Shift Active (Clocked In)</span>
+                    <span class="text-blue-700 text-[10px]">${s.clockInTime}</span>
+                  </div>
+                  <p class="text-[10px] text-blue-700">GPS verified at ${cl.postcode || cl.name}. Tap below when your shift finishes.</p>
+                </div>
+              ` : ''}
+
               <!-- HOURLY RATE ONLY -->
               <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
                 <span>Pay Rate:</span>
                 <span class="text-emerald-700 font-extrabold text-sm">£${s.pay.toFixed(2)} / hr</span>
               </div>
             </div>
+
+            <!-- REQUIREMENT 2: DIRECT IN-PLACE CLOCK-IN & FINISH BUTTONS -->
             <div>
-              ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}</button>` : ''}
-              ${isMine && s.status === 'claimed' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Ready for Today's Check-In</button>` : ''}
-              ${isMine && s.status === 'in_progress' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Clocked In - Finish Session</button>` : ''}
-              ${isMine && s.status === 'completed' ? `<span class="block text-center text-xs text-emerald-800 font-bold py-2.5 bg-emerald-50 rounded-xl border border-emerald-200">✓ Completed (Earned: £${(s.hours * s.pay).toFixed(2)})</span>` : ''}
-              ${!isMine && s.status !== 'open' && isManagerOrIT ? `<span class="block text-center text-xs text-slate-600 font-bold py-2 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>` : ''}
+              ${s.status === 'open' ? `
+                <button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">
+                  ${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}
+                </button>
+              ` : ''}
+
+              ${isMine && s.status === 'claimed' ? `
+                <button onclick="handleDirectShiftClock(${s.id}, true)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-location-dot"></i> Clock In to Start Shift
+                </button>
+              ` : ''}
+
+              ${isMine && s.status === 'in_progress' ? `
+                <button onclick="handleDirectShiftClock(${s.id}, false)" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-flag-checkered"></i> Finish Shift & Clock Out
+                </button>
+              ` : ''}
+
+              ${isMine && s.status === 'completed' ? `
+                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-center text-xs space-y-0.5">
+                  <span class="font-extrabold text-emerald-900 block">✓ Shift Completed & Verified</span>
+                  <span class="text-[10px] text-emerald-700 block">Logged: ${s.clockInTime} to ${s.clockOutTime}</span>
+                  <span class="text-xs font-black text-emerald-800 block mt-1">Earned: £${(s.hours * s.pay).toFixed(2)}</span>
+                </div>
+              ` : ''}
+
+              ${!isMine && s.status !== 'open' && isManagerOrIT ? `
+                <span class="block text-center text-xs text-slate-600 font-bold py-2.5 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>
+              ` : ''}
             </div>
           </div>
         `;
       }).join('');
 
-      // POPULATE CLOCK-IN DROPDOWN WITH ACTIVE BOOKINGS
-      const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
+      // POPULATE CLOCK-IN DROPDOWN (FOR IT ADMIN DIAGNOSTIC PORTAL ONLY)
+      const active = shifts.filter(s => s.status !== 'completed');
       const currentSelected = document.getElementById('clockShiftSelect').value;
 
       document.getElementById('clockShiftSelect').innerHTML = active.length ? 
@@ -2557,7 +2597,7 @@
         updateITDirectory();
         renderRosterScheduler();
 
-        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Golden Tree Care HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available assignments.\n\nBest regards,\nGolden Tree Care Operations Team`);
+        dispatchAutomatedEmail(u.email, u.name, "🎉 Your Golden Tree Care HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available assignments.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
 
         showToast(`✓ Authorized ${u.name} as ${u.title}! Approval email dispatched.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
