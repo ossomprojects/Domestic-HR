@@ -247,8 +247,8 @@
             <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
               <i class="fa-solid fa-location-crosshairs text-3xl"></i>
             </div>
-            <h2 class="text-lg font-extrabold text-snoo-navy">Real-World GPS Check-In</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">Requires physical presence at the registered client postcode.</p>
+            <h2 class="text-lg font-extrabold text-snoo-navy">Postcode Area Check-In</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">Requires physical presence within the client postcode area.</p>
           </div>
 
           <div class="space-y-4 text-xs">
@@ -269,7 +269,9 @@
               </div>
               <div class="flex justify-between items-center border-t border-slate-200/80 pt-2">
                 <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
-                <span class="bg-snoo-blue text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">50 meters</span>
+                <span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <i class="fa-solid fa-shield-check"></i> Postcode Zone (500m)
+                </span>
               </div>
             </div>
 
@@ -283,7 +285,7 @@
                   Test Distance
                 </button>
               </div>
-              <p id="proximityLiveText" class="text-slate-600 font-medium">Click below to verify your physical presence using device GPS.</p>
+              <p id="proximityLiveText" class="text-slate-600 font-medium">Click below to verify your physical presence within the client postcode.</p>
             </div>
 
             <!-- Clock Buttons -->
@@ -849,7 +851,9 @@
     let scheduleMode = 'single';
     let currentResolvedCoords = { lat: 51.5026, lng: 0.0476, postcode: "E16 2DN" };
     let rosterWeekOffset = 0; // 0 = current week
-    const MAX_GEOFENCE_METERS = 50; // Maximum allowed distance to clock in/out (50 meters)
+    
+    // POSTCODE-AREA TOLERANCE (500 METERS) TO ELIMINATE GPS JITTER & INDOOR DRIFT
+    const MAX_GEOFENCE_METERS = 500; 
 
     // ================= REAL-WORLD TIME DURATION CALCULATOR =================
     function recalcShiftHours() {
@@ -887,6 +891,12 @@
                 Math.sin(Δλ/2) * Math.sin(Δλ/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       return R * c; // Distance in meters
+    }
+
+    // EXTRACT OUTWARD POSTCODE DISTRICT (e.g. "E16 2DN" -> "E16")
+    function getPostcodeOutwardCode(pcStr) {
+      if (!pcStr) return "";
+      return pcStr.trim().toUpperCase().split(" ")[0];
     }
 
     // DIRECT JUMP FROM MARKETPLACE CARD TO CLOCK TAB & AUTO-SELECT THAT SHIFT
@@ -930,7 +940,7 @@
       if (radar) radar.className = "fa-solid fa-spinner fa-spin text-snoo-blue";
       
       const txt = document.getElementById('proximityLiveText');
-      if (txt) txt.textContent = "Acquiring high-accuracy GPS coordinates from device sensors...";
+      if (txt) txt.textContent = "Acquiring device GPS sensors within the postcode zone...";
 
       if (!navigator.geolocation) {
         if (radar) radar.className = "fa-solid fa-satellite-dish text-rose-500";
@@ -948,10 +958,10 @@
           if (radar) radar.className = isWithin ? "fa-solid fa-circle-check text-emerald-600" : "fa-solid fa-triangle-exclamation text-amber-600";
           if (txt) {
             if (isWithin) {
-              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site Verified:</strong> You are <strong class="text-emerald-800">${distMeters.toFixed(1)}m</strong> from ${cl.postcode || 'the doorstep'} (Within ${MAX_GEOFENCE_METERS}m geofence). Ready to clock!`;
+              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site in Postcode Area:</strong> You are within the registered postcode zone for <strong class="text-emerald-800">${cl.postcode || cl.name}</strong> (${distMeters < 50 ? 'Immediate Doorstep' : `${distMeters.toFixed(0)}m away`}). Ready to clock in/out!`;
             } else {
               const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
-              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Range:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). You must be physically at the client location.`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Postcode Zone:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). You must be within the client postcode area.`;
             }
           }
         },
@@ -963,7 +973,7 @@
       );
     }
 
-    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT
+    // REAL-WORLD GPS ENFORCED CLOCK IN / OUT WITH POSTCODE TOLERANCE
     async function handleRealGpsClock(isIn) {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
       const s = shifts.find(x => x.id === sid);
@@ -986,20 +996,20 @@
           const userLng = position.coords.longitude;
           const distanceMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
 
-          // STRICT GEOFENCE VERIFICATION (50 METERS)
+          // VERIFICATION WITH 500M POSTCODE TOLERANCE
           if (distanceMeters > MAX_GEOFENCE_METERS) {
             const distDisplay = distanceMeters >= 1000 ? `${(distanceMeters / 1000).toFixed(2)} km` : `${distanceMeters.toFixed(0)} meters`;
             
-            showToast(`✕ Location Verification Failed: You are ${distDisplay} away from ${cl.postcode || cl.name}. You must be physically on-site (within ${MAX_GEOFENCE_METERS}m).`, "bg-rose-50 text-rose-800 border-rose-200");
+            showToast(`✕ Outside Postcode: You are ${distDisplay} away from ${cl.postcode || cl.name}. You must be physically within the client postcode zone.`, "bg-rose-50 text-rose-800 border-rose-200");
             
             const txt = document.getElementById('proximityLiveText');
             if (txt) {
-              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}). You must be physically at the doorstep to ${isIn ? 'clock in' : 'clock out'}.`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}). Please be in the postcode area to ${isIn ? 'clock in' : 'clock out'}.`;
             }
             return;
           }
 
-          // SUCCESS: PERSON IS PHYSICALLY PRESENT
+          // SUCCESS: PERSON IS PHYSICALLY IN THE POSTCODE
           const now = new Date();
           const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
           
@@ -1008,15 +1018,15 @@
             s.clockInTime = `Today ${timeStr}`;
             s.clockInTimestamp = now.toISOString();
             s.verified = true;
-            s.distance = `${distanceMeters.toFixed(1)}m from ${cl.postcode || 'Site'}`;
+            s.distance = `${cl.postcode || 'Site'} Verified (${distanceMeters < 50 ? 'On-Site' : `${distanceMeters.toFixed(0)}m`})`;
             s.gpsCoords = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
-            showToast(`✓ GPS Verified: Within ${distanceMeters.toFixed(1)}m of ${cl.postcode}. Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+            showToast(`✓ Postcode Verified: Clocked in at ${cl.postcode || cl.name}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
           } else {
             s.status = 'completed';
             s.clockOutTime = `Today ${timeStr}`;
             s.clockOutTimestamp = now.toISOString();
             s.verified = true;
-            showToast(`✓ GPS Verified: Within ${distanceMeters.toFixed(1)}m of ${cl.postcode}. Clocked out! Timesheet saved.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+            showToast(`✓ Postcode Verified: Clocked out at ${cl.postcode || cl.name}! Timesheet saved.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
           }
 
           await pushToFirebaseDirect();
@@ -1093,7 +1103,7 @@
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically at ${client.postcode || 'the client postcode'} (within 50 meters) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: Real-world GPS verification is required. You must be physically within the client postcode area (${client.postcode || 'registered postcode'}) to clock in on the day.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
       const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
@@ -2136,7 +2146,7 @@
               ${s.clockInTime ? `
                 <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
                 <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Doorstep Verified'}</span>
+                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Postcode Verified'}</span>
               ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
             </td>
             <td class="p-3 text-right">
@@ -2176,7 +2186,7 @@
         "Gross Margin (£)",
         "Clock In Time",
         "Clock Out Time",
-        "Doorstep GPS Verified",
+        "Postcode GPS Verified",
         "Status"
       ];
 
@@ -2206,7 +2216,7 @@
           margin,
           `"${s.clockInTime || 'N/A'}"`,
           `"${s.clockOutTime || 'N/A'}"`,
-          s.verified ? `Yes (${s.distance || 'Doorstep Proximity'})` : "Pending",
+          s.verified ? `Yes (${s.distance || 'Postcode Proximity'})` : "Pending",
           s.status
         ];
       });
