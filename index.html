@@ -253,7 +253,7 @@
 
           <div class="space-y-4 text-xs">
             <div>
-              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Active Assignment:</label>
+              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Assignment Location:</label>
               <select id="clockShiftSelect" onchange="updateClockShiftDetails()" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
             </div>
 
@@ -889,6 +889,17 @@
       return R * c; // Distance in meters
     }
 
+    // DIRECT JUMP FROM MARKETPLACE CARD TO CLOCK TAB & AUTO-SELECT THAT SHIFT
+    function goToClockForShift(shiftId) {
+      navigateTab('clock');
+      const sel = document.getElementById('clockShiftSelect');
+      if (sel) {
+        sel.value = shiftId;
+        updateClockShiftDetails();
+        checkLiveProximity();
+      }
+    }
+
     // UPDATE SELECTED SHIFT DETAILS IN CLOCK TAB
     function updateClockShiftDetails() {
       const sid = parseInt(document.getElementById('clockShiftSelect').value);
@@ -897,7 +908,7 @@
       const targetAddress = document.getElementById('targetAddress');
 
       if (s) {
-        const cl = clients.find(c => c.id === s.clientId) || { postcode: "E16 2DN", address: "UK Address" };
+        const cl = clients.find(c => c.id === s.clientId) || { postcode: "E16 2DN", address: "UK Address", name: "Client" };
         if (targetPostcode) targetPostcode.textContent = cl.postcode || "E16 2DN";
         if (targetAddress) targetAddress.textContent = `${cl.name} (${cl.address})`;
       } else {
@@ -940,7 +951,7 @@
               txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site Verified:</strong> You are <strong class="text-emerald-800">${distMeters.toFixed(1)}m</strong> from ${cl.postcode || 'the doorstep'} (Within ${MAX_GEOFENCE_METERS}m geofence). Ready to clock!`;
             } else {
               const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
-              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Range:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.postcode || cl.name}. You must be physically at the client location.`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Range:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). You must be physically at the client location.`;
             }
           }
         },
@@ -983,7 +994,7 @@
             
             const txt = document.getElementById('proximityLiveText');
             if (txt) {
-              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.postcode}. You must be physically at the doorstep to ${isIn ? 'clock in' : 'clock out'}.`;
+              txt.innerHTML = `<strong class="text-rose-700">✕ Location Blocked:</strong> You are <strong>${distDisplay}</strong> away from ${cl.name} (${cl.postcode}). You must be physically at the doorstep to ${isIn ? 'clock in' : 'clock out'}.`;
             }
             return;
           }
@@ -1884,17 +1895,28 @@
             </div>
             <div>
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}</button>` : ''}
-              ${isMine && s.status === 'claimed' ? `<button onclick="navigateTab('clock')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Ready for Today's Check-In</button>` : ''}
-              ${isMine && s.status === 'in_progress' ? `<button onclick="navigateTab('clock')" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Clocked In - Finish Session</button>` : ''}
+              ${isMine && s.status === 'claimed' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Ready for Today's Check-In</button>` : ''}
+              ${isMine && s.status === 'in_progress' ? `<button onclick="goToClockForShift(${s.id})" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Clocked In - Finish Session</button>` : ''}
               ${!isMine && s.status !== 'open' ? `<span class="block text-center text-xs text-slate-400 font-bold py-2.5 bg-slate-50 rounded-xl">Booked Assignment</span>` : ''}
             </div>
           </div>
         `;
       }).join('');
 
+      // POPULATE CLOCK-IN DROPDOWN WITH EXACT FACILITY NAME, POSTCODE & ADDRESS
       const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
+      const currentSelected = document.getElementById('clockShiftSelect').value;
+
       document.getElementById('clockShiftSelect').innerHTML = active.length ? 
-        active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'})</option>`).join('') : '<option value="">No claimed assignments for today</option>';
+        active.map(s => {
+          const cl = clients.find(c => c.id === s.clientId) || { name: "Client", postcode: "UK", address: "Site" };
+          const schedStr = s.isBlock ? s.dateRangeStr : s.date;
+          return `<option value="${s.id}">${cl.name} - ${cl.postcode || cl.address} (${schedStr} | ${s.time || '08:00 - 16:00'})</option>`;
+        }).join('') : '<option value="">No claimed assignments for today</option>';
+      
+      if (currentSelected && active.some(s => s.id === parseInt(currentSelected))) {
+        document.getElementById('clockShiftSelect').value = currentSelected;
+      }
       
       updateClockShiftDetails();
     }
