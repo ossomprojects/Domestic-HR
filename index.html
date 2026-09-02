@@ -74,7 +74,7 @@
       <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
         <div>
           <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address:</label>
-          <input type="email" id="loginEmail" placeholder="e.g. minute2131@gmail.com" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
+          <input type="email" id="loginEmail" placeholder="e.g. admin@gtchr.co.uk" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
         </div>
 
         <div>
@@ -221,7 +221,7 @@
             <div>
               <h3 class="font-extrabold text-base text-amber-950">Account Pending Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once approved by management, available shifts will automatically unlock for you.
+                Your sign-up has been transmitted to <strong>admin@gtchr.co.uk</strong>. Once approved by management, available shifts will automatically unlock for you.
               </p>
             </div>
           </div>
@@ -280,7 +280,7 @@
         </div>
       </section>
 
-      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER (NEW!) ================= -->
+      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER ================= -->
       <section id="view-roster" class="tab-view hidden space-y-6">
         
         <!-- Header & Week Controls -->
@@ -662,7 +662,7 @@
               <span class="text-xs text-indigo-700 font-bold">IT Management & User Provisioning</span>
             </div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Golden Tree Care HR IT Infrastructure</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Register staff directly, manage accounts, and monitor automated emails.</p>
+            <p class="text-xs text-slate-500 mt-1">Logged in as admin@gtchr.co.uk. Register staff directly, manage accounts, and monitor automated emails.</p>
           </div>
         </div>
 
@@ -798,7 +798,7 @@
     const masterAdmin = { 
       id: 999, 
       name: "Golden Tree IT Admin", 
-      email: "minute2131@gmail.com", 
+      email: "admin@gtchr.co.uk", 
       password: "cookies", 
       role: "it_admin", 
       title: "Super Admin (Owner)", 
@@ -865,11 +865,11 @@
 
     // 1. TRIGGER: SIGN UP WELCOME EMAIL
     async function triggerSignupEmails(newUser) {
-      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Golden Tree Care HR.\n\nYour application has been safely received and transmitted to the management verification queue (minute2131@gmail.com).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nGolden Tree Care Operations Team`;
+      const staffMsg = `Hello ${newUser.name},\n\nThank you for registering with Golden Tree Care HR.\n\nYour application has been safely received and transmitted to the management verification queue (admin@gtchr.co.uk).\n\nAs soon as your account is authorized, the live shift marketplace will unlock on your device.\n\nBest regards,\nGolden Tree Care Operations Team`;
       dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Registration Received", staffMsg);
 
       const itMsg = `New staff registration received:\n\nName: ${newUser.name}\nEmail: ${newUser.email}\nPhone: ${newUser.phone}\nRole: ${newUser.title}\n\nPlease sign into your IT Portal to authorize this user.`;
-      dispatchAutomatedEmail("minute2131@gmail.com", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
+      dispatchAutomatedEmail("admin@gtchr.co.uk", "Golden Tree IT Admin", `🚨 New Staff Registration: ${newUser.name}`, itMsg);
     }
 
     // 2. TRIGGER: SHIFT DISPATCHED BROADCAST
@@ -893,7 +893,7 @@
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg);
 
       const adminMsg = `Contract Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nPay Rate: £${shift.pay.toFixed(2)}/hr`;
-      dispatchAutomatedEmail("minute2131@gmail.com", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
+      dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg);
     }
 
     // LIVE DIAGNOSTIC TEST BUTTON
@@ -907,7 +907,7 @@
       showToast("Dispatching test via EmailJS...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
 
       const result = await dispatchAutomatedEmail(
-        "minute2131@gmail.com", 
+        "admin@gtchr.co.uk", 
         "Golden Tree IT Admin", 
         "✓ Golden Tree Care HR Automated Email Test", 
         "This is an automated test email confirming that EmailJS (service_drg1mzk / template_ibrgiwu) is working live for Golden Tree Care HR!"
@@ -916,8 +916,8 @@
       if (box) {
         if (result.success) {
           box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-emerald-50 border-emerald-200 text-emerald-900 block";
-          box.innerHTML = `<strong>✓ EmailJS Status 200 OK:</strong> Email successfully accepted by EmailJS for minute2131@gmail.com! Check your inbox.`;
-          showToast("✓ Live test email sent to minute2131@gmail.com!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          box.innerHTML = `<strong>✓ EmailJS Status 200 OK:</strong> Email successfully accepted by EmailJS for admin@gtchr.co.uk! Check your inbox.`;
+          showToast("✓ Live test email sent to admin@gtchr.co.uk!", "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
           const errText = result.error ? (result.error.text || result.error.message || JSON.stringify(result.error)) : "Unknown Error";
           box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-rose-50 border-rose-200 text-rose-900 block";
@@ -933,8 +933,9 @@
       if (savedSession) {
         try {
           currentUser = JSON.parse(savedSession);
-          if (currentUser.email === "minute2131@gmail.com") {
+          if (currentUser.email === "admin@gtchr.co.uk" || currentUser.email === "minute2131@gmail.com") {
             currentUser.name = "Golden Tree IT Admin";
+            currentUser.email = "admin@gtchr.co.uk";
           }
           document.getElementById('authScreen').classList.add('hidden');
           document.getElementById('mainApp').classList.remove('hidden');
@@ -1010,7 +1011,7 @@
       if (data.users) {
         const arr = Array.isArray(data.users) ? data.users : Object.values(data.users);
         users = arr.filter(Boolean);
-        if (!users.some(u => u.email && u.email.toLowerCase() === "minute2131@gmail.com")) {
+        if (!users.some(u => u.email && u.email.toLowerCase() === "admin@gtchr.co.uk")) {
           users.unshift(masterAdmin);
         }
       }
@@ -1113,7 +1114,7 @@
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const pass = document.getElementById('loginPassword').value;
 
-      if (email === "minute2131@gmail.com" && pass === "cookies") {
+      if ((email === "admin@gtchr.co.uk" || email === "minute2131@gmail.com") && pass === "cookies") {
         currentUser = masterAdmin;
         loginSuccess();
         return;
@@ -1361,7 +1362,7 @@
         btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs";
         btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
         secR.classList.remove('hidden');
-        secS.classList.add('hidden');
+        secR.classList.add('hidden');
       }
     }
 
@@ -1483,7 +1484,7 @@
           <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
             <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
             <p class="font-extrabold text-slate-700">Shifts Locked Pending Authorization</p>
-            <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration in Firebase, all shifts will unlock.</p>
+            <p class="text-xs text-slate-400 mt-1">Once admin@gtchr.co.uk approves your registration in Firebase, all shifts will unlock.</p>
           </div>
         `;
         return;
@@ -1599,7 +1600,7 @@
       if (currentUser.role !== 'staff') updateManagerView();
     }
 
-    // ================= ROSTER SCHEDULER ENGINE (SCREENSHOT MATCH) =================
+    // ================= ROSTER SCHEDULER ENGINE =================
     function changeRosterWeek(delta) {
       rosterWeekOffset += delta;
       renderRosterScheduler();
@@ -1652,15 +1653,12 @@
       }
 
       bodyEl.innerHTML = clients.map(cl => {
-        // Find shifts associated with this client
         const clientShifts = shifts.filter(s => s.clientId === cl.id);
         const totalShiftsCount = clientShifts.length;
 
-        // Build 7 columns for this client
         const dayCols = weekDates.map(d => {
           const dayISO = d.toISOString().split('T')[0];
 
-          // Find shifts on this specific day for this client
           const dayShifts = clientShifts.filter(s => {
             if (s.isBlock && s.datesList && Array.isArray(s.datesList)) {
               return s.datesList.includes(dayISO);
@@ -1677,22 +1675,17 @@
               ${dayShifts.map(s => {
                 const staff = users.find(u => u.id === s.staffId);
                 const staffName = staff ? staff.name : 'Unassigned';
-                const isClaimed = !!staff;
 
                 return `
                   <div class="p-3.5 rounded-2xl bg-teal-600 text-white shadow-md shadow-teal-700/10 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer" onclick="showShiftDetailsModal(${s.id})">
                     <div>
-                      <!-- Top Blue Pill -->
                       <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-[10px] text-white tracking-wider mb-2">
                         1
                       </div>
-                      
-                      <!-- Shift Time & Client/Service Title -->
                       <div class="font-extrabold text-xs text-teal-100">${s.time || '09:00 - 13:00'}</div>
                       <div class="text-[11px] font-bold text-white leading-tight truncate mt-0.5">${cl.name}</div>
                     </div>
 
-                    <!-- Bottom White Staff Pill with Green Checkmark (Screenshot Match) -->
                     <div class="mt-3 bg-white text-slate-800 py-1 px-2.5 rounded-xl text-[10px] font-bold flex items-center justify-between shadow-xs">
                       <div class="flex items-center gap-1.5 truncate">
                         <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
@@ -1709,14 +1702,12 @@
 
         return `
           <div class="pt-4 space-y-3">
-            <!-- Client Collapsible Header -->
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
               <h3 class="font-extrabold text-slate-800 text-sm">${cl.name}</h3>
               <span class="bg-snoo-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">${totalShiftsCount}</span>
             </div>
 
-            <!-- 7 Days Grid for this Client -->
             <div class="grid grid-cols-7 gap-3">
               ${dayCols}
             </div>
@@ -1950,7 +1941,7 @@
             </span>
           </td>
           <td class="p-3 text-right space-x-1.5">
-            ${u.email === 'minute2131@gmail.com' ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
+            ${(u.email === 'admin@gtchr.co.uk' || u.email === 'minute2131@gmail.com') ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
               <button onclick="toggleUserRole(${u.id})" class="bg-slate-100 hover:bg-snoo-blue/10 text-slate-700 hover:text-snoo-blue font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer border border-slate-200 shadow-xs">
                 Switch to ${u.role === 'manager' ? 'Staff' : 'Manager'}
               </button>
