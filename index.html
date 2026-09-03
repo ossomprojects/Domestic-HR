@@ -436,6 +436,18 @@
               </button>
             </div>
 
+            <!-- DIRECT STAFF ASSIGNMENT DROPDOWN -->
+            <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-1.5">
+              <label class="font-bold text-indigo-950 block text-[11px] uppercase tracking-wider flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-check text-indigo-600"></i> Assign To:</span>
+                <span class="text-[9px] font-black text-indigo-600 bg-white px-2 py-0.5 rounded-full border border-indigo-200">Direct or Marketplace</span>
+              </label>
+              <select id="newShiftAssignStaff" class="w-full border border-indigo-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                <option value="open">📢 Open Marketplace (Broadcast to all staff)</option>
+              </select>
+              <p class="text-[10px] text-slate-500">Assigning directly to a staff member bypasses the open marketplace and books it to their account immediately.</p>
+            </div>
+
             <!-- Service Title -->
             <div>
               <label class="font-bold block mb-1 text-slate-700">Service Description:</label>
@@ -522,7 +534,7 @@
             </div>
 
             <button onclick="createShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-md transition cursor-pointer text-xs flex items-center justify-center gap-2 mt-2">
-              <i class="fa-solid fa-bullhorn"></i> Publish Shift & Broadcast Alerts
+              <i class="fa-solid fa-paper-plane"></i> Publish & Dispatch Shift
             </button>
           </div>
 
@@ -1261,17 +1273,17 @@
       });
     }
 
-    // 3. TRIGGER: SHIFT CLAIMED CONFIRMATION
+    // 3. TRIGGER: SHIFT CLAIMED / DIRECT ASSIGNED CONFIRMATION
     async function triggerShiftClaimedEmails(shift, staff, client) {
       const isBlock = shift.isBlock === true;
       const shiftType = isBlock ? `Recurring Block Booking (${shift.dateRangeStr})` : `Shift Date: ${shift.date}`;
       const directShiftUrl = `${COMPANY_BASE_DOMAIN}/?shift=${shift.id}`;
 
-      const staffMsg = `Hello ${staff.name},\n\nYou have successfully claimed the following assignment:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: You can clock in directly from the shift card on gtchr.co.uk on the day. Ensure you are physically at ${client.name} (${client.postcode || 'Site'}).\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
+      const staffMsg = `Hello ${staff.name},\n\nYou have been assigned to the following shift:\n\n• Service: ${shift.title}\n• Facility / Client: ${client.name}\n• Location & Postcode: ${client.address}\n• Hours / Time: ${shift.time} (${shift.hours} hrs)\n• Schedule: ${shiftType}\n• Pay Rate: £${shift.pay.toFixed(2)} per hour\n\nImportant: You can clock in directly from your shift card on gtchr.co.uk on the day. Ensure you are physically at ${client.name} (${client.postcode || 'Site'}).\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
       dispatchAutomatedEmail(staff.email, staff.name, `✅ Booking Confirmed: ${shift.title} at ${client.name}`, staffMsg, directShiftUrl, "View My Assignment on gtchr.co.uk");
 
-      const adminMsg = `Assignment Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
-      dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Claimed by ${staff.name}: ${shift.title}`, adminMsg, directShiftUrl, "View Shift in Operations Hub");
+      const adminMsg = `Assignment Assigned / Claimed:\n\nStaff: ${staff.name} (${staff.email})\nClient: ${client.name}\nService: ${shift.title}\nSchedule: ${shiftType}\nDuration: ${shift.hours} hrs\nPay Rate: £${shift.pay.toFixed(2)} per hour`;
+      dispatchAutomatedEmail("admin@gtchr.co.uk", "Operations Admin", `👤 Shift Assigned to ${staff.name}: ${shift.title}`, adminMsg, directShiftUrl, "View Shift in Operations Hub");
     }
 
     // LIVE DIAGNOSTIC TEST BUTTON
@@ -1633,6 +1645,7 @@
       users.push(newUser);
       await pushToFirebaseDirect();
       updateITDirectory();
+      populateDropdowns();
 
       const welcomeMsg = `Hello ${newUser.name},\n\nYou have been directly registered with Golden Tree Care HR with the following credentials:\n\n• Role: ${newUser.title}\n• Email: ${newUser.email}\n• Temporary Password: ${pass}\n• Hourly Rate: £${rate.toFixed(2)} per hour\n\nYou can now sign into the portal immediately and start claiming assignments.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`;
       dispatchAutomatedEmail(newUser.email, newUser.name, "Welcome to Golden Tree Care HR - Your Account Credentials", welcomeMsg, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
@@ -1660,6 +1673,7 @@
 
         await pushToFirebaseDirect();
         updateITDirectory();
+        populateDropdowns();
         renderShifts();
         renderRosterScheduler();
         showToast(`✓ Removed ${userName} from the active staff directory.`, 'bg-slate-100 text-slate-800 border-slate-200');
@@ -1743,12 +1757,27 @@
       const newShiftClientEl = document.getElementById('newShiftClient');
       const invoiceClientSelectEl = document.getElementById('invoiceClientSelect');
       const rosterClientFilterEl = document.getElementById('rosterClientFilter');
+      const newShiftAssignStaffEl = document.getElementById('newShiftAssignStaff');
 
       if (newShiftClientEl) {
         const prevVal = newShiftClientEl.value;
         newShiftClientEl.innerHTML = opts;
         if (prevVal && deduped.some(c => c.id === parseInt(prevVal))) {
           newShiftClientEl.value = prevVal;
+        }
+      }
+
+      // Populate Direct Staff Assignment Selector
+      if (newShiftAssignStaffEl) {
+        const prevStaffVal = newShiftAssignStaffEl.value || 'open';
+        const activeStaffList = users.filter(u => u.status === 'active' && u.email !== 'admin@gtchr.co.uk');
+        
+        let staffOpts = `<option value="open">📢 Open Marketplace (Broadcast to all staff)</option>`;
+        staffOpts += activeStaffList.map(u => `<option value="${u.id}">👤 Direct Assign: ${u.name} (${u.title || u.role})</option>`).join('');
+        
+        newShiftAssignStaffEl.innerHTML = staffOpts;
+        if (prevStaffVal && (prevStaffVal === 'open' || activeStaffList.some(u => u.id === parseInt(prevStaffVal)))) {
+          newShiftAssignStaffEl.value = prevStaffVal;
         }
       }
 
@@ -2076,7 +2105,7 @@
       }
     }
 
-    // ================= CREATE & DISPATCH SHIFT =================
+    // ================= CREATE & DISPATCH SHIFT (WITH DIRECT ASSIGNMENT) =================
     async function createShift() {
       if (!currentUser || (currentUser.role !== 'manager' && currentUser.role !== 'it_admin') || currentUser.status === 'pending') {
         return showToast("Access Denied: Only Managers and IT Super Admin can publish shifts.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -2150,6 +2179,13 @@
         return showToast('Please select or enter a client / care facility.', 'bg-rose-50 text-rose-800 border-rose-200');
       }
 
+      // Check Direct Assignment vs Open Marketplace
+      const assignStaffVal = document.getElementById('newShiftAssignStaff') ? document.getElementById('newShiftAssignStaff').value : 'open';
+      const isDirectAssign = assignStaffVal !== 'open' && !isNaN(parseInt(assignStaffVal));
+      const targetAssignedStaffId = isDirectAssign ? parseInt(assignStaffVal) : null;
+      const initialStatus = isDirectAssign ? "claimed" : "open";
+      const assignedStaffObj = isDirectAssign ? users.find(u => u.id === targetAssignedStaffId) : null;
+
       recalcShiftHours();
       const startTime = document.getElementById('newShiftStartTime').value || "08:00";
       const endTime = document.getElementById('newShiftEndTime').value || "16:00";
@@ -2164,9 +2200,20 @@
         const h = parseFloat(document.getElementById('newShiftHours').value) || 8.0;
 
         newShift = { 
-          id: Date.now(), clientId: finalClientId, title: t, isBlock: false, date: d, time: timeRangeString, 
-          hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
-          clockInTime: null, clockOutTime: null, verified: false,
+          id: Date.now(), 
+          clientId: finalClientId, 
+          title: t, 
+          isBlock: false, 
+          date: d, 
+          time: timeRangeString, 
+          hours: h, 
+          pay: p, 
+          chargeRate: ch, 
+          status: initialStatus, 
+          staffId: targetAssignedStaffId,
+          clockInTime: null, 
+          clockOutTime: null, 
+          verified: false,
           createdBy: currentUser.name
         };
         shifts.push(newShift);
@@ -2219,8 +2266,8 @@
           hours: totalBlockHours,
           pay: p,
           chargeRate: ch,
-          status: "open",
-          staffId: null,
+          status: initialStatus,
+          staffId: targetAssignedStaffId,
           clockInTime: null,
           clockOutTime: null,
           verified: false,
@@ -2236,16 +2283,23 @@
       updateITClientDirectory();
 
       if (newShift && finalClientObj) {
-        triggerShiftBroadcastEmails(newShift, finalClientObj);
+        if (isDirectAssign && assignedStaffObj) {
+          // Send notification directly and ONLY to assigned staff
+          triggerShiftClaimedEmails(newShift, assignedStaffObj, finalClientObj);
+          showToast(`✓ Shift assigned directly to ${assignedStaffObj.name} (bypassing open marketplace)!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        } else {
+          // Broadcast to all active staff
+          triggerShiftBroadcastEmails(newShift, finalClientObj);
+          showToast(`✓ Shift published to Open Marketplace & broadcasted to all staff!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        }
       }
 
       if (document.getElementById('newShiftTitle')) document.getElementById('newShiftTitle').value = '';
       if (document.getElementById('customClientName')) document.getElementById('customClientName').value = '';
       if (document.getElementById('customPostcode')) document.getElementById('customPostcode').value = '';
       if (document.getElementById('customAddress')) document.getElementById('customAddress').value = '';
+      if (document.getElementById('newShiftAssignStaff')) document.getElementById('newShiftAssignStaff').value = 'open';
       setClientMode('existing');
-
-      showToast(`✓ Shift published for ${finalClientObj.name} (${finalClientObj.postcode || 'Site'}) & broadcasted!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
     // ================= DELETE SHIFT MODAL =================
@@ -2992,6 +3046,7 @@
         u.title = roleToAssign === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
         await pushToFirebaseDirect();
         updateITDirectory();
+        populateDropdowns();
         renderRosterScheduler();
 
         dispatchAutomatedEmail(u.email, u.name, "🎉 Your Golden Tree Care HR Account has been Approved!", `Hello ${u.name},\n\nGreat news! Your account has been verified and approved by management as ${u.title}.\n\nYou can now log into the portal to browse and claim available assignments.\n\nBest regards,\nGolden Tree Care Operations Team\n${COMPANY_FULL_ADDRESS}`, `${COMPANY_BASE_DOMAIN}`, "Log In to Golden Tree Care HR");
@@ -3007,6 +3062,7 @@
         u.title = u.role === 'manager' ? 'Operations Manager' : 'Care & Domestic Staff';
         await pushToFirebaseDirect();
         updateITDirectory();
+        populateDropdowns();
         showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
