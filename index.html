@@ -37,7 +37,14 @@
     }
   </script>
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    input, select, textarea, button {
+      font-family: inherit;
+    }
     @media print {
       body * { visibility: hidden; }
       #invoicePaper, #invoicePaper * { visibility: visible; }
@@ -53,15 +60,15 @@
       
       <!-- Brand Header -->
       <div class="text-center mb-6">
-        <div class="inline-flex p-3.5 rounded-2xl bg-amber-500/10 text-amber-600 mb-2 shadow-sm">
-          <i class="fa-solid fa-tree text-2xl"></i>
+        <div class="inline-flex p-4 rounded-2xl bg-amber-500/10 text-amber-600 mb-2 shadow-sm">
+          <i class="fa-solid fa-tree text-3xl"></i>
         </div>
         <h1 class="text-2xl font-black text-snoo-navy tracking-tight">Golden Tree Care HR</h1>
-        <p class="text-xs text-slate-500 font-medium mt-1">Care & Domestic Workforce Logistics Portal</p>
+        <p class="text-sm text-slate-500 font-medium mt-1">Care & Domestic Workforce Logistics Portal</p>
       </div>
 
       <!-- Auth Toggle -->
-      <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-2xl mb-5 text-xs font-bold">
+      <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1.5 rounded-2xl mb-6 text-sm font-bold">
         <button onclick="toggleAuthMode('login')" id="btnAuthLogin" class="py-2.5 rounded-xl bg-white text-snoo-navy shadow-sm transition cursor-pointer">
           Sign In
         </button>
@@ -71,50 +78,50 @@
       </div>
 
       <!-- A. LOGIN FORM -->
-      <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+      <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4 text-sm">
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address:</label>
-          <input type="email" id="loginEmail" placeholder="e.g. admin@gtchr.co.uk" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
+          <label class="font-bold text-slate-700 block mb-1.5 text-xs uppercase tracking-wider">Email Address:</label>
+          <input type="email" id="loginEmail" placeholder="e.g. admin@gtchr.co.uk" required class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium text-slate-900">
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Password:</label>
-          <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
+          <label class="font-bold text-slate-700 block mb-1.5 text-xs uppercase tracking-wider">Password:</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium text-slate-900">
         </div>
 
-        <button type="submit" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-lg shadow-snoo-blue/20 transition text-sm flex items-center justify-center gap-2 cursor-pointer">
+        <button type="submit" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-lg shadow-snoo-blue/20 transition text-sm flex items-center justify-center gap-2 cursor-pointer mt-2">
           <i class="fa-solid fa-right-to-bracket"></i> Sign In to Account
         </button>
       </form>
 
       <!-- B. REAL STAFF / MANAGER SIGN UP FORM -->
-      <form id="formSignup" onsubmit="handleStaffSignup(event)" class="hidden space-y-3.5 text-xs">
+      <form id="formSignup" onsubmit="handleStaffSignup(event)" class="hidden space-y-4 text-sm">
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Full Legal Name:</label>
-          <input type="text" id="regName" placeholder="e.g. Sarah Jenkins" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
+          <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Full Legal Name:</label>
+          <input type="text" id="regName" placeholder="e.g. Sarah Jenkins" required class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-medium text-slate-900">
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Email Address (Receives Confirmation):</label>
-          <input type="email" id="regEmail" placeholder="sarah@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
+          <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Email Address (Receives Confirmation):</label>
+          <input type="email" id="regEmail" placeholder="sarah@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-medium text-slate-900">
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Phone Number:</label>
-          <input type="tel" id="regPhone" placeholder="07700900888" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
+          <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Phone Number:</label>
+          <input type="tel" id="regPhone" placeholder="07700900888" required class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-medium text-slate-900">
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Requested Role:</label>
-            <select id="regRole" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy">
+            <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Requested Role:</label>
+            <select id="regRole" class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-bold text-snoo-navy">
               <option value="staff">Staff</option>
               <option value="manager">Manager</option>
             </select>
           </div>
           <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Create Password:</label>
-            <input type="password" id="regPassword" placeholder="Create password" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
+            <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Create Password:</label>
+            <input type="password" id="regPassword" placeholder="Create password" required class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-medium text-slate-900">
           </div>
         </div>
 
@@ -131,37 +138,37 @@
     
     <!-- Header Banner -->
     <header class="bg-white/95 backdrop-blur-md text-slate-800 shadow-sm sticky top-0 z-40 border-b border-slate-200/90">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/20">
-            <i class="fa-solid fa-tree text-xl"></i>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-sm border border-amber-500/20">
+            <i class="fa-solid fa-tree text-2xl"></i>
           </div>
           <div>
-            <h1 class="font-black text-base tracking-tight text-snoo-navy flex items-center gap-2">
+            <h1 class="font-black text-lg tracking-tight text-snoo-navy flex items-center gap-2">
               <span>Golden Tree Care HR</span>
-              <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
+              <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-xs font-black px-3 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
             </h1>
-            <p id="roleBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Workforce & Operations Portal</p>
+            <p id="roleBadge" class="text-xs text-slate-500 font-bold uppercase tracking-wider">Workforce & Operations Portal</p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-3.5">
           <!-- Real-Time Firebase Status Pill -->
-          <div id="headerFirebasePill" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online
+          <div id="headerFirebasePill" class="hidden items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Firebase Online
           </div>
 
           <!-- Real-Time Cloud Sync Button -->
-          <button id="headerSyncBtn" onclick="testAndSyncFirebase(true)" title="Force sync live database" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
+          <button id="headerSyncBtn" onclick="testAndSyncFirebase(true)" title="Force sync live database" class="hidden items-center gap-2 px-3.5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
             <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
             <span class="hidden sm:inline">Sync Cloud</span>
           </button>
 
           <div class="text-right hidden sm:block">
-            <p id="userNameDisplay" class="text-xs font-black leading-tight text-slate-900">Golden Tree IT Admin</p>
-            <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Super Admin</p>
+            <p id="userNameDisplay" class="text-sm font-black leading-tight text-slate-900">Golden Tree IT Admin</p>
+            <p id="userRoleDisplay" class="text-xs text-snoo-blue font-bold">Super Admin</p>
           </div>
-          <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+          <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer shadow-xs">
             <i class="fa-solid fa-power-off text-rose-500"></i> Logout
           </button>
         </div>
@@ -169,45 +176,45 @@
     </header>
 
     <!-- Navigation Tabs -->
-    <nav class="bg-white border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto">
-        <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2">
-          <i class="fa-regular fa-calendar-check"></i> Shift Marketplace
+    <nav class="bg-white border-b border-slate-200 shadow-2xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 overflow-x-auto">
+        <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-sm font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-regular fa-calendar-check text-base"></i> Shift Marketplace
         </button>
 
         <!-- MANAGER ONLY TABS -->
-        <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-week text-teal-600"></i> Roster Scheduler
+        <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-calendar-week text-teal-600 text-base"></i> Roster Scheduler
         </button>
-        <button onclick="navigateTab('manager')" id="tab-manager" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
+        <button onclick="navigateTab('manager')" id="tab-manager" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-chart-pie text-snoo-blue text-base"></i> Manager Operations Hub
         </button>
-        <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Client Invoices
+        <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-file-invoice-dollar text-emerald-600 text-base"></i> Client Invoices
         </button>
-        <button onclick="navigateTab('hmrc')" id="tab-hmrc" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-calculator text-amber-600"></i> HMRC Taxes & PAYE
+        <button onclick="navigateTab('hmrc')" id="tab-hmrc" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-calculator text-amber-600 text-base"></i> HMRC Taxes & PAYE
         </button>
 
         <!-- IT MANAGER ONLY TABS -->
-        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn it-only hidden py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-location-crosshairs text-sky-600"></i> GPS Diagnostic Portal
+        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn it-only hidden py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-location-crosshairs text-sky-600 text-base"></i> GPS Diagnostic Portal
         </button>
-        <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Email Settings
-          <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
+        <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-shield-halved text-indigo-600 text-base"></i> IT Approvals & Email Settings
+          <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-xs font-black px-2 py-0.5 rounded-full">0</span>
         </button>
       </div>
     </nav>
 
     <!-- Toast Notification -->
-    <div id="toast" class="hidden max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition">
+    <div id="toast" class="hidden max-w-xl mx-auto mt-4 p-4 rounded-2xl shadow-lg border text-sm font-bold flex justify-between items-center transition">
       <span id="toast-msg"></span>
-      <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-sm">&times;</button>
+      <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-base">&times;</button>
     </div>
 
     <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
 
       <!-- ================= TAB 1: SHIFT MARKETPLACE & DIRECT CLOCK-IN ================= -->
       <section id="view-shifts" class="tab-view">
@@ -215,12 +222,12 @@
         <!-- PENDING IT APPROVAL NOTICE -->
         <div id="pendingStaffNotice" class="hidden mb-6 p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 shadow-sm">
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-xl">
+            <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-2xl">
               <i class="fa-solid fa-hourglass-half animate-pulse"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-amber-950">Account Pending Authorization</h3>
-              <p class="text-xs text-amber-800 mt-1 leading-relaxed">
+              <h3 class="font-extrabold text-lg text-amber-950">Account Pending Authorization</h3>
+              <p class="text-sm text-amber-800 mt-1.5 leading-relaxed">
                 Your sign-up has been transmitted to <strong>admin@gtchr.co.uk</strong>. Once approved by management, available assignments will automatically unlock for you.
               </p>
             </div>
@@ -230,19 +237,19 @@
         <!-- SHIFT BOARD HEADER -->
         <div id="approvedShiftsHeader" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h2 id="shiftsViewTitle" class="text-xl font-extrabold text-snoo-navy">Care & Domestic Shift Board</h2>
-            <p id="shiftsViewSub" class="text-xs text-slate-500 font-medium">Browse active client assignments or manage your claimed shifts.</p>
+            <h2 id="shiftsViewTitle" class="text-2xl font-black text-snoo-navy">Care & Domestic Shift Board</h2>
+            <p id="shiftsViewSub" class="text-sm text-slate-500 font-medium mt-0.5">Browse active client assignments or manage your claimed shifts.</p>
           </div>
           
           <!-- SECTIONS FOR OPEN vs CLAIMED -->
-          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
-            <button onclick="setMarketplaceFilter('open')" id="btnFilterOpen" class="px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5">
-              <i class="fa-solid fa-bolt text-amber-500"></i> Open Shifts <span id="badgeOpenCount" class="bg-amber-100 text-amber-800 text-[10px] font-black px-2 py-0.2 rounded-full">0</span>
+          <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
+            <button onclick="setMarketplaceFilter('open')" id="btnFilterOpen" class="px-4 py-2.5 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-2 font-bold">
+              <i class="fa-solid fa-bolt text-amber-500"></i> Open Shifts <span id="badgeOpenCount" class="bg-amber-100 text-amber-800 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
             </button>
-            <button onclick="setMarketplaceFilter('my_claimed')" id="btnFilterClaimed" class="px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5">
-              <i class="fa-solid fa-calendar-check text-emerald-600"></i> <span id="labelClaimedTab">My Booked Shifts</span> <span id="badgeClaimedCount" class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.2 rounded-full">0</span>
+            <button onclick="setMarketplaceFilter('my_claimed')" id="btnFilterClaimed" class="px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-2 font-bold">
+              <i class="fa-solid fa-calendar-check text-emerald-600"></i> <span id="labelClaimedTab">My Booked Shifts</span> <span id="badgeClaimedCount" class="bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
             </button>
-            <button onclick="setMarketplaceFilter('all')" id="btnFilterAll" class="manager-only hidden px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5">
+            <button onclick="setMarketplaceFilter('all')" id="btnFilterAll" class="manager-only hidden px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-2 font-bold">
               <i class="fa-solid fa-layer-group text-snoo-blue"></i> All Shifts
             </button>
           </div>
@@ -253,51 +260,51 @@
 
       <!-- ================= TAB 2: GPS DIAGNOSTIC PORTAL (IT ADMIN ONLY) ================= -->
       <section id="view-clock" class="tab-view hidden">
-        <div class="max-w-md mx-auto bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
+        <div class="max-w-lg mx-auto bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
           <div class="text-center mb-6">
             <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
               <i class="fa-solid fa-location-crosshairs text-3xl"></i>
             </div>
-            <h2 class="text-lg font-extrabold text-snoo-navy">GPS Postcode Diagnostic Console</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">IT Admin Diagnostic Tool for Real-Time Geofence Testing.</p>
+            <h2 class="text-xl font-extrabold text-snoo-navy">GPS Postcode Diagnostic Console</h2>
+            <p class="text-sm text-slate-500 font-medium mt-1">IT Admin Diagnostic Tool for Real-Time Geofence Testing.</p>
           </div>
 
-          <div class="space-y-4 text-xs">
+          <div class="space-y-5 text-sm">
             <div>
-              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Assignment Location:</label>
-              <select id="clockShiftSelect" onchange="updateClockShiftDetails()" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
+              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-xs tracking-wider">Select Assignment Location:</label>
+              <select id="clockShiftSelect" onchange="updateClockShiftDetails()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
             </div>
 
             <!-- Client Postcode & Location Target Display -->
-            <div id="clockTargetCard" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+            <div id="clockTargetCard" class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
               <div class="flex justify-between items-start">
                 <span class="text-slate-500 font-medium">Assigned Postcode:</span>
-                <span id="targetPostcode" class="font-mono text-snoo-blue font-extrabold text-sm uppercase">E16 2DN</span>
+                <span id="targetPostcode" class="font-mono text-snoo-blue font-extrabold text-base uppercase">E16 2DN</span>
               </div>
               <div class="flex justify-between items-start">
                 <span class="text-slate-500 font-medium">Facility / Address:</span>
-                <span id="targetAddress" class="font-bold text-slate-800 text-right text-[11px] max-w-[200px]">14 Kensington Sq, London</span>
+                <span id="targetAddress" class="font-bold text-slate-800 text-right text-xs max-w-[220px]">14 Kensington Sq, London</span>
               </div>
               
-              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2">
+              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2.5">
                 <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
-                <span class="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                <span class="bg-emerald-600 text-white text-xs font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
                   <i class="fa-solid fa-shield-check"></i> Location Zone (500m)
                 </span>
               </div>
             </div>
 
             <!-- LIVE PROXIMITY SCAN STATUS BOX -->
-            <div id="proximityLiveBox" class="p-3.5 rounded-2xl border text-[11px] bg-blue-50/50 border-blue-200 text-blue-900 space-y-1">
+            <div id="proximityLiveBox" class="p-4 rounded-2xl border text-sm bg-blue-50/60 border-blue-200 text-blue-900 space-y-1.5">
               <div class="flex justify-between items-center">
-                <span class="font-bold flex items-center gap-1.5">
-                  <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue"></i> Live GPS Status:
+                <span class="font-bold flex items-center gap-2">
+                  <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue text-base"></i> Live GPS Status:
                 </span>
-                <button type="button" onclick="checkLiveProximity()" class="text-snoo-blue font-black underline hover:text-snoo-lightBlue cursor-pointer">
+                <button type="button" onclick="checkLiveProximity()" class="text-snoo-blue font-black underline hover:text-snoo-lightBlue cursor-pointer text-xs">
                   Test Distance
                 </button>
               </div>
-              <p id="proximityLiveText" class="text-slate-600 font-medium">Click above to verify physical proximity to client coordinates.</p>
+              <p id="proximityLiveText" class="text-slate-600 font-medium text-xs leading-relaxed">Click above to verify physical proximity to client coordinates.</p>
             </div>
           </div>
         </div>
@@ -310,35 +317,35 @@
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div class="flex items-center gap-2 mb-1">
-              <span class="bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Manager View</span>
-              <h2 class="text-xl font-extrabold text-snoo-navy">Claimed Shifts Roster & Scheduler</h2>
+              <span class="bg-teal-50 text-teal-800 border border-teal-200 text-xs font-black px-3 py-0.5 rounded-full uppercase">Manager View</span>
+              <h2 class="text-2xl font-black text-snoo-navy">Claimed Shifts Roster & Scheduler</h2>
             </div>
-            <p class="text-xs text-slate-500">Live multi-day schedule mapping all claimed staff shifts across care facilities and clients.</p>
+            <p class="text-sm text-slate-500">Live multi-day schedule mapping all claimed staff shifts across care facilities and clients.</p>
           </div>
 
           <!-- CLIENT DROPDOWN SELECTOR & WEEK CONTROLS -->
           <div class="flex flex-wrap items-center gap-3">
             
             <!-- SINGLE CLIENT FILTER DROPDOWN -->
-            <div class="flex items-center gap-1.5">
-              <label class="text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-bold text-slate-600 uppercase whitespace-nowrap">
                 <i class="fa-solid fa-house-user text-teal-600"></i> Client:
               </label>
-              <select id="rosterClientFilter" onchange="renderRosterScheduler()" class="border border-slate-200 rounded-xl p-2 text-xs bg-slate-50 font-bold text-snoo-navy focus:ring-2 focus:ring-teal-500">
+              <select id="rosterClientFilter" onchange="renderRosterScheduler()" class="border border-slate-200 rounded-xl p-2.5 text-xs bg-slate-50 font-bold text-snoo-navy focus:ring-2 focus:ring-teal-500">
                 <option value="all">⚡ All Active Clients & Facilities</option>
               </select>
             </div>
 
             <!-- Week Navigation Buttons -->
             <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
-              <button onclick="changeRosterWeek(-1)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
-                <i class="fa-solid fa-chevron-left text-[10px]"></i> Prev
+              <button onclick="changeRosterWeek(-1)" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
+                <i class="fa-solid fa-chevron-left text-xs"></i> Prev
               </button>
-              <button onclick="resetRosterWeek()" id="rosterWeekTitle" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white shadow-xs transition cursor-pointer">
+              <button onclick="resetRosterWeek()" id="rosterWeekTitle" class="px-4 py-2 rounded-xl bg-teal-600 text-white shadow-xs transition cursor-pointer">
                 This Week
               </button>
-              <button onclick="changeRosterWeek(1)" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
-                Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <button onclick="changeRosterWeek(1)" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-200 text-slate-700 shadow-xs transition cursor-pointer flex items-center gap-1">
+                Next <i class="fa-solid fa-chevron-right text-xs"></i>
               </button>
             </div>
 
@@ -348,11 +355,11 @@
         <!-- Roster Calendar Grid Container -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
           
-          <div id="rosterDaysHeader" class="grid grid-cols-7 gap-3 min-w-[840px] pb-4 border-b border-slate-100 text-center">
+          <div id="rosterDaysHeader" class="grid grid-cols-7 gap-3 min-w-[880px] pb-4 border-b border-slate-100 text-center">
             <!-- Dynamically Rendered 7 Days -->
           </div>
 
-          <div id="rosterBody" class="min-w-[840px] divide-y divide-slate-100 mt-4 space-y-6">
+          <div id="rosterBody" class="min-w-[880px] divide-y divide-slate-100 mt-4 space-y-6">
             <!-- Dynamically Populated Client Rows -->
           </div>
 
@@ -364,152 +371,152 @@
       <section id="view-manager" class="tab-view hidden space-y-8">
         
         <!-- Metric Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Client Revenue</span>
-            <p id="sumRevenue" class="text-2xl font-black text-snoo-navy mt-1">£0.00</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+            <span class="text-slate-400 text-xs font-extrabold uppercase tracking-wider">Total Client Revenue</span>
+            <p id="sumRevenue" class="text-3xl font-black text-snoo-navy mt-1.5">£0.00</p>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Staff Wages Paid</span>
-            <p id="sumWages" class="text-2xl font-black text-amber-600 mt-1">£0.00</p>
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+            <span class="text-slate-400 text-xs font-extrabold uppercase tracking-wider">Staff Wages Paid</span>
+            <p id="sumWages" class="text-3xl font-black text-amber-600 mt-1.5">£0.00</p>
           </div>
-          <div class="bg-indigo-50/70 p-5 rounded-2xl border border-indigo-200 shadow-sm">
+          <div class="bg-indigo-50/70 p-6 rounded-3xl border border-indigo-200 shadow-sm">
             <div class="flex justify-between items-center">
-              <span class="text-indigo-900 text-[10px] font-extrabold uppercase tracking-wider">IT Maintenance (5%)</span>
-              <span class="text-[9px] bg-indigo-600 text-white font-black px-1.5 py-0.2 rounded-md uppercase">Weekly Due</span>
+              <span class="text-indigo-900 text-xs font-extrabold uppercase tracking-wider">IT Maintenance (5%)</span>
+              <span class="text-xs bg-indigo-600 text-white font-black px-2 py-0.5 rounded-md uppercase">Weekly Due</span>
             </div>
-            <p id="sumITLevy" class="text-2xl font-black text-indigo-950 mt-1">£0.00</p>
+            <p id="sumITLevy" class="text-3xl font-black text-indigo-950 mt-1.5">£0.00</p>
           </div>
-          <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm">
-            <span class="text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">Net Company Margin</span>
-            <p id="sumProfit" class="text-2xl font-black text-emerald-950 mt-1">£0.00</p>
+          <div class="bg-emerald-50 p-6 rounded-3xl border border-emerald-200 shadow-sm">
+            <span class="text-emerald-800 text-xs font-extrabold uppercase tracking-wider">Net Company Margin</span>
+            <p id="sumProfit" class="text-3xl font-black text-emerald-950 mt-1.5">£0.00</p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <!-- Dispatch Form -->
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
-                <i class="fa-solid fa-plus-circle text-snoo-blue"></i> Dispatch New Shift
+          <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-snoo-blue text-lg"></i> Dispatch New Shift
               </h3>
-              <div class="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
-                <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer">Existing</button>
-                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">+ New Facility</button>
+              <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-3 py-1.5 rounded-lg bg-white text-snoo-navy shadow-xs cursor-pointer">Existing</button>
+                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer">+ New Facility</button>
               </div>
             </div>
 
             <!-- MODE 1: Select Existing Client (By Name) -->
-            <div id="sectionClientExisting" class="space-y-1">
-              <label class="font-bold block mb-1 text-slate-700">Client / Care Facility (Select by Name):</label>
-              <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy"></select>
+            <div id="sectionClientExisting" class="space-y-1.5">
+              <label class="font-bold block text-slate-700 text-xs uppercase tracking-wider">Client / Care Facility (Select by Name):</label>
+              <select id="newShiftClient" onchange="onExistingClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-bold text-snoo-navy text-sm"></select>
             </div>
 
             <!-- MODE 2: Add New Client by Name & Postcode -->
-            <div id="sectionClientNew" class="hidden space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+            <div id="sectionClientNew" class="hidden space-y-3.5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
               <div>
-                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Facility / Client Name (Unique Identifier): <span class="text-rose-600">*</span></label>
-                <input type="text" id="customClientName" placeholder="e.g. Amber Court Care" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Facility / Client Name (Unique Identifier): <span class="text-rose-600">*</span></label>
+                <input type="text" id="customClientName" placeholder="e.g. Amber Court Care" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 text-sm">
               </div>
 
               <div class="grid grid-cols-3 gap-2">
                 <div class="col-span-2">
-                  <label class="font-bold text-slate-700 block mb-1 text-[11px]">UK Postcode:</label>
-                  <input type="text" id="customPostcode" oninput="formatPostcode(this)" placeholder="e.g. E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold uppercase tracking-wider text-indigo-900">
+                  <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">UK Postcode:</label>
+                  <input type="text" id="customPostcode" oninput="formatPostcode(this)" placeholder="e.g. E16 2DN" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold uppercase tracking-wider text-indigo-900 text-sm">
                 </div>
                 <div>
-                  <label class="block text-slate-400 mb-1 text-[11px]">&nbsp;</label>
-                  <button type="button" onclick="lookupPostcode()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-2 rounded-xl text-[11px] transition cursor-pointer flex items-center justify-center gap-1 shadow-xs">
+                  <label class="block text-slate-400 mb-1 text-xs">&nbsp;</label>
+                  <button type="button" onclick="lookupPostcode()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-2.5 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs">
                     <i class="fa-solid fa-magnifying-glass"></i> Lookup
                   </button>
                 </div>
               </div>
 
               <div>
-                <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
-                <input type="text" id="customAddress" placeholder="e.g. 469a Romford Road, London, England, E7 8AB" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Street & Area Address:</label>
+                <input type="text" id="customAddress" placeholder="e.g. 469a Romford Road, London, England, E7 8AB" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium text-sm">
               </div>
 
-              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-slate-200/70 hover:bg-slate-200 text-slate-700 font-bold py-1.5 px-3 rounded-xl transition flex items-center justify-center gap-1.5 text-[11px] cursor-pointer">
+              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-slate-200/70 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 text-xs cursor-pointer">
                 <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> Detect GPS Coordinates
               </button>
             </div>
 
             <!-- DIRECT STAFF ASSIGNMENT DROPDOWN -->
-            <div class="p-3 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-1.5">
-              <label class="font-bold text-indigo-950 block text-[11px] uppercase tracking-wider flex items-center justify-between">
+            <div class="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-1.5">
+              <label class="font-bold text-indigo-950 block text-xs uppercase tracking-wider flex items-center justify-between">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-check text-indigo-600"></i> Assign To:</span>
-                <span class="text-[9px] font-black text-indigo-600 bg-white px-2 py-0.5 rounded-full border border-indigo-200">Direct or Marketplace</span>
+                <span class="text-xs font-black text-indigo-600 bg-white px-2.5 py-0.5 rounded-full border border-indigo-200">Direct or Marketplace</span>
               </label>
-              <select id="newShiftAssignStaff" class="w-full border border-indigo-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+              <select id="newShiftAssignStaff" class="w-full border border-indigo-200 rounded-xl p-3 bg-white font-bold text-slate-800 text-sm focus:ring-2 focus:ring-indigo-500">
                 <option value="open">📢 Open Marketplace (Broadcast to all staff)</option>
               </select>
-              <p class="text-[10px] text-slate-500">Assigning directly to a staff member bypasses the open marketplace and books it to their account immediately.</p>
+              <p class="text-xs text-slate-500 leading-normal">Assigning directly to a staff member bypasses the open marketplace and books it to their account immediately.</p>
             </div>
 
             <!-- Service Title -->
             <div>
-              <label class="font-bold block mb-1 text-slate-700">Service Description:</label>
-              <input type="text" id="newShiftTitle" placeholder="e.g. Care Support & Assistance" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+              <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Service Description:</label>
+              <input type="text" id="newShiftTitle" placeholder="e.g. Care Support & Assistance" class="w-full border border-slate-200 rounded-xl p-3 text-sm font-medium">
             </div>
 
             <!-- TIME DURATION SELECTOR -->
-            <div class="border border-slate-200 p-3.5 rounded-2xl bg-slate-50 space-y-2">
+            <div class="border border-slate-200 p-4 rounded-2xl bg-slate-50 space-y-2.5">
               <div class="flex justify-between items-center">
-                <label class="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                <label class="font-bold text-slate-700 text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <i class="fa-regular fa-clock text-snoo-blue"></i> Shift Time & Duration
                 </label>
-                <span id="calculatedHoursBadge" class="bg-snoo-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">8.0 hrs</span>
+                <span id="calculatedHoursBadge" class="bg-snoo-blue text-white text-xs font-black px-3 py-0.5 rounded-full shadow-xs">8.0 hrs</span>
               </div>
 
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label class="text-[10px] font-bold text-slate-500 block mb-0.5 uppercase">Start Time:</label>
-                  <input type="time" id="newShiftStartTime" value="08:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                  <label class="text-xs font-bold text-slate-500 block mb-1 uppercase">Start Time:</label>
+                  <input type="time" id="newShiftStartTime" value="08:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 text-sm">
                 </div>
                 <div>
-                  <label class="text-[10px] font-bold text-slate-500 block mb-0.5 uppercase">End Time:</label>
-                  <input type="time" id="newShiftEndTime" value="16:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                  <label class="text-xs font-bold text-slate-500 block mb-1 uppercase">End Time:</label>
+                  <input type="time" id="newShiftEndTime" value="16:00" onchange="recalcShiftHours()" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 text-sm">
                 </div>
               </div>
             </div>
 
             <!-- Schedule Type -->
-            <div class="border border-slate-200 p-3.5 rounded-2xl bg-slate-50 space-y-2.5">
+            <div class="border border-slate-200 p-4 rounded-2xl bg-slate-50 space-y-3">
               <div class="flex justify-between items-center">
-                <label class="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1">
+                <label class="font-bold text-slate-700 text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <i class="fa-regular fa-calendar-days text-snoo-blue"></i> Schedule Type
                 </label>
-                <div class="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-bold">
-                  <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer">Single Day</button>
-                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer">📦 Recurring Block</button>
+                <div class="flex bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold">
+                  <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2.5 py-1 rounded-lg bg-snoo-blue text-white shadow-xs cursor-pointer">Single Day</button>
+                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer">📦 Recurring Block</button>
                 </div>
               </div>
 
               <!-- Option 1: Single Date -->
               <div id="sectionSchedSingle" class="space-y-1">
-                <label class="font-bold block mb-1 text-slate-700 text-[11px]">Shift Date:</label>
-                <input type="date" id="newShiftDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Shift Date:</label>
+                <input type="date" id="newShiftDate" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium text-sm">
                 <input type="hidden" id="newShiftHours" value="8.0">
               </div>
 
               <!-- Option 2: Recurring Block Shift -->
-              <div id="sectionSchedRange" class="hidden space-y-2">
-                <div class="grid grid-cols-2 gap-2">
+              <div id="sectionSchedRange" class="hidden space-y-2.5">
+                <div class="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label class="font-bold block mb-1 text-slate-700 text-[11px]">Start Date:</label>
-                    <input type="date" id="newShiftStartDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                    <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Start Date:</label>
+                    <input type="date" id="newShiftStartDate" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium text-sm">
                   </div>
                   <div>
-                    <label class="font-bold block mb-1 text-slate-700 text-[11px]">End Date:</label>
-                    <input type="date" id="newShiftEndDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+                    <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">End Date:</label>
+                    <input type="date" id="newShiftEndDate" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium text-sm">
                   </div>
                 </div>
 
                 <div>
-                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Repeat Days:</label>
-                  <select id="newShiftRepeatPattern" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium text-[11px]">
+                  <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Repeat Days:</label>
+                  <select id="newShiftRepeatPattern" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium text-xs">
                     <option value="daily">Every Day (Daily)</option>
                     <option value="weekdays">Weekdays Only (Mon-Fri)</option>
                     <option value="weekends">Weekends Only (Sat-Sun)</option>
@@ -522,84 +529,84 @@
             </div>
 
             <!-- Rates -->
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-2.5">
               <div>
-                <label class="font-bold block mb-1 text-slate-700">Staff Pay (£/hr):</label>
-                <input type="number" id="newShiftPay" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+                <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Staff Pay (£/hr):</label>
+                <input type="number" id="newShiftPay" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-3 font-medium text-sm">
               </div>
               <div>
-                <label class="font-bold block mb-1 text-slate-700">Client Rate (£/hr):</label>
-                <input type="number" id="newShiftCharge" value="26.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+                <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Client Rate (£/hr):</label>
+                <input type="number" id="newShiftCharge" value="26.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-3 font-medium text-sm">
               </div>
             </div>
 
-            <button onclick="createShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-md transition cursor-pointer text-xs flex items-center justify-center gap-2 mt-2">
+            <button onclick="createShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-4 rounded-xl shadow-md transition cursor-pointer text-sm flex items-center justify-center gap-2 mt-3">
               <i class="fa-solid fa-paper-plane"></i> Publish & Dispatch Shift
             </button>
           </div>
 
           <!-- Timesheets Table -->
-          <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <div class="lg:col-span-2 bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
             
-            <div class="flex flex-col gap-3 mb-4 pb-3 border-b border-slate-100">
+            <div class="flex flex-col gap-3.5 mb-4 pb-4 border-b border-slate-100">
               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
-                  <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
+                  <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-snoo-blue text-lg"></i> Live Timesheets & Attendance Audit
                   </h3>
-                  <p class="text-[11px] text-slate-500">Includes gross breakdown, staff wages, and internal 5% IT maintenance fee.</p>
+                  <p class="text-xs text-slate-500 mt-0.5">Includes gross breakdown, staff wages, and internal 5% IT maintenance fee.</p>
                 </div>
 
                 <!-- Timeframe Filter, Purge Shifts & Export CSV Button -->
-                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                  <select id="timesheetTimeframe" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-2 text-xs bg-slate-50 font-bold text-snoo-navy">
+                <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                  <select id="timesheetTimeframe" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-2.5 text-xs bg-slate-50 font-bold text-snoo-navy">
                     <option value="all_time">Since Inception (All Time)</option>
                     <option value="this_week">This Week</option>
                     <option value="this_month">This Month</option>
                     <option value="this_year">This Year</option>
                     <option value="custom">📅 Custom Date Range...</option>
                   </select>
-                  <button onclick="purgeUnwantedOpenShifts()" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs" title="Clear all open unbooked shifts">
+                  <button onclick="purgeUnwantedOpenShifts()" class="bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs" title="Clear all open unbooked shifts">
                     <i class="fa-solid fa-trash-can text-rose-600"></i> Clear Open Shifts
                   </button>
-                  <button onclick="exportTimesheetCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs whitespace-nowrap">
+                  <button onclick="exportTimesheetCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer shadow-xs whitespace-nowrap">
                     <i class="fa-solid fa-file-excel"></i> Export CSV
                   </button>
                 </div>
               </div>
 
               <!-- CUSTOM DATE RANGE INPUTS -->
-              <div id="timesheetCustomDateSec" class="hidden flex-wrap items-center gap-2 pt-2 border-t border-slate-100 bg-slate-50 p-3 rounded-2xl">
-                <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+              <div id="timesheetCustomDateSec" class="hidden flex-wrap items-center gap-3 pt-3 border-t border-slate-100 bg-slate-50 p-4 rounded-2xl">
+                <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
                   <i class="fa-regular fa-calendar-days text-snoo-blue"></i> Range:
                 </span>
                 <div class="flex items-center gap-1.5">
-                  <label class="text-[10px] font-bold text-slate-400 uppercase">From:</label>
-                  <input type="date" id="timesheetStartDate" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-1.5 text-xs bg-white font-bold text-slate-700">
+                  <label class="text-xs font-bold text-slate-400 uppercase">From:</label>
+                  <input type="date" id="timesheetStartDate" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-2 text-xs bg-white font-bold text-slate-700">
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <label class="text-[10px] font-bold text-slate-400 uppercase">To:</label>
-                  <input type="date" id="timesheetEndDate" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-1.5 text-xs bg-white font-bold text-slate-700">
+                  <label class="text-xs font-bold text-slate-400 uppercase">To:</label>
+                  <input type="date" id="timesheetEndDate" onchange="updateManagerView()" class="border border-slate-200 rounded-xl p-2 text-xs bg-white font-bold text-slate-700">
                 </div>
-                <button type="button" onclick="updateManagerView()" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition cursor-pointer shadow-xs">
+                <button type="button" onclick="updateManagerView()" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs">
                   Apply Filter
                 </button>
               </div>
             </div>
 
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-xs">
                   <tr>
-                    <th class="p-3">Staff & Client</th>
-                    <th class="p-3">Clock In/Out</th>
-                    <th class="p-3 text-right text-amber-700">Staff Pay</th>
-                    <th class="p-3 text-right text-indigo-700">IT 5% Levy</th>
-                    <th class="p-3 text-right text-emerald-700">Company Margin</th>
-                    <th class="p-3 text-right">Action</th>
+                    <th class="p-3.5">Staff & Client</th>
+                    <th class="p-3.5">Clock In/Out</th>
+                    <th class="p-3.5 text-right text-amber-700">Staff Pay</th>
+                    <th class="p-3.5 text-right text-indigo-700">IT 5% Levy</th>
+                    <th class="p-3.5 text-right text-emerald-700">Company Margin</th>
+                    <th class="p-3.5 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody id="managerTable" class="divide-y"></tbody>
+                <tbody id="managerTable" class="divide-y divide-slate-100"></tbody>
               </table>
             </div>
           </div>
@@ -609,90 +616,90 @@
 
       <!-- ================= TAB 5: CLIENT INVOICES (WITH PERSISTENT SELECTION) ================= -->
       <section id="view-invoices" class="tab-view hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
-            <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
-              <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Compile Client Invoice
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+            <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2">
+              <i class="fa-solid fa-file-invoice-dollar text-emerald-600 text-lg"></i> Compile Client Invoice
             </h3>
             
             <div>
-              <label class="font-bold block mb-1 text-slate-700">Select Client / Household (By Name):</label>
-              <select id="invoiceClientSelect" onchange="onInvoiceClientSelectChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy"></select>
+              <label class="font-bold block mb-1 text-slate-700 text-xs uppercase tracking-wider">Select Client / Household (By Name):</label>
+              <select id="invoiceClientSelect" onchange="onInvoiceClientSelectChange(this.value)" class="w-full border border-slate-200 rounded-xl p-3 text-sm bg-slate-50 font-bold text-snoo-navy"></select>
             </div>
 
             <!-- INVOICE DATE RANGE CONTROLS -->
-            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-              <label class="font-bold block text-slate-700 uppercase text-[10px] tracking-wider">
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+              <label class="font-bold block text-slate-700 uppercase text-xs tracking-wider">
                 <i class="fa-regular fa-calendar-days text-emerald-600"></i> Invoice Billing Date Range:
               </label>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label class="text-[10px] font-bold text-slate-400 block mb-0.5 uppercase">From Date:</label>
-                  <input type="date" id="invoiceStartDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                  <label class="text-xs font-bold text-slate-400 block mb-1 uppercase">From Date:</label>
+                  <input type="date" id="invoiceStartDate" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 text-xs">
                 </div>
                 <div>
-                  <label class="text-[10px] font-bold text-slate-400 block mb-0.5 uppercase">To Date:</label>
-                  <input type="date" id="invoiceEndDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-slate-800">
+                  <label class="text-xs font-bold text-slate-400 block mb-1 uppercase">To Date:</label>
+                  <input type="date" id="invoiceEndDate" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-slate-800 text-xs">
                 </div>
               </div>
             </div>
 
-            <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-xs">
+            <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm">
               <i class="fa-solid fa-file-invoice"></i> Compile Official Invoice
             </button>
-            <button onclick="window.print()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer text-xs">
+            <button onclick="window.print()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer text-sm">
               <i class="fa-solid fa-print"></i> Print / Save as PDF
             </button>
           </div>
 
-          <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
+          <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-sm">
             <div class="flex justify-between pb-6 border-b">
               <div>
-                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Golden Tree Care Services Ltd</h2>
-                <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
-                <p class="text-slate-600 font-bold mt-0.5">469a Romford Road, London, England, E7 8AB</p>
+                <h2 class="font-black text-snoo-navy text-2xl tracking-tight">Golden Tree Care Services Ltd</h2>
+                <p class="text-slate-500 mt-1 font-medium text-xs">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
+                <p class="text-slate-700 font-bold mt-0.5 text-xs">469a Romford Road, London, England, E7 8AB</p>
               </div>
               <div class="text-right">
-                <span class="text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">Official Invoice</span>
-                <p id="invNum" class="font-bold text-snoo-navy text-sm mt-1.5">INV-2026-001</p>
-                <p class="text-slate-400">Due: 14 Days Net</p>
+                <span class="text-xs font-extrabold uppercase bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">Official Invoice</span>
+                <p id="invNum" class="font-bold text-snoo-navy text-base mt-2">INV-2026-001</p>
+                <p class="text-slate-400 text-xs">Due: 14 Days Net</p>
               </div>
             </div>
             
-            <div class="py-4 flex justify-between items-start border-b border-slate-100">
+            <div class="py-5 flex justify-between items-start border-b border-slate-100">
               <div>
-                <span class="font-bold text-slate-400 uppercase text-[10px]">Invoice To:</span>
-                <p id="invClient" class="font-bold text-slate-800 text-sm">Select Client</p>
+                <span class="font-bold text-slate-400 uppercase text-xs">Invoice To:</span>
+                <p id="invClient" class="font-bold text-slate-800 text-base mt-0.5">Select Client</p>
               </div>
               <div class="text-right">
-                <span class="font-bold text-slate-400 uppercase text-[10px]">Billing Period:</span>
-                <p id="invPeriod" class="font-bold text-emerald-700 text-xs">All Time</p>
+                <span class="font-bold text-slate-400 uppercase text-xs">Billing Period:</span>
+                <p id="invPeriod" class="font-bold text-emerald-700 text-sm mt-0.5">All Time</p>
               </div>
             </div>
 
-            <table class="w-full my-4">
-              <thead class="bg-slate-50 border-y text-[10px] uppercase font-bold text-slate-500">
+            <table class="w-full my-5">
+              <thead class="bg-slate-50 border-y text-xs uppercase font-bold text-slate-500">
                 <tr>
-                  <th class="py-2.5 px-2 text-left">Service Description</th>
-                  <th class="py-2.5 px-2 text-right">Hours</th>
-                  <th class="py-2.5 px-2 text-right">Rate (£/hr)</th>
-                  <th class="py-2.5 px-2 text-right">Total</th>
+                  <th class="py-3 px-2 text-left">Service Description</th>
+                  <th class="py-3 px-2 text-right">Hours</th>
+                  <th class="py-3 px-2 text-right">Rate (£/hr)</th>
+                  <th class="py-3 px-2 text-right">Total</th>
                 </tr>
               </thead>
-              <tbody id="invoiceRows" class="divide-y">
+              <tbody id="invoiceRows" class="divide-y divide-slate-100">
                 <tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Select client & date range, then click compile invoice</td></tr>
               </tbody>
             </table>
 
-            <div class="flex justify-between items-end pt-4 border-t">
-              <div class="text-slate-500 space-y-1">
+            <div class="flex justify-between items-end pt-5 border-t">
+              <div class="text-slate-500 space-y-1 text-xs">
                 <p class="font-bold text-slate-700">Bank Transfer Details:</p>
                 <p>Barclays UK | Sort Code: 20-40-71 | Acc: 83920184</p>
               </div>
-              <div class="w-48 space-y-1 text-right">
-                <div class="flex justify-between text-slate-600"><span>Subtotal:</span><span id="invSub">£0.00</span></div>
-                <div class="flex justify-between text-slate-600"><span>VAT (20%):</span><span id="invVat">£0.00</span></div>
-                <div class="flex justify-between font-bold text-snoo-navy text-base border-t pt-1"><span>Total Due:</span><span id="invTot">£0.00</span></div>
+              <div class="w-56 space-y-1.5 text-right text-sm">
+                <div class="flex justify-between text-slate-600"><span>Subtotal:</span><span id="invSub" class="font-semibold">£0.00</span></div>
+                <div class="flex justify-between text-slate-600"><span>VAT (20%):</span><span id="invVat" class="font-semibold">£0.00</span></div>
+                <div class="flex justify-between font-black text-snoo-navy text-lg border-t pt-1.5"><span>Total Due:</span><span id="invTot">£0.00</span></div>
               </div>
             </div>
           </div>
@@ -704,20 +711,20 @@
         <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-6 pb-4 border-b">
             <div>
-              <h2 class="text-lg font-bold text-snoo-navy">UK HMRC Payroll & Tax Compliance</h2>
-              <p class="text-xs text-slate-500">PAYE, Class 1 Employee NICs (8%), and Employer NICs (13.8%)</p>
+              <h2 class="text-xl font-bold text-snoo-navy">UK HMRC Payroll & Tax Compliance</h2>
+              <p class="text-xs text-slate-500 mt-0.5">PAYE, Class 1 Employee NICs (8%), and Employer NICs (13.8%)</p>
             </div>
-            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-full border border-emerald-200">Tax Code 1257L</span>
+            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3.5 py-1.5 rounded-full border border-emerald-200">Tax Code 1257L</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 text-xs mb-6">
+          <div class="grid grid-cols-2 gap-4 text-sm mb-6">
             <div>
-              <label class="font-bold block mb-1">Gross Staff Payroll (£):</label>
-              <input type="number" id="hmrcGross" value="2500" oninput="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue font-medium bg-slate-50">
+              <label class="font-bold block mb-1.5 text-xs uppercase tracking-wider">Gross Staff Payroll (£):</label>
+              <input type="number" id="hmrcGross" value="2500" oninput="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue font-medium bg-slate-50">
             </div>
             <div>
-              <label class="font-bold block mb-1">Period:</label>
-              <select id="hmrcPeriod" onchange="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3 text-sm font-medium bg-slate-50">
+              <label class="font-bold block mb-1.5 text-xs uppercase tracking-wider">Period:</label>
+              <select id="hmrcPeriod" onchange="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm font-medium bg-slate-50">
                 <option value="monthly">Monthly</option>
                 <option value="weekly">Weekly</option>
                 <option value="annual">Annual</option>
@@ -725,33 +732,33 @@
             </div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-xs space-y-3.5 shadow-xs">
-            <div class="flex justify-between pb-2.5 border-b border-slate-200">
+          <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-sm space-y-4 shadow-xs">
+            <div class="flex justify-between pb-3 border-b border-slate-200">
               <span class="text-slate-600 font-medium">Gross Wages:</span>
-              <span id="resGross" class="font-extrabold text-slate-900 text-sm">£2,500.00</span>
+              <span id="resGross" class="font-extrabold text-slate-900 text-base">£2,500.00</span>
             </div>
-            <div class="flex justify-between pb-2.5 border-b border-slate-200">
+            <div class="flex justify-between pb-3 border-b border-slate-200">
               <span class="text-slate-600 font-medium">PAYE Income Tax (Withheld):</span>
               <span id="resTax" class="font-bold text-rose-600">- £290.50</span>
             </div>
-            <div class="flex justify-between pb-2.5 border-b border-slate-200">
+            <div class="flex justify-between pb-3 border-b border-slate-200">
               <span class="text-slate-600 font-medium">Employee Class 1 NI (8%):</span>
               <span id="resEmpNI" class="font-bold text-rose-600">- £116.12</span>
             </div>
-            <div class="flex justify-between bg-emerald-50 border border-emerald-200 p-3 rounded-2xl">
+            <div class="flex justify-between bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
               <span class="text-emerald-900 font-extrabold">Net Staff Take-Home Pay:</span>
-              <span id="resNet" class="font-black text-emerald-700 text-sm">£2,093.38</span>
+              <span id="resNet" class="font-black text-emerald-700 text-base">£2,093.38</span>
             </div>
-            <div class="flex justify-between pb-2.5 border-b border-slate-200">
+            <div class="flex justify-between pb-3 border-b border-slate-200">
               <span class="text-slate-600 font-medium">Employer Class 1 NI (13.8%):</span>
               <span id="resEmplrNI" class="font-bold text-amber-700">+ £240.35</span>
             </div>
-            <div class="flex justify-between bg-snoo-blue text-white p-4 rounded-2xl font-bold shadow-md shadow-snoo-blue/20">
+            <div class="flex justify-between bg-snoo-blue text-white p-5 rounded-2xl font-bold shadow-md shadow-snoo-blue/20">
               <div>
-                <p class="text-white text-[10px] uppercase tracking-wider">Total HMRC Remittance Due:</p>
-                <p class="text-[10px] text-blue-100 font-normal">(PAYE + Emp NI + Emplr NI)</p>
+                <p class="text-white text-xs uppercase tracking-wider">Total HMRC Remittance Due:</p>
+                <p class="text-xs text-blue-100 font-normal">(PAYE + Emp NI + Emplr NI)</p>
               </div>
-              <span id="resHMRC" class="text-white text-base font-extrabold self-center">£646.97</span>
+              <span id="resHMRC" class="text-white text-xl font-extrabold self-center">£646.97</span>
             </div>
           </div>
         </div>
@@ -763,107 +770,107 @@
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
           <div>
             <div class="flex items-center gap-2 mb-1">
-              <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
+              <span class="bg-snoo-blue/10 text-snoo-blue text-xs font-black px-3 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
               <span class="text-xs text-indigo-700 font-bold">IT Management & System Maintenance</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Golden Tree Care HR IT Infrastructure</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as admin@gtchr.co.uk. System infrastructure, user provisioning, client facility management & 5% weekly maintenance tracker.</p>
+            <h2 class="text-2xl font-black text-snoo-navy">Golden Tree Care HR IT Infrastructure</h2>
+            <p class="text-sm text-slate-500 mt-1">Logged in as admin@gtchr.co.uk. System infrastructure, user provisioning, client facility management & 5% weekly maintenance tracker.</p>
           </div>
         </div>
 
         <!-- 5% IT & SYSTEM MAINTENANCE REMITTANCE CARD -->
-        <div class="bg-gradient-to-r from-indigo-900 to-slate-900 rounded-3xl p-6 text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="bg-gradient-to-r from-indigo-900 to-slate-900 rounded-3xl p-7 text-white shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <div class="flex items-center gap-2 mb-1.5">
-              <span class="bg-amber-400 text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Weekly Remittance</span>
-              <h3 class="font-extrabold text-base text-white">5% IT Infrastructure & Maintenance Retainer</h3>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-amber-400 text-slate-900 text-xs font-black px-3 py-0.5 rounded-full uppercase tracking-wider">Weekly Remittance</span>
+              <h3 class="font-extrabold text-lg text-white">5% IT Infrastructure & Maintenance Retainer</h3>
             </div>
-            <p class="text-xs text-indigo-200 max-w-xl">
+            <p class="text-sm text-indigo-200 max-w-xl leading-relaxed">
               Calculated automatically as 5% of client billing across all completed assignments. Reserved to maintain server uptime, real-world GPS geofencing, and automated email dispatch.
             </p>
           </div>
-          <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-right min-w-[180px]">
-            <span class="text-[10px] uppercase font-bold text-indigo-200">Accrued 5% Retainer:</span>
-            <p id="itMaintenanceTotalDisplay" class="text-2xl font-black text-amber-300 mt-0.5">£0.00</p>
-            <span class="text-[9px] text-emerald-300 font-semibold block mt-0.5">● Due Weekly</span>
+          <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 text-right min-w-[200px]">
+            <span class="text-xs uppercase font-bold text-indigo-200">Accrued 5% Retainer:</span>
+            <p id="itMaintenanceTotalDisplay" class="text-3xl font-black text-amber-300 mt-1">£0.00</p>
+            <span class="text-xs text-emerald-300 font-semibold block mt-1">● Due Weekly</span>
           </div>
         </div>
 
         <!-- SECTION A: CARE FACILITIES & CLIENT DIRECTORY -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+        <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
-                <i class="fa-solid fa-house-chimney-medical text-teal-600"></i> Care Facilities & Client Directory
+              <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2">
+                <i class="fa-solid fa-house-chimney-medical text-teal-600 text-lg"></i> Care Facilities & Client Directory
               </h3>
-              <p class="text-xs text-slate-500">Clients identified by their unique Name. Allows multiple distinct facilities per postcode.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Clients identified by their unique Name. Allows multiple distinct facilities per postcode.</p>
             </div>
-            <span id="itClientCountBadge" class="bg-teal-50 text-teal-800 font-extrabold text-xs px-3 py-1 rounded-full border border-teal-200">0 Facilities</span>
+            <span id="itClientCountBadge" class="bg-teal-50 text-teal-800 font-extrabold text-xs px-3.5 py-1.5 rounded-full border border-teal-200">0 Facilities</span>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-xs">
                 <tr>
-                  <th class="p-3">Facility / Client Name</th>
-                  <th class="p-3">Postcode & Address</th>
-                  <th class="p-3">Default Rate</th>
-                  <th class="p-3 text-center">Active Shifts</th>
-                  <th class="p-3 text-right">Delete Action</th>
+                  <th class="p-3.5">Facility / Client Name</th>
+                  <th class="p-3.5">Postcode & Address</th>
+                  <th class="p-3.5">Default Rate</th>
+                  <th class="p-3.5 text-center">Active Shifts</th>
+                  <th class="p-3.5 text-right">Delete Action</th>
                 </tr>
               </thead>
-              <tbody id="itClientTable" class="divide-y"></tbody>
+              <tbody id="itClientTable" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
 
         <!-- SECTION B: DIRECT STAFF ONBOARDING FORM -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
+        <div class="bg-white p-7 rounded-3xl shadow-sm border border-indigo-100 space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
-                <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct Staff & Manager Onboarding (IT Direct Register)
+              <h3 class="text-base font-extrabold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-indigo-600 text-lg"></i> Direct Staff & Manager Onboarding (IT Direct Register)
               </h3>
-              <p class="text-xs text-slate-500">Register new staff directly into Firebase without waiting for manual signup.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Register new staff directly into Firebase without waiting for manual signup.</p>
             </div>
           </div>
 
-          <form onsubmit="handleITDirectAddUser(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          <form onsubmit="handleITDirectAddUser(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Legal Name:</label>
-              <input type="text" id="itAddName" placeholder="e.g. John Adams" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Legal Name:</label>
+              <input type="text" id="itAddName" placeholder="e.g. John Adams" required class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-medium text-sm">
             </div>
 
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Email Address:</label>
-              <input type="email" id="itAddEmail" placeholder="john@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Email Address:</label>
+              <input type="email" id="itAddEmail" placeholder="john@example.co.uk" required class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-medium text-sm">
             </div>
 
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Phone Number:</label>
-              <input type="tel" id="itAddPhone" placeholder="07700900123" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Phone Number:</label>
+              <input type="tel" id="itAddPhone" placeholder="07700900123" required class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-medium text-sm">
             </div>
 
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Role:</label>
-              <select id="itAddRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-snoo-navy">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Assign Role:</label>
+              <select id="itAddRole" class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-bold text-snoo-navy text-sm">
                 <option value="staff">Staff</option>
                 <option value="manager">Manager</option>
               </select>
             </div>
 
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Pay Rate (£/hr):</label>
-              <input type="number" id="itAddRate" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Pay Rate (£/hr):</label>
+              <input type="number" id="itAddRate" value="15.00" step="0.5" class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-medium text-sm">
             </div>
 
             <div>
-              <label class="font-bold text-slate-700 block mb-1 text-[10px] uppercase">Assign Password:</label>
-              <input type="text" id="itAddPass" value="welcome2026" required class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium font-mono text-snoo-blue">
+              <label class="font-bold text-slate-700 block mb-1 text-xs uppercase tracking-wider">Assign Password:</label>
+              <input type="text" id="itAddPass" value="welcome2026" required class="w-full border border-slate-200 rounded-xl p-3 bg-slate-50 font-medium font-mono text-snoo-blue text-sm">
             </div>
 
             <div class="col-span-full flex justify-end">
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md">
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-7 rounded-xl transition text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md">
                 <i class="fa-solid fa-plus-circle"></i> Onboard Staff Now
               </button>
             </div>
@@ -871,71 +878,71 @@
         </div>
 
         <!-- SECTION C: PENDING APPROVALS QUEUE -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
+        <div class="bg-white p-7 rounded-3xl shadow-sm border border-amber-200">
           <div class="flex justify-between items-center mb-4">
             <div>
-              <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
-                <i class="fa-solid fa-bell text-amber-600"></i> Pending Staff Sign-Ups (Action Required)
+              <h3 class="text-base font-extrabold text-amber-950 flex items-center gap-2">
+                <i class="fa-solid fa-bell text-amber-600 text-lg"></i> Pending Staff Sign-Ups (Action Required)
               </h3>
-              <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Approve new registrations to grant them access to the shift board.</p>
             </div>
-            <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3 py-1 rounded-full border border-amber-200">0 Pending</span>
+            <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3.5 py-1.5 rounded-full border border-amber-200">0 Pending</span>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-xs">
                 <tr>
-                  <th class="p-3">Staff Details</th>
-                  <th class="p-3">Phone</th>
-                  <th class="p-3">Requested Role</th>
-                  <th class="p-3 text-right">Approve / Reject Action</th>
+                  <th class="p-3.5">Staff Details</th>
+                  <th class="p-3.5">Phone</th>
+                  <th class="p-3.5">Requested Role</th>
+                  <th class="p-3.5 text-right">Approve / Reject Action</th>
                 </tr>
               </thead>
-              <tbody id="itPendingTable" class="divide-y"></tbody>
+              <tbody id="itPendingTable" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
 
         <!-- SECTION D: AUTHORIZED DIRECTORY & DELETION -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+        <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-4">
             <div>
-              <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
-              <p class="text-xs text-slate-500">Manage active staff, switch roles, or remove staff who left the company.</p>
+              <h3 class="text-base font-bold text-snoo-navy">Authorized Accounts Directory</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Manage active staff, switch roles, or remove staff who left the company.</p>
             </div>
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-xs">
                 <tr>
-                  <th class="p-3">Name & Email</th>
-                  <th class="p-3">Phone</th>
-                  <th class="p-3">Role & Rate</th>
-                  <th class="p-3 text-right">Role / Delete Actions</th>
+                  <th class="p-3.5">Name & Email</th>
+                  <th class="p-3.5">Phone</th>
+                  <th class="p-3.5">Role & Rate</th>
+                  <th class="p-3.5 text-right">Role / Delete Actions</th>
                 </tr>
               </thead>
-              <tbody id="itDirectoryTable" class="divide-y"></tbody>
+              <tbody id="itDirectoryTable" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
 
         <!-- SECTION E: AUTOMATED EMAIL DISPATCH STATUS & LIVE TESTER -->
-        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+        <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2">
-                <i class="fa-solid fa-envelope-circle-check text-emerald-600"></i> Automated Email Dispatcher (Brevo via EmailJS)
+              <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2">
+                <i class="fa-solid fa-envelope-circle-check text-emerald-600 text-lg"></i> Automated Email Dispatcher (Brevo via EmailJS)
               </h3>
-              <p class="text-xs text-slate-500">Service: <code class="font-mono text-snoo-blue font-bold">service_affajui</code> | Template: <code class="font-mono text-snoo-blue font-bold">template_ibrgiwu</code></p>
+              <p class="text-xs text-slate-500 mt-0.5">Service: <code class="font-mono text-snoo-blue font-bold">service_affajui</code> | Template: <code class="font-mono text-snoo-blue font-bold">template_ibrgiwu</code></p>
             </div>
-            <button onclick="testSendDiagnosticEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition">
+            <button onclick="testSendDiagnosticEmail()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md transition">
               <i class="fa-solid fa-paper-plane"></i> Send Test Email Now
             </button>
           </div>
 
-          <div id="emailDiagnosticBox" class="hidden p-3.5 rounded-2xl text-xs font-mono border"></div>
+          <div id="emailDiagnosticBox" class="hidden p-4 rounded-2xl text-xs font-mono border"></div>
         </div>
 
       </section>
@@ -945,31 +952,31 @@
 
   <!-- ================= 3. DELETE SHIFT CONFIRMATION MODAL ================= -->
   <div id="deleteShiftModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
-      <div class="flex items-start gap-3.5 mb-4">
-        <div class="p-3 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 text-xl">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="p-3 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 text-2xl">
           <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
         <div>
-          <h3 class="font-black text-base text-slate-900">Delete Shift Assignment?</h3>
+          <h3 class="font-black text-lg text-slate-900">Delete Shift Assignment?</h3>
           <p class="text-xs text-slate-500 mt-0.5">Please confirm if you wish to permanently remove this shift.</p>
         </div>
       </div>
 
       <!-- Shift Card Preview in Modal -->
-      <div id="deleteModalPreview" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 mb-5 text-slate-700">
+      <div id="deleteModalPreview" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2 mb-5 text-slate-700">
         <!-- Injected Dynamically -->
       </div>
 
-      <div class="bg-rose-50/60 p-3 rounded-xl border border-rose-100 text-[11px] text-rose-900 mb-5 font-medium">
+      <div class="bg-rose-50/60 p-3 rounded-xl border border-rose-100 text-xs text-rose-900 mb-5 font-medium">
         ⚠️ This action is permanent and will remove the shift immediately across all staff devices and Firebase.
       </div>
 
-      <div class="flex gap-2.5 justify-end text-xs font-bold">
+      <div class="flex gap-3 justify-end text-xs font-bold">
         <button type="button" onclick="closeDeleteModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
           Cancel
         </button>
-        <button type="button" onclick="confirmDeleteShift()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-1.5">
+        <button type="button" onclick="confirmDeleteShift()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-2">
           <i class="fa-solid fa-trash-can"></i> Yes, Delete Shift
         </button>
       </div>
@@ -1290,7 +1297,7 @@
     async function testSendDiagnosticEmail() {
       const box = document.getElementById('emailDiagnosticBox');
       if (box) {
-        box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-slate-50 border-slate-200 text-slate-700 block";
+        box.className = "p-4 rounded-2xl text-xs font-mono border bg-slate-50 border-slate-200 text-slate-700 block";
         box.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-snoo-blue"></i> Sending live test packet to Brevo / EmailJS servers...`;
       }
 
@@ -1307,13 +1314,13 @@
 
       if (box) {
         if (result.success) {
-          box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-emerald-50 border-emerald-200 text-emerald-900 block";
+          box.className = "p-4 rounded-2xl text-xs font-mono border bg-emerald-50 border-emerald-200 text-emerald-900 block";
           box.innerHTML = `<strong>✓ Brevo Status 200 OK:</strong> Email successfully dispatched via Brevo for admin@gtchr.co.uk! Link pointing to <code>${COMPANY_BASE_DOMAIN}</code>.`;
           showToast("✓ Live test email sent to admin@gtchr.co.uk!", "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
           const errText = result.error ? (result.error.text || result.error.message || JSON.stringify(result.error)) : "Unknown Error";
-          box.className = "p-3.5 rounded-2xl text-xs font-mono border bg-rose-50 border-rose-200 text-rose-900 block";
-          box.innerHTML = `<strong>⚠️ EmailJS Response Error:</strong> ${errText}<br><br><span class="text-[11px]">Tip: In EmailJS Dashboard > Templates > template_ibrgiwu, ensure the <strong>"To Email"</strong> field is set to <code>{{to_email}}</code>.</span>`;
+          box.className = "p-4 rounded-2xl text-xs font-mono border bg-rose-50 border-rose-200 text-rose-900 block";
+          box.innerHTML = `<strong>⚠️ EmailJS Response Error:</strong> ${errText}<br><br><span class="text-xs">Tip: In EmailJS Dashboard > Templates > template_ibrgiwu, ensure the <strong>"To Email"</strong> field is set to <code>{{to_email}}</code>.</span>`;
           showToast(`EmailJS Error: ${errText}`, "bg-rose-50 text-rose-800 border-rose-200");
         }
       }
@@ -1498,11 +1505,11 @@
           headerPill.classList.remove('hidden');
           headerPill.classList.add('flex');
           if (isOnline) {
-            headerPill.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold";
-            headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Firebase Online`;
+            headerPill.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold";
+            headerPill.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Firebase Online`;
           } else {
-            headerPill.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-[10px] font-bold";
-            headerPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> ${errMsg || 'Connecting...'}`;
+            headerPill.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold";
+            headerPill.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> ${errMsg || 'Connecting...'}`;
           }
         } else {
           headerPill.classList.add('hidden');
@@ -1716,7 +1723,7 @@
       if (!table) return;
 
       if (deduped.length === 0) {
-        table.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium italic">No client care facilities registered in the database.</td></tr>`;
+        table.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium italic text-sm">No client care facilities registered in the database.</td></tr>`;
         return;
       }
 
@@ -1725,22 +1732,22 @@
         const safeName = (cl.name || 'Facility').replace(/'/g, "\\'");
 
         return `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy text-sm">${cl.name}</p>
+          <tr class="hover:bg-slate-50 text-sm">
+            <td class="p-3.5">
+              <p class="font-bold text-snoo-navy text-base">${cl.name}</p>
             </td>
-            <td class="p-3">
-              <span class="font-mono font-extrabold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-md">${cl.postcode || 'N/A'}</span>
-              <p class="text-[11px] text-slate-500 mt-0.5">${cl.address || 'Address not specified'}</p>
+            <td class="p-3.5">
+              <span class="font-mono font-extrabold text-indigo-900 bg-indigo-50 px-2.5 py-0.5 rounded-md text-xs">${cl.postcode || 'N/A'}</span>
+              <p class="text-xs text-slate-500 mt-1">${cl.address || 'Address not specified'}</p>
             </td>
-            <td class="p-3 font-bold text-slate-800">
+            <td class="p-3.5 font-bold text-slate-800">
               £${(cl.rate || 25.00).toFixed(2)} / hr
             </td>
-            <td class="p-3 text-center">
-              <span class="bg-slate-100 text-slate-700 font-extrabold text-[10px] px-2.5 py-1 rounded-full">${shiftCount} shifts</span>
+            <td class="p-3.5 text-center">
+              <span class="bg-slate-100 text-slate-700 font-extrabold text-xs px-3 py-1 rounded-full">${shiftCount} shifts</span>
             </td>
-            <td class="p-3 text-right">
-              <button onclick="deleteClientFacility(${cl.id}, '${safeName}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs inline-flex items-center gap-1.5" title="Delete Care Facility">
+            <td class="p-3.5 text-right">
+              <button onclick="deleteClientFacility(${cl.id}, '${safeName}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3.5 py-2 rounded-xl transition text-xs cursor-pointer shadow-xs inline-flex items-center gap-1.5" title="Delete Care Facility">
                 <i class="fa-solid fa-trash-can text-rose-600"></i> Delete
               </button>
             </td>
@@ -1973,13 +1980,13 @@
 
       [btnOpen, btnClaimed, btnAll].forEach(btn => {
         if (btn) {
-          btn.className = "px-3.5 py-2 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1.5";
+          btn.className = "px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-2 font-bold text-xs";
         }
       });
 
-      if (filter === 'open' && btnOpen) btnOpen.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
-      if (filter === 'my_claimed' && btnClaimed) btnClaimed.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
-      if (filter === 'all' && btnAll) btnAll.className = "px-3.5 py-2 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-1.5 font-bold";
+      if (filter === 'open' && btnOpen) btnOpen.className = "px-4 py-2.5 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-2 font-bold text-xs";
+      if (filter === 'my_claimed' && btnClaimed) btnClaimed.className = "px-4 py-2.5 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-2 font-bold text-xs";
+      if (filter === 'all' && btnAll) btnAll.className = "px-4 py-2.5 rounded-xl bg-white text-snoo-navy shadow-xs transition cursor-pointer flex items-center gap-2 font-bold text-xs";
 
       renderShifts();
     }
@@ -1992,13 +1999,13 @@
       const secNew = document.getElementById('sectionClientNew');
 
       if (mode === 'existing') {
-        btnEx.className = "px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer";
-        btnNew.className = "px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer";
+        btnEx.className = "px-3 py-1.5 rounded-lg bg-white text-snoo-navy shadow-xs cursor-pointer";
+        btnNew.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer";
         secEx.classList.remove('hidden');
         secNew.classList.add('hidden');
       } else {
-        btnNew.className = "px-2.5 py-1 rounded-md bg-white text-snoo-navy shadow-xs cursor-pointer";
-        btnEx.className = "px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-900 cursor-pointer";
+        btnNew.className = "px-3 py-1.5 rounded-lg bg-white text-snoo-navy shadow-xs cursor-pointer";
+        btnEx.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer";
         secNew.classList.remove('hidden');
         secEx.classList.add('hidden');
       }
@@ -2012,13 +2019,13 @@
       const secR = document.getElementById('sectionSchedRange');
 
       if (mode === 'single') {
-        btnS.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
-        btnR.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
+        btnS.className = "px-2.5 py-1 rounded-lg bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnR.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer";
         secS.classList.remove('hidden');
         secR.classList.add('hidden');
       } else {
-        btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
-        btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
+        btnR.className = "px-2.5 py-1 rounded-lg bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnS.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer";
         secR.classList.remove('hidden');
         secS.classList.add('hidden');
       }
@@ -2324,8 +2331,8 @@
             <span>${s.title}</span>
             <span class="text-rose-600 font-extrabold">£${(s.hours * s.pay).toFixed(2)}</span>
           </div>
-          <p class="text-[11px] text-slate-600 font-semibold"><i class="fa-solid fa-house-user text-snoo-blue"></i> ${cl.name} (${cl.postcode || 'Site'})</p>
-          <div class="flex justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/80">
+          <p class="text-xs text-slate-600 font-semibold mt-1"><i class="fa-solid fa-house-user text-snoo-blue"></i> ${cl.name} (${cl.postcode || 'Site'})</p>
+          <div class="flex justify-between text-xs text-slate-500 pt-2 border-t border-slate-200/80">
             <span><i class="fa-regular fa-calendar"></i> ${s.isBlock ? s.dateRangeStr : s.date} (${s.time || '08:00 - 16:00'})</span>
             <span><i class="fa-solid fa-user-check"></i> ${st ? st.name : 'Open / Unassigned'}</span>
           </div>
@@ -2392,10 +2399,10 @@
 
       if (isPending) {
         c.innerHTML = `
-          <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
-            <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
-            <p class="font-extrabold text-slate-700">Assignments Locked Pending Authorization</p>
-            <p class="text-xs text-slate-400 mt-1">Once admin@gtchr.co.uk approves your registration in Firebase, all assignments will unlock.</p>
+          <div class="col-span-full bg-white p-14 rounded-3xl border border-amber-200 text-center text-slate-400">
+            <i class="fa-solid fa-lock text-5xl mb-4 text-amber-500"></i>
+            <p class="font-extrabold text-slate-800 text-lg">Assignments Locked Pending Authorization</p>
+            <p class="text-sm text-slate-500 mt-2">Once admin@gtchr.co.uk approves your registration in Firebase, all assignments will unlock.</p>
           </div>
         `;
         return;
@@ -2443,10 +2450,10 @@
         }
 
         c.innerHTML = `
-          <div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400">
-            <i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-300"></i>
-            <p class="font-bold text-slate-600">${emptyMsg}</p>
-            <p class="text-xs text-slate-400 mt-1">${emptySub}</p>
+          <div class="col-span-full bg-white p-14 rounded-3xl border border-slate-200 text-center text-slate-400">
+            <i class="fa-regular fa-calendar-xmark text-5xl mb-4 text-slate-300"></i>
+            <p class="font-bold text-slate-700 text-base">${emptyMsg}</p>
+            <p class="text-sm text-slate-400 mt-1">${emptySub}</p>
           </div>
         `;
         return;
@@ -2467,95 +2474,95 @@
         return `
           <div id="shift-card-${s.id}" class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
             <div>
-              <div class="flex justify-between items-center mb-2">
+              <div class="flex justify-between items-center mb-3">
                 ${isBlock ? 
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : (s.status === 'completed' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">
+                  `<span class="text-xs font-extrabold uppercase px-3.5 py-1.5 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1.5"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
+                  `<span class="text-xs font-extrabold uppercase px-3.5 py-1.5 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : (s.status === 'completed' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">
                     ${s.status === 'completed' ? '✓ Completed' : (s.status === 'in_progress' ? '● In Progress' : s.status.replace('_', ' '))}
                   </span>`
                 }
                 
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} hrs (${s.time || '08:00 - 16:00'})</span>
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} hrs</span>
                   ${isManagerOrIT ? `
-                    <button onclick="openDeleteShiftModal(${s.id}, event)" title="Delete Shift" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shadow-xs">
+                    <button onclick="openDeleteShiftModal(${s.id}, event)" title="Delete Shift" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-xs">
                       <i class="fa-solid fa-trash-can text-rose-600"></i> Delete
                     </button>
                   ` : ''}
                 </div>
               </div>
 
-              <h3 class="font-extrabold text-snoo-navy text-base">${s.title}</h3>
-              <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
-              <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address} <span class="font-mono font-bold text-indigo-900">(${cl.postcode || 'UK'})</span></p>
+              <h3 class="font-extrabold text-snoo-navy text-lg leading-tight mb-1">${s.title}</h3>
+              <p class="text-sm text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
+              <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-location-dot"></i> ${cl.address} <span class="font-mono font-bold text-indigo-900">(${cl.postcode || 'UK'})</span></p>
               
               ${isBlock ? `
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs">
-                  <div class="flex justify-between font-bold text-indigo-950 text-[11px]">
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 text-xs space-y-1.5 mb-3 shadow-2xs">
+                  <div class="flex justify-between font-bold text-indigo-950 text-xs">
                     <span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span>
                     <span class="text-emerald-700">${s.hoursPerDay}h / day</span>
                   </div>
-                  <p class="text-[10px] text-slate-500">Hours: ${s.time || '08:00 - 16:00'}</p>
+                  <p class="text-xs text-slate-500">Hours: ${s.time || '08:00 - 16:00'}</p>
                 </div>
               ` : `
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date} (${s.time || '08:00 - 16:00'})</p>
               `}
 
               ${isManagerOrIT && s.status !== 'open' ? `
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 mb-3 text-xs space-y-1">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-3 text-xs space-y-1">
                   <div class="flex justify-between items-center">
-                    <span class="text-slate-500 text-[10px] font-bold uppercase">Assigned Staff:</span>
-                    <span class="font-bold text-snoo-navy">${assignedStaff ? assignedStaff.name : 'Unassigned'}</span>
+                    <span class="text-slate-500 text-xs font-bold uppercase">Assigned Staff:</span>
+                    <span class="font-bold text-snoo-navy text-sm">${assignedStaff ? assignedStaff.name : 'Unassigned'}</span>
                   </div>
-                  ${s.clockInTime ? `<div class="text-[10px] text-emerald-700 font-semibold"><i class="fa-solid fa-clock"></i> In: ${s.clockInTime}</div>` : ''}
+                  ${s.clockInTime ? `<div class="text-xs text-emerald-700 font-semibold"><i class="fa-solid fa-clock"></i> In: ${s.clockInTime}</div>` : ''}
                 </div>
               ` : ''}
 
               ${isMine && s.status === 'in_progress' ? `
-                <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-3 mb-3 text-xs space-y-1 text-blue-950">
+                <div class="bg-blue-50/80 border border-blue-200 rounded-2xl p-3.5 mb-3 text-xs space-y-1 text-blue-950">
                   <div class="flex justify-between items-center font-bold">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-play text-blue-600 animate-pulse"></i> Shift Active (Clocked In)</span>
-                    <span class="text-blue-700 text-[10px]">${s.clockInTime}</span>
+                    <span class="text-blue-700 text-xs">${s.clockInTime}</span>
                   </div>
-                  <p class="text-[10px] text-blue-700">GPS verified at ${cl.name}. Tap below when your shift finishes.</p>
+                  <p class="text-xs text-blue-700 mt-1">GPS verified at ${cl.name}. Tap below when your shift finishes.</p>
                 </div>
               ` : ''}
 
-              <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
-                <span>Pay Rate:</span>
-                <span class="text-emerald-700 font-extrabold text-sm">£${s.pay.toFixed(2)} / hr</span>
+              <div class="text-xs bg-slate-50 p-3.5 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
+                <span class="text-xs">Pay Rate:</span>
+                <span class="text-emerald-700 font-black text-base">£${s.pay.toFixed(2)} / hr</span>
               </div>
             </div>
 
             <div>
               ${s.status === 'open' ? `
-                <button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">
+                <button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl text-sm cursor-pointer shadow-md transition flex items-center justify-center gap-2">
                   ${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Assignment'}
                 </button>
               ` : ''}
 
               ${isMine && s.status === 'claimed' ? `
-                <button onclick="handleDirectShiftClock(${s.id}, true)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
+                <button onclick="handleDirectShiftClock(${s.id}, true)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm cursor-pointer shadow-md transition flex items-center justify-center gap-2">
                   <i class="fa-solid fa-location-dot"></i> Clock In to Start Shift
                 </button>
               ` : ''}
 
               ${isMine && s.status === 'in_progress' ? `
-                <button onclick="handleDirectShiftClock(${s.id}, false)" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-2">
+                <button onclick="handleDirectShiftClock(${s.id}, false)" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl text-sm cursor-pointer shadow-md transition flex items-center justify-center gap-2">
                   <i class="fa-solid fa-flag-checkered"></i> Finish Shift & Clock Out
                 </button>
               ` : ''}
 
               ${isMine && s.status === 'completed' ? `
-                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-center text-xs space-y-0.5">
-                  <span class="font-extrabold text-emerald-900 block">✓ Shift Completed & Verified</span>
-                  <span class="text-[10px] text-emerald-700 block">Logged: ${s.clockInTime} to ${s.clockOutTime}</span>
-                  <span class="text-xs font-black text-emerald-800 block mt-1">Earned: £${(s.hours * s.pay).toFixed(2)}</span>
+                <div class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center text-xs space-y-1">
+                  <span class="font-extrabold text-emerald-900 text-sm block">✓ Shift Completed & Verified</span>
+                  <span class="text-xs text-emerald-700 block">Logged: ${s.clockInTime} to ${s.clockOutTime}</span>
+                  <span class="text-sm font-black text-emerald-800 block mt-1">Earned: £${(s.hours * s.pay).toFixed(2)}</span>
                 </div>
               ` : ''}
 
               ${!isMine && s.status !== 'open' && isManagerOrIT ? `
-                <span class="block text-center text-xs text-slate-600 font-bold py-2.5 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>
+                <span class="block text-center text-xs text-slate-600 font-bold py-3 bg-slate-100 rounded-xl">Booked by ${assignedStaff ? assignedStaff.name : 'Staff'}</span>
               ` : ''}
             </div>
           </div>
@@ -2633,9 +2640,9 @@
       headerEl.innerHTML = weekDates.map((d, idx) => {
         const isToday = d.toISOString().split('T')[0] === todayISO;
         return `
-          <div class="p-2 rounded-2xl ${isToday ? 'bg-teal-50 text-teal-900 font-black border border-teal-300' : 'text-slate-600 font-bold'}">
+          <div class="p-2.5 rounded-2xl ${isToday ? 'bg-teal-50 text-teal-900 font-black border border-teal-300' : 'text-slate-600 font-bold'}">
             <div class="text-2xl font-black">${d.getDate()}</div>
-            <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">${dayNames[idx]}</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 font-bold mt-0.5">${dayNames[idx]}</div>
           </div>
         `;
       }).join('');
@@ -2669,7 +2676,7 @@
 
       const bodyEl = document.getElementById('rosterBody');
       if (clientsToDisplay.length === 0) {
-        bodyEl.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium">No active clients found. Select another client from the dropdown above.</div>`;
+        bodyEl.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium text-sm">No active clients found. Select another client from the dropdown above.</div>`;
         return;
       }
 
@@ -2694,31 +2701,31 @@
           });
 
           if (dayShifts.length === 0) {
-            return `<div class="min-h-[130px] p-2 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200/60 flex items-center justify-center text-slate-300 text-[10px]">Empty</div>`;
+            return `<div class="min-h-[140px] p-2 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200/60 flex items-center justify-center text-slate-300 text-xs">Empty</div>`;
           }
 
           return `
-            <div class="space-y-2">
+            <div class="space-y-2.5">
               ${dayShifts.map(s => {
                 const staff = users.find(u => u.id === s.staffId);
                 const staffName = staff ? staff.name : 'Unassigned';
 
                 return `
-                  <div class="p-3 rounded-2xl bg-teal-600 text-white shadow-md shadow-teal-700/10 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer" onclick="showShiftDetailsModal(${s.id})">
+                  <div class="p-3.5 rounded-2xl bg-teal-600 text-white shadow-md shadow-teal-700/10 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer" onclick="showShiftDetailsModal(${s.id})">
                     <div>
-                      <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-[10px] text-white tracking-wider mb-1.5">
+                      <div class="w-full py-0.5 px-2 bg-snoo-blue/80 rounded-lg text-center font-black text-xs text-white tracking-wider mb-2">
                         1
                       </div>
-                      <div class="font-extrabold text-[11px] text-teal-100">${s.time || '08:00 - 16:00'}</div>
-                      <div class="text-[11px] font-bold text-white leading-tight truncate mt-0.5">${cl.name}</div>
+                      <div class="font-extrabold text-xs text-teal-100">${s.time || '08:00 - 16:00'}</div>
+                      <div class="text-xs font-bold text-white leading-tight truncate mt-1">${cl.name}</div>
                     </div>
 
-                    <div class="mt-2.5 bg-white text-slate-800 py-1 px-2 rounded-xl text-[10px] font-bold flex items-center justify-between shadow-xs">
+                    <div class="mt-3 bg-white text-slate-800 py-1.5 px-2.5 rounded-xl text-xs font-bold flex items-center justify-between shadow-xs">
                       <div class="flex items-center gap-1.5 truncate">
                         <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
                         <span class="truncate">${staffName}</span>
                       </div>
-                      <i class="fa-solid fa-ellipsis-vertical text-slate-400 text-[10px]"></i>
+                      <i class="fa-solid fa-ellipsis-vertical text-slate-400 text-xs"></i>
                     </div>
                   </div>
                 `;
@@ -2728,11 +2735,11 @@
         }).join('');
 
         return `
-          <div class="pt-4 space-y-3">
+          <div class="pt-5 space-y-3">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
-              <h3 class="font-extrabold text-slate-800 text-sm">${cl.name} <span class="text-xs text-indigo-700 font-bold">(${cl.postcode || 'Site'})</span></h3>
-              <span class="bg-teal-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">${totalShiftsCount} shifts</span>
+              <h3 class="font-extrabold text-slate-800 text-base">${cl.name} <span class="text-xs text-indigo-700 font-bold">(${cl.postcode || 'Site'})</span></h3>
+              <span class="bg-teal-600 text-white text-xs font-black px-3 py-0.5 rounded-full shadow-xs">${totalShiftsCount} shifts</span>
             </div>
 
             <div class="grid grid-cols-7 gap-3">
@@ -2835,7 +2842,7 @@
 
       const tbody = document.getElementById('managerTable');
       if (filteredShifts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No attendance records found for this date range.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic text-sm">No attendance records found for this date range.</td></tr>`;
         return;
       }
 
@@ -2848,28 +2855,28 @@
         const profit = shiftGross - staffEarned - shiftIT;
 
         return `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
-              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name} (${cl.postcode || 'UK'})</p>
-              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.time || '08:00 - 16:00'} - ${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
+          <tr class="hover:bg-slate-50 text-sm">
+            <td class="p-3.5">
+              <p class="font-bold text-snoo-navy text-base">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
+              <p class="text-xs text-snoo-blue font-bold mt-0.5">${cl.name} (${cl.postcode || 'UK'})</p>
+              <span class="text-xs text-slate-500 font-medium block mt-0.5">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.time || '08:00 - 16:00'} - ${s.hours}h @ £${s.pay.toFixed(2)}/hr)</span>
             </td>
-            <td class="p-3">
+            <td class="p-3.5">
               ${s.clockInTime ? `
-                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
-                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || 'Location Verified'}</span>
-              ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
+                <span class="font-bold text-emerald-700 block text-xs"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
+                <span class="text-slate-700 font-semibold block text-xs mt-0.5"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
+                <span class="text-xs text-emerald-600 font-bold mt-0.5 block">GPS: ${s.distance || 'Location Verified'}</span>
+              ` : '<span class="text-slate-400 italic text-xs">Not clocked in</span>'}
             </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
+            <td class="p-3.5 text-right">
+              <span class="font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg text-sm">£${staffEarned.toFixed(2)}</span>
             </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg">£${shiftIT.toFixed(2)}</span>
+            <td class="p-3.5 text-right">
+              <span class="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg text-sm">£${shiftIT.toFixed(2)}</span>
             </td>
-            <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
-            <td class="p-3 text-right">
-              <button onclick="openDeleteShiftModal(${s.id}, event)" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs flex items-center gap-1" title="Delete Shift Record">
+            <td class="p-3.5 text-right font-black text-emerald-700 text-sm">+ £${profit.toFixed(2)}</td>
+            <td class="p-3.5 text-right">
+              <button onclick="openDeleteShiftModal(${s.id}, event)" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-2 rounded-xl transition text-xs cursor-pointer shadow-xs inline-flex items-center gap-1.5" title="Delete Shift Record">
                 <i class="fa-solid fa-trash-can"></i> Delete
               </button>
             </td>
@@ -2986,25 +2993,25 @@
 
       const pTable = document.getElementById('itPendingTable');
       if (pendingUsers.length === 0) {
-        pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
+        pTable.innerHTML = `<tr><td colspan="4" class="p-5 text-center text-slate-400 font-medium italic text-sm">No pending sign-ups right now in Firebase. All staff are authorized.</td></tr>`;
       } else {
         pTable.innerHTML = pendingUsers.map(u => `
-          <tr class="hover:bg-amber-50/50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${u.name}</p>
-              <p class="text-[11px] text-slate-500">${u.email}</p>
+          <tr class="hover:bg-amber-50/50 text-sm">
+            <td class="p-3.5">
+              <p class="font-bold text-snoo-navy text-base">${u.name}</p>
+              <p class="text-xs text-slate-500 mt-0.5">${u.email}</p>
             </td>
-            <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
+            <td class="p-3.5 font-medium text-slate-700">${u.phone || 'N/A'}</td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800">
                 ${u.role}
               </span>
             </td>
-            <td class="p-3 text-right space-x-1.5">
-              <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
+            <td class="p-3.5 text-right space-x-2">
+              <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl transition text-xs cursor-pointer shadow-xs">
                 <i class="fa-solid fa-check"></i> Approve
               </button>
-              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Reject Application">
+              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-2 rounded-xl transition text-xs cursor-pointer shadow-xs" title="Reject Application">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -3013,23 +3020,23 @@
       }
 
       document.getElementById('itDirectoryTable').innerHTML = activeUsers.map(u => `
-        <tr class="hover:bg-slate-50 text-xs">
-          <td class="p-3">
-            <p class="font-bold text-snoo-navy">${u.name}</p>
-            <p class="text-[11px] text-slate-400">${u.email}</p>
+        <tr class="hover:bg-slate-50 text-sm">
+          <td class="p-3.5">
+            <p class="font-bold text-snoo-navy text-base">${u.name}</p>
+            <p class="text-xs text-slate-400 mt-0.5">${u.email}</p>
           </td>
-          <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-          <td class="p-3 font-semibold">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
+          <td class="p-3.5 font-medium text-slate-700">${u.phone || 'N/A'}</td>
+          <td class="p-3.5 font-semibold">
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase ${u.role === 'manager' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
               ${u.role} (£${(u.hourlyRate || 15.00).toFixed(2)}/hr)
             </span>
           </td>
-          <td class="p-3 text-right space-x-1.5">
-            ${(u.email === 'admin@gtchr.co.uk' || u.email === 'minute2131@gmail.com') ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
-              <button onclick="toggleUserRole(${u.id})" class="bg-slate-100 hover:bg-snoo-blue/10 text-slate-700 hover:text-snoo-blue font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer border border-slate-200 shadow-xs">
+          <td class="p-3.5 text-right space-x-2">
+            ${(u.email === 'admin@gtchr.co.uk' || u.email === 'minute2131@gmail.com') ? '<span class="text-slate-400 font-bold text-xs">Primary IT Admin</span>' : `
+              <button onclick="toggleUserRole(${u.id})" class="bg-slate-100 hover:bg-snoo-blue/10 text-slate-700 hover:text-snoo-blue font-bold px-3.5 py-2 rounded-xl transition text-xs cursor-pointer border border-slate-200 shadow-xs">
                 Switch to ${u.role === 'manager' ? 'Staff' : 'Manager'}
               </button>
-              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs" title="Remove Staff Member">
+              <button onclick="deleteStaffUser(${u.id}, '${u.name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-3 py-2 rounded-xl transition text-xs cursor-pointer shadow-xs" title="Remove Staff Member">
                 <i class="fa-solid fa-trash"></i>
               </button>
             `}
@@ -3097,7 +3104,7 @@
 
       if (sList.length === 0) {
         document.getElementById('invoiceRows').innerHTML = `
-          <tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No completed shifts found for ${cl.name} between ${periodLabel}.</td></tr>
+          <tr><td colspan="4" class="p-6 text-center text-slate-400 italic text-sm">No completed shifts found for ${cl.name} between ${periodLabel}.</td></tr>
         `;
         document.getElementById('invSub').textContent = `£0.00`;
         document.getElementById('invVat').textContent = `£0.00`;
@@ -3112,10 +3119,10 @@
         const st = users.find(u => u.id === s.staffId);
         return `
           <tr>
-            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'}) - ${st ? st.name : 'Care Staff'}</td>
-            <td class="py-2.5 px-2 text-right">${s.hours}</td>
-            <td class="py-2.5 px-2 text-right">£${rateToUse.toFixed(2)}</td>
-            <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
+            <td class="py-3 px-2 font-semibold text-slate-800 text-sm">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.time || '08:00 - 16:00'}) - ${st ? st.name : 'Care Staff'}</td>
+            <td class="py-3 px-2 text-right text-sm">${s.hours}</td>
+            <td class="py-3 px-2 text-right text-sm">£${rateToUse.toFixed(2)}</td>
+            <td class="py-3 px-2 text-right font-bold text-snoo-navy text-sm">£${tot.toFixed(2)}</td>
           </tr>
         `;
       }).join('');
@@ -3159,7 +3166,7 @@
 
     function showToast(m, cls) {
       const t = document.getElementById('toast');
-      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center ${cls}`;
+      t.className = `max-w-xl mx-auto mt-4 p-4 rounded-2xl shadow-lg border text-sm font-bold flex justify-between items-center ${cls}`;
       document.getElementById('toast-msg').textContent = m;
       t.classList.remove('hidden');
       setTimeout(hideToast, 4500);
