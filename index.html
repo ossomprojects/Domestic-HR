@@ -1,3 +1,12 @@
+Both the **HMRC Taxes & PAYE** tab and the **GPS Diagnostic Console** tab have been cleanly removed from the navigation bar, views, and JavaScript handlers.
+
+The core GPS geofencing and real-world doorstep verification remain 100% active directly on the staff shift cards for clocking in/out.
+
+---
+
+### Clean Updated `index.html` (Copy & Replace All):
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -192,14 +201,8 @@
         <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-file-invoice-dollar text-emerald-600 text-base"></i> Client Invoices
         </button>
-        <button onclick="navigateTab('hmrc')" id="tab-hmrc" class="tab-btn manager-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-calculator text-amber-600 text-base"></i> HMRC Taxes & PAYE
-        </button>
 
         <!-- IT MANAGER ONLY TABS -->
-        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn it-only hidden py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-location-crosshairs text-sky-600 text-base"></i> GPS Diagnostic Portal
-        </button>
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-shield-halved text-indigo-600 text-base"></i> IT Approvals & Email Settings
           <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-xs font-black px-2 py-0.5 rounded-full">0</span>
@@ -258,59 +261,7 @@
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 2: GPS DIAGNOSTIC PORTAL (IT ADMIN ONLY) ================= -->
-      <section id="view-clock" class="tab-view hidden">
-        <div class="max-w-lg mx-auto bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-          <div class="text-center mb-6">
-            <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
-              <i class="fa-solid fa-location-crosshairs text-3xl"></i>
-            </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">GPS Postcode Diagnostic Console</h2>
-            <p class="text-sm text-slate-500 font-medium mt-1">IT Admin Diagnostic Tool for Real-Time Geofence Testing.</p>
-          </div>
-
-          <div class="space-y-5 text-sm">
-            <div>
-              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-xs tracking-wider">Select Assignment Location:</label>
-              <select id="clockShiftSelect" onchange="updateClockShiftDetails()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
-            </div>
-
-            <!-- Client Postcode & Location Target Display -->
-            <div id="clockTargetCard" class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="text-slate-500 font-medium">Assigned Postcode:</span>
-                <span id="targetPostcode" class="font-mono text-snoo-blue font-extrabold text-base uppercase">E16 2DN</span>
-              </div>
-              <div class="flex justify-between items-start">
-                <span class="text-slate-500 font-medium">Facility / Address:</span>
-                <span id="targetAddress" class="font-bold text-slate-800 text-right text-xs max-w-[220px]">14 Kensington Sq, London</span>
-              </div>
-              
-              <div class="flex justify-between items-center border-t border-slate-200/80 pt-2.5">
-                <span class="text-slate-500 font-medium">Geofence Perimeter:</span>
-                <span class="bg-emerald-600 text-white text-xs font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
-                  <i class="fa-solid fa-shield-check"></i> Location Zone (500m)
-                </span>
-              </div>
-            </div>
-
-            <!-- LIVE PROXIMITY SCAN STATUS BOX -->
-            <div id="proximityLiveBox" class="p-4 rounded-2xl border text-sm bg-blue-50/60 border-blue-200 text-blue-900 space-y-1.5">
-              <div class="flex justify-between items-center">
-                <span class="font-bold flex items-center gap-2">
-                  <i id="gpsRadarIcon" class="fa-solid fa-satellite-dish text-snoo-blue text-base"></i> Live GPS Status:
-                </span>
-                <button type="button" onclick="checkLiveProximity()" class="text-snoo-blue font-black underline hover:text-snoo-lightBlue cursor-pointer text-xs">
-                  Test Distance
-                </button>
-              </div>
-              <p id="proximityLiveText" class="text-slate-600 font-medium text-xs leading-relaxed">Click above to verify physical proximity to client coordinates.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= TAB 3: MANAGER SHIFT ROSTER SCHEDULER ================= -->
+      <!-- ================= TAB 2: MANAGER SHIFT ROSTER SCHEDULER ================= -->
       <section id="view-roster" class="tab-view hidden space-y-6">
         
         <!-- Header & Controls with Unified Client Dropdown -->
@@ -367,7 +318,7 @@
 
       </section>
 
-      <!-- ================= TAB 4: OPERATIONS MANAGER HUB ================= -->
+      <!-- ================= TAB 3: OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
         
         <!-- Metric Cards -->
@@ -614,7 +565,7 @@
 
       </section>
 
-      <!-- ================= TAB 5: CLIENT INVOICES (WITH PERSISTENT SELECTION) ================= -->
+      <!-- ================= TAB 4: CLIENT INVOICES (WITH PERSISTENT SELECTION) ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div class="bg-white p-7 rounded-3xl shadow-sm border border-slate-200 space-y-4">
@@ -706,65 +657,7 @@
         </div>
       </section>
 
-      <!-- ================= TAB 6: HMRC TAXES & PAYE ================= -->
-      <section id="view-hmrc" class="tab-view hidden">
-        <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-          <div class="flex justify-between items-center mb-6 pb-4 border-b">
-            <div>
-              <h2 class="text-xl font-bold text-snoo-navy">UK HMRC Payroll & Tax Compliance</h2>
-              <p class="text-xs text-slate-500 mt-0.5">PAYE, Class 1 Employee NICs (8%), and Employer NICs (13.8%)</p>
-            </div>
-            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3.5 py-1.5 rounded-full border border-emerald-200">Tax Code 1257L</span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4 text-sm mb-6">
-            <div>
-              <label class="font-bold block mb-1.5 text-xs uppercase tracking-wider">Gross Staff Payroll (£):</label>
-              <input type="number" id="hmrcGross" value="2500" oninput="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm focus:ring-2 focus:ring-snoo-blue font-medium bg-slate-50">
-            </div>
-            <div>
-              <label class="font-bold block mb-1.5 text-xs uppercase tracking-wider">Period:</label>
-              <select id="hmrcPeriod" onchange="calcHMRC()" class="w-full border border-slate-200 rounded-xl p-3.5 text-sm font-medium bg-slate-50">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="annual">Annual</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-sm space-y-4 shadow-xs">
-            <div class="flex justify-between pb-3 border-b border-slate-200">
-              <span class="text-slate-600 font-medium">Gross Wages:</span>
-              <span id="resGross" class="font-extrabold text-slate-900 text-base">£2,500.00</span>
-            </div>
-            <div class="flex justify-between pb-3 border-b border-slate-200">
-              <span class="text-slate-600 font-medium">PAYE Income Tax (Withheld):</span>
-              <span id="resTax" class="font-bold text-rose-600">- £290.50</span>
-            </div>
-            <div class="flex justify-between pb-3 border-b border-slate-200">
-              <span class="text-slate-600 font-medium">Employee Class 1 NI (8%):</span>
-              <span id="resEmpNI" class="font-bold text-rose-600">- £116.12</span>
-            </div>
-            <div class="flex justify-between bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
-              <span class="text-emerald-900 font-extrabold">Net Staff Take-Home Pay:</span>
-              <span id="resNet" class="font-black text-emerald-700 text-base">£2,093.38</span>
-            </div>
-            <div class="flex justify-between pb-3 border-b border-slate-200">
-              <span class="text-slate-600 font-medium">Employer Class 1 NI (13.8%):</span>
-              <span id="resEmplrNI" class="font-bold text-amber-700">+ £240.35</span>
-            </div>
-            <div class="flex justify-between bg-snoo-blue text-white p-5 rounded-2xl font-bold shadow-md shadow-snoo-blue/20">
-              <div>
-                <p class="text-white text-xs uppercase tracking-wider">Total HMRC Remittance Due:</p>
-                <p class="text-xs text-blue-100 font-normal">(PAYE + Emp NI + Emplr NI)</p>
-              </div>
-              <span id="resHMRC" class="text-white text-xl font-extrabold self-center">£646.97</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= TAB 7: IT SUPERIOR ADMIN & EMAIL SETTINGS ================= -->
+      <!-- ================= TAB 5: IT SUPERIOR ADMIN & EMAIL SETTINGS ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
@@ -1154,67 +1047,6 @@
           showToast(`✕ Location Access Required: ${errDetail}`, "bg-rose-50 text-rose-800 border-rose-200");
         },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-      );
-    }
-
-    function updateClockShiftDetails() {
-      const sid = parseInt(document.getElementById('clockShiftSelect').value);
-      const s = shifts.find(x => x.id === sid);
-      const targetPostcode = document.getElementById('targetPostcode');
-      const targetAddress = document.getElementById('targetAddress');
-
-      if (s) {
-        const cl = clients.find(c => c.id === s.clientId) || { postcode: "E16 2DN", address: "UK Address", name: "Client" };
-        if (targetPostcode) targetPostcode.textContent = cl.postcode || "E16 2DN";
-        if (targetAddress) targetAddress.textContent = `${cl.name} (${cl.address})`;
-      } else {
-        if (targetPostcode) targetPostcode.textContent = "N/A";
-        if (targetAddress) targetAddress.textContent = "No assignment selected";
-      }
-    }
-
-    function checkLiveProximity() {
-      const sid = parseInt(document.getElementById('clockShiftSelect').value);
-      const s = shifts.find(x => x.id === sid);
-      if (!s) return showToast("Please select an active assignment first.", "bg-rose-50 text-rose-800 border-rose-200");
-
-      const cl = clients.find(c => c.id === s.clientId);
-      if (!cl || !cl.lat || !cl.lng) return showToast("Client GPS coordinates missing.", "bg-rose-50 text-rose-800 border-rose-200");
-
-      const radar = document.getElementById('gpsRadarIcon');
-      if (radar) radar.className = "fa-solid fa-spinner fa-spin text-snoo-blue";
-      
-      const txt = document.getElementById('proximityLiveText');
-      if (txt) txt.textContent = "Acquiring device GPS sensors within the target zone...";
-
-      if (!navigator.geolocation) {
-        if (radar) radar.className = "fa-solid fa-satellite-dish text-rose-500";
-        if (txt) txt.innerHTML = "<span class='text-rose-600 font-bold'>GPS not supported on this browser/device.</span>";
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-          const distMeters = calculateDistanceInMeters(userLat, userLng, cl.lat, cl.lng);
-          const isWithin = distMeters <= MAX_GEOFENCE_METERS;
-
-          if (radar) radar.className = isWithin ? "fa-solid fa-circle-check text-emerald-600" : "fa-solid fa-triangle-exclamation text-amber-600";
-          if (txt) {
-            if (isWithin) {
-              txt.innerHTML = `<strong class="text-emerald-700">✓ On-Site at ${cl.name}:</strong> You are within the perimeter for <strong class="text-emerald-800">${cl.name}</strong> (${distMeters < 50 ? 'Immediate Doorstep' : `${distMeters.toFixed(0)}m away`}). Ready to clock in/out!`;
-            } else {
-              const distStr = distMeters >= 1000 ? `${(distMeters/1000).toFixed(2)} km` : `${distMeters.toFixed(0)} meters`;
-              txt.innerHTML = `<strong class="text-rose-700">✕ Out of Perimeter:</strong> You are <strong class="text-rose-800">${distStr}</strong> away from ${cl.name} (${cl.postcode || 'Site'}). (Geofence: ${MAX_GEOFENCE_METERS}m).`;
-            }
-          }
-        },
-        (err) => {
-          if (radar) radar.className = "fa-solid fa-circle-exclamation text-rose-600";
-          if (txt) txt.innerHTML = `<strong class="text-rose-700">GPS Permission Blocked:</strong> Please allow Location Access in your browser settings.`;
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
 
@@ -1867,10 +1699,14 @@
 
       // RESTORE SAVED TAB ON PAGE REFRESH
       let tabToOpen = localStorage.getItem('goldentree_active_tab') || 'shifts';
-      if (['it-admin', 'clock'].includes(tabToOpen) && currentUser.role !== 'it_admin') {
+      if (tabToOpen === 'it-admin' && currentUser.role !== 'it_admin') {
         tabToOpen = 'shifts';
       }
-      if (['manager', 'roster', 'invoices', 'hmrc'].includes(tabToOpen) && (isStaff || isPending)) {
+      if (['manager', 'roster', 'invoices'].includes(tabToOpen) && (isStaff || isPending)) {
+        tabToOpen = 'shifts';
+      }
+      // If user had clock or hmrc saved previously, gracefully fallback to shifts
+      if (['clock', 'hmrc'].includes(tabToOpen)) {
         tabToOpen = 'shifts';
       }
 
@@ -1892,8 +1728,6 @@
       renderRosterScheduler();
       updateITDirectory();
       updateITClientDirectory();
-      calcHMRC();
-      updateClockShiftDetails();
       if (tabToOpen === 'manager') updateManagerView();
     }
 
@@ -1924,11 +1758,11 @@
     }
 
     function navigateTab(tabName) {
-      if (['it-admin', 'clock'].includes(tabName) && currentUser.role !== 'it_admin') {
+      if (tabName === 'it-admin' && currentUser.role !== 'it_admin') {
         showToast("Access Denied: IT Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
-      if (['manager', 'roster', 'invoices', 'hmrc'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
+      if (['manager', 'roster', 'invoices'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
         showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1963,12 +1797,6 @@
       if (tabName === 'it-admin') {
         updateITDirectory();
         updateITClientDirectory();
-      }
-      if (tabName === 'clock') {
-        updateClockShiftDetails();
-        if (currentUser && currentUser.role === 'it_admin') {
-          checkLiveProximity();
-        }
       }
     }
 
@@ -2568,22 +2396,6 @@
           </div>
         `;
       }).join('');
-
-      const active = shifts.filter(s => s.status !== 'completed');
-      const currentSelected = document.getElementById('clockShiftSelect').value;
-
-      document.getElementById('clockShiftSelect').innerHTML = active.length ? 
-        active.map(s => {
-          const cl = clients.find(c => c.id === s.clientId) || { name: "Client", postcode: "UK", address: "Site" };
-          const schedStr = s.isBlock ? s.dateRangeStr : s.date;
-          return `<option value="${s.id}">${cl.name} - ${cl.postcode || cl.address} (${schedStr} | ${s.time || '08:00 - 16:00'})</option>`;
-        }).join('') : '<option value="">No claimed assignments for today</option>';
-      
-      if (currentSelected && active.some(s => s.id === parseInt(currentSelected))) {
-        document.getElementById('clockShiftSelect').value = currentSelected;
-      }
-      
-      updateClockShiftDetails();
     }
 
     async function claimShift(id) {
@@ -3135,35 +2947,6 @@
       showToast(`✓ Official invoice compiled for ${cl.name} (${periodLabel})!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
-    function calcHMRC() {
-      const gross = parseFloat(document.getElementById('hmrcGross').value) || 0;
-      const period = document.getElementById('hmrcPeriod').value;
-      const mult = period === 'weekly' ? 52 : (period === 'monthly' ? 12 : 1);
-      const annual = gross * mult;
-
-      const taxable = Math.max(0, annual - 12570);
-      let tax = 0;
-      if (taxable > 0) {
-        tax = Math.min(taxable, 37700) * 0.20 + Math.max(0, taxable - 37700) * 0.40;
-      }
-      const periodTax = tax / mult;
-
-      const weekly = annual / 52;
-      let empNI = 0, emplrNI = 0;
-      if (weekly > 242) empNI = (Math.min(weekly, 967) - 242) * 0.08 + Math.max(0, weekly - 967) * 0.02;
-      if (weekly > 175) emplrNI = (weekly - 175) * 0.138;
-
-      const pEmpNI = (empNI * 52) / mult;
-      const pEmplrNI = (emplrNI * 52) / mult;
-
-      document.getElementById('resGross').textContent = `£${gross.toFixed(2)}`;
-      document.getElementById('resTax').textContent = `- £${periodTax.toFixed(2)}`;
-      document.getElementById('resEmpNI').textContent = `- £${pEmpNI.toFixed(2)}`;
-      document.getElementById('resNet').textContent = `£${(gross - periodTax - pEmpNI).toFixed(2)}`;
-      document.getElementById('resEmplrNI').textContent = `+ £${pEmplrNI.toFixed(2)}`;
-      document.getElementById('resHMRC').textContent = `£${(periodTax + pEmpNI + pEmplrNI).toFixed(2)}`;
-    }
-
     function showToast(m, cls) {
       const t = document.getElementById('toast');
       t.className = `max-w-xl mx-auto mt-4 p-4 rounded-2xl shadow-lg border text-sm font-bold flex justify-between items-center ${cls}`;
@@ -3177,3 +2960,4 @@
   </script>
 </body>
 </html>
+```
