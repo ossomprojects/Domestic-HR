@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GTC HR & Staffing Portal</title>
+  <title>GTC HR - Domestic & Healthcare Staffing Portal</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,9 +12,7 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#f0fdfa',
-              100: '#ccfbf1',
+            teal: {
               500: '#14b8a6',
               600: '#0d9488',
               700: '#0f766e',
@@ -30,7 +28,7 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Firebase App & Realtime Database SDKs (Compat v9) -->
+  <!-- Firebase Compat SDKs (v9.23.0) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -38,221 +36,166 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
-    .custom-scrollbar::-webkit-scrollbar {
+    .custom-scroll::-webkit-scrollbar {
       height: 6px;
       width: 6px;
     }
-    .custom-scrollbar::-webkit-scrollbar-track {
+    .custom-scroll::-webkit-scrollbar-track {
       background: #f1f5f9;
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
+    .custom-scroll::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col antialiased text-base">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased text-sm">
 
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="bg-slate-900 text-white shadow sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <!-- Brand Logo & Title -->
+        
+        <!-- Logo & Title -->
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white font-extrabold text-xl shadow">
+          <div class="w-9 h-9 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow">
             <i class="fa-solid fa-people-roof"></i>
           </div>
           <div>
-            <h1 class="font-bold text-lg leading-tight tracking-wide flex items-center gap-2">
+            <h1 class="font-bold text-base tracking-wide flex items-center gap-2">
               GTC Domestic HR
-              <span class="text-xs bg-teal-500/20 text-teal-300 font-medium px-2 py-0.5 rounded border border-teal-500/30">Enterprise</span>
             </h1>
-            <p class="text-xs text-slate-400 hidden sm:block">Healthcare, Domestic & Facilities Workforce Management</p>
+            <p class="text-xs text-slate-400">Workforce Scheduling & Staffing Portal</p>
           </div>
         </div>
 
-        <!-- Right Side: Cloud Status, Active User & Controls -->
+        <!-- Right Side: Live Cloud Badge, Active User & Login/Logout -->
         <div class="flex items-center space-x-3">
-          <!-- Live Cloud Status Pill -->
-          <div id="cloud-status-badge" class="hidden sm:flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 font-medium text-slate-300">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="cloud-status-text">Cloud Sync Live</span>
+          <!-- Firebase Live Cloud Status Pill -->
+          <div id="cloud-status-pill" class="flex items-center space-x-2 text-xs px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+            <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span id="cloud-status-text">Connecting...</span>
           </div>
 
-          <!-- Active User Pill -->
-          <div id="user-profile-badge" class="flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
-            <div class="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs uppercase" id="nav-user-avatar">
-              U
+          <!-- Active User Badge -->
+          <div class="flex items-center space-x-2 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
+            <div class="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs uppercase" id="nav-avatar">
+              A
             </div>
-            <div class="text-left hidden md:block leading-tight">
-              <div class="text-sm font-semibold text-slate-100" id="nav-user-name">Guest User</div>
-              <div class="text-xs text-teal-400 uppercase tracking-wider font-semibold" id="nav-user-role">STAFF</div>
+            <div class="text-left hidden sm:block">
+              <span class="text-xs font-semibold block text-slate-100" id="nav-user-name">IT Admin</span>
+              <span class="text-[10px] text-teal-400 uppercase font-bold" id="nav-user-role">ADMIN</span>
             </div>
           </div>
 
-          <!-- Auth Button (Login / Logout) -->
-          <button id="btn-auth-action" onclick="handleAuthAction()" class="text-sm bg-teal-600 hover:bg-teal-500 text-white px-3.5 py-1.5 rounded-lg font-semibold shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            <span id="auth-btn-label">Login</span>
+          <!-- Auth Button -->
+          <button id="btn-auth" onclick="handleAuthButtonClick()" class="text-xs bg-teal-600 hover:bg-teal-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span id="btn-auth-text">Logout</span>
           </button>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 border-t border-slate-800 text-sm font-medium custom-scrollbar" id="main-nav-tabs">
-        <button onclick="switchTab('roster')" id="tab-btn-roster" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap bg-teal-600 text-white font-semibold flex items-center gap-2">
-          <i class="fa-solid fa-calendar-week"></i>
-          Roster Scheduler
+      <nav class="flex space-x-1 overflow-x-auto py-2 border-t border-slate-800 text-xs font-medium custom-scroll" id="nav-tabs">
+        <button onclick="switchTab('roster')" id="tab-roster" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap bg-teal-600 text-white font-semibold">
+          <i class="fa-solid fa-calendar-week mr-1.5"></i> Roster Scheduler
         </button>
-        <button onclick="switchTab('marketplace')" id="tab-btn-marketplace" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-store"></i>
-          Open Marketplace
+        <button onclick="switchTab('marketplace')" id="tab-marketplace" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-store mr-1.5"></i> Open Marketplace
         </button>
-        <button onclick="switchTab('post-shift')" id="tab-btn-post-shift" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-circle-plus"></i>
-          Post Shift
+        <button onclick="switchTab('post-shift')" id="tab-post-shift" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-plus-circle mr-1.5"></i> Post Shifts
         </button>
-        <button onclick="switchTab('timesheets')" id="tab-btn-timesheets" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Timesheets & Clock In
+        <button onclick="switchTab('timesheets')" id="tab-timesheets" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-clock mr-1.5"></i> Timesheets
         </button>
-        <button onclick="switchTab('invoices')" id="tab-btn-invoices" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-file-invoice-dollar"></i>
-          Invoices
+        <button onclick="switchTab('invoices')" id="tab-invoices" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-file-invoice mr-1.5"></i> Invoices
         </button>
-        <button onclick="switchTab('staff-dir')" id="tab-btn-staff-dir" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-users"></i>
-          Staff Directory
+        <button onclick="switchTab('staff-dir')" id="tab-staff-dir" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-users mr-1.5"></i> Staff Directory
         </button>
-        <button onclick="switchTab('clients')" id="tab-btn-clients" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-building-user"></i>
-          Clients / Facilities
+        <button onclick="switchTab('clients')" id="tab-clients" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-building mr-1.5"></i> Clients
         </button>
-        <button onclick="switchTab('it-admin')" id="tab-btn-it-admin" class="nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-server"></i>
-          IT Admin & Cloud
+        <button onclick="switchTab('it-admin')" id="tab-it-admin" class="nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-server mr-1.5"></i> IT Admin
         </button>
       </nav>
     </div>
   </header>
 
-  <!-- ================= MAIN CONTAINER ================= -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- ================= MAIN APP VIEWPORT ================= -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
 
-    <!-- TAB 1: WEEKLY MATRIX ROSTER SCHEDULER (Matched to media_1789737793490.png) -->
-    <section id="view-roster" class="tab-view block space-y-5">
-      <!-- Roster Header & Controls Bar -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <!-- Title & Week Date Range Label -->
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="w-2.5 h-6 bg-teal-600 rounded-full"></span>
-            <h2 class="text-xl font-bold text-slate-900">Weekly Roster Matrix</h2>
-            <span class="bg-teal-100 text-teal-800 text-xs px-2.5 py-0.5 rounded-full font-semibold">Live Who's Where</span>
-          </div>
-          <p class="text-sm text-slate-500 mt-1" id="roster-week-label">Loading week schedule...</p>
-        </div>
-
-        <!-- Week Navigator & Quick Actions -->
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-          <!-- Week Navigation Buttons -->
-          <div class="inline-flex rounded-lg shadow-sm border border-slate-300 bg-slate-50 p-1">
-            <button onclick="changeRosterWeek(-1)" title="Previous Week" class="px-3 py-1.5 rounded-md hover:bg-white text-slate-700 hover:shadow-sm text-sm font-semibold transition flex items-center gap-1">
-              <i class="fa-solid fa-chevron-left"></i>
-              <span class="hidden sm:inline">Prev</span>
+    <!-- ================= TAB 1: WEEKLY ROSTER SCHEDULER (media_1789737793490.png) ================= -->
+    <section id="view-roster" class="tab-view block space-y-4">
+      
+      <!-- Top Bar: Week Navigation & Filter -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <!-- Week Selector & Range Display -->
+        <div class="flex items-center space-x-2">
+          <div class="inline-flex rounded-lg border border-slate-300 bg-slate-50 p-0.5 text-xs font-semibold">
+            <button onclick="navigateWeek(-1)" class="px-2.5 py-1.5 rounded hover:bg-white text-slate-700 transition">
+              <i class="fa-solid fa-chevron-left mr-1"></i> Prev
             </button>
-            <button onclick="resetRosterWeek()" title="Current Week" class="px-3 py-1.5 rounded-md hover:bg-white text-slate-700 hover:shadow-sm text-sm font-semibold transition">
+            <button onclick="navigateWeek(0)" class="px-2.5 py-1.5 rounded hover:bg-white text-slate-700 transition">
               This Week
             </button>
-            <button onclick="changeRosterWeek(1)" title="Next Week" class="px-3 py-1.5 rounded-md hover:bg-white text-slate-700 hover:shadow-sm text-sm font-semibold transition flex items-center gap-1">
-              <span class="hidden sm:inline">Next</span>
-              <i class="fa-solid fa-chevron-right"></i>
+            <button onclick="navigateWeek(1)" class="px-2.5 py-1.5 rounded hover:bg-white text-slate-700 transition">
+              Next <i class="fa-solid fa-chevron-right ml-1"></i>
             </button>
           </div>
+          <span id="roster-week-display" class="text-sm font-bold text-slate-800 ml-2">Loading week...</span>
+        </div>
 
-          <!-- Quick Post Shift Button (Consultant, Manager, IT Admin) -->
-          <button id="btn-roster-quick-add" onclick="openQuickScheduleModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 rounded-lg text-sm font-semibold shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-calendar-plus"></i>
-            <span>Schedule Shift</span>
+        <!-- Filters & Action -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Filter by Client -->
+          <select id="roster-filter-facility" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium">
+            <option value="all">All Facilities</option>
+          </select>
+
+          <!-- Filter by Role -->
+          <select id="roster-filter-role" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium">
+            <option value="all">All Job Roles</option>
+            <option value="Support worker">Support worker</option>
+            <option value="House keeper">House keeper</option>
+            <option value="General Cleaner">General Cleaner</option>
+            <option value="Domestic Assistant">Domestic Assistant</option>
+            <option value="Maintenance person">Maintenance person</option>
+            <option value="Kitchen Porter">Kitchen Porter</option>
+          </select>
+
+          <!-- Filter by Creator (Consultants / Managers) -->
+          <select id="roster-filter-creator" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium">
+            <option value="all">All Schedulers</option>
+          </select>
+
+          <!-- Schedule New Shift Button (Consultants, Managers, IT) -->
+          <button onclick="openScheduleShiftForClient()" id="btn-roster-add-shift" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+            <i class="fa-solid fa-plus"></i> Schedule Shift
           </button>
         </div>
       </div>
 
-      <!-- Filter Bar: Facility, Role, Creator (Posted By) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3.5 flex flex-wrap items-center justify-between gap-3 text-sm">
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Facility Filter -->
-          <div class="flex items-center space-x-1.5">
-            <label class="text-slate-500 font-medium text-xs uppercase tracking-wide">Facility:</label>
-            <select id="roster-filter-client" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-medium focus:ring-teal-500 focus:border-teal-500">
-              <option value="all">All Facilities</option>
-            </select>
-          </div>
-
-          <!-- Role Filter -->
-          <div class="flex items-center space-x-1.5">
-            <label class="text-slate-500 font-medium text-xs uppercase tracking-wide">Role:</label>
-            <select id="roster-filter-role" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-medium focus:ring-teal-500 focus:border-teal-500">
-              <option value="all">All Job Roles</option>
-              <option value="Support worker">Support worker</option>
-              <option value="House keeper">House keeper</option>
-              <option value="General Cleaner">General Cleaner</option>
-              <option value="Domestic Assistant">Domestic Assistant</option>
-              <option value="Maintenance person">Maintenance person</option>
-              <option value="Kitchen Porter">Kitchen Porter</option>
-            </select>
-          </div>
-
-          <!-- Posted By (Consultant/Manager) Filter -->
-          <div class="flex items-center space-x-1.5">
-            <label class="text-slate-500 font-medium text-xs uppercase tracking-wide">Posted By:</label>
-            <select id="roster-filter-creator" onchange="renderRosterGrid()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-medium focus:ring-teal-500 focus:border-teal-500">
-              <option value="all">All Schedulers</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Legend / Stats -->
-        <div class="flex items-center space-x-4 text-xs font-semibold text-slate-500">
-          <div class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded-full bg-teal-600"></span>
-            <span>Assigned Shift</span>
-          </div>
-          <div class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-            <span>Open Marketplace</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Roster Matrix Container (Horizontal Scrollable Table) -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto custom-scrollbar">
-          <table class="w-full border-collapse min-w-[980px]" id="roster-table">
-            <!-- Day of Week Table Headers -->
+      <!-- Weekly Matrix Table (7-Day Columns + Collapsible Facility Rows) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full border-collapse min-w-[950px]" id="roster-grid-table">
             <thead>
-              <tr class="bg-slate-800 text-white text-sm" id="roster-header-row">
-                <th class="w-64 p-3.5 text-left font-bold border-r border-slate-700">
-                  <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-hospital text-teal-400"></i>
-                    <span>Client / Facility</span>
-                  </div>
-                </th>
-                <!-- 7 Day Columns injected dynamically: Mon - Sun -->
+              <tr class="bg-slate-800 text-white text-xs" id="roster-table-headers">
+                <th class="w-60 p-3 text-left font-bold border-r border-slate-700">Client / Facility</th>
+                <!-- Injected: 7 day columns (e.g. 17 Mon, 18 Tue, ...) -->
               </tr>
             </thead>
-            <!-- Facility Rows with Shift Cards inside each Day Column -->
-            <tbody id="roster-table-body" class="divide-y divide-slate-200 text-sm">
-              <tr>
-                <td colspan="8" class="p-8 text-center text-slate-400">
-                  <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-teal-600"></i>
-                  <p>Loading Weekly Roster Matrix...</p>
-                </td>
-              </tr>
+            <tbody id="roster-table-body" class="text-xs divide-y divide-slate-200">
+              <!-- Dynamically populated rows -->
             </tbody>
           </table>
         </div>
@@ -260,55 +203,42 @@
     </section>
 
 
-    <!-- TAB 2: OPEN MARKETPLACE (Claimable Shifts) -->
-    <section id="view-marketplace" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <!-- ================= TAB 2: OPEN MARKETPLACE ================= -->
+    <section id="view-marketplace" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-store text-teal-600"></i>
-            Open Marketplace Shifts
-          </h2>
-          <p class="text-sm text-slate-500">Pick up shifts matching your accredited skills and schedule.</p>
+          <h2 class="text-base font-bold text-slate-900">Open Shifts Marketplace</h2>
+          <p class="text-xs text-slate-500">Pick up open shifts at accredited care facilities.</p>
         </div>
-        <div class="flex flex-wrap items-center gap-3">
-          <input type="text" id="market-search" placeholder="Search by role or client..." oninput="renderMarketplace()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500 w-64" />
-        </div>
+        <input type="text" id="market-filter-input" placeholder="Search by role or facility..." oninput="renderMarketplaceView()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-60" />
       </div>
 
-      <!-- Marketplace Cards Grid -->
-      <div id="marketplace-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Dynamically rendered -->
+      <div id="marketplace-card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Dynamically rendered marketplace shifts -->
       </div>
     </section>
 
 
-    <!-- TAB 3: POST SHIFTS (Consultant, Manager, IT Admin) -->
-    <section id="view-post-shift" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-3xl mx-auto">
-        <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
-          <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-lg">
-            <i class="fa-solid fa-calendar-plus"></i>
-          </div>
-          <div>
-            <h2 class="text-xl font-bold text-slate-900">Post or Directly Assign Shift</h2>
-            <p class="text-sm text-slate-500">Available to Consultants, Managers, and IT Administrators.</p>
-          </div>
-        </div>
+    <!-- ================= TAB 3: POST SHIFT ================= -->
+    <section id="view-post-shift" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 max-w-2xl mx-auto">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Post or Directly Assign Shift</h2>
+        <p class="text-xs text-slate-500 mb-5">Available for Consultants, Managers, and IT Administrators.</p>
 
-        <form id="form-post-shift" onsubmit="handlePostShift(event)" class="space-y-4">
-          <!-- Client / Facility Dropdown -->
+        <form id="form-post-new-shift" onsubmit="handleCreateShiftSubmit(event)" class="space-y-4">
+          <!-- Client Facility -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Client / Care Facility *</label>
-            <select id="post-client" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-teal-500 focus:border-teal-500">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Client / Care Facility *</label>
+            <select id="post-input-client" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs">
               <option value="">-- Select Client / Facility --</option>
             </select>
           </div>
 
-          <!-- Job Title Dropdown (Directly placed above service description) -->
+          <!-- Standard 6 Job Roles (Directly above Service Description) -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Required Job Role *</label>
-            <select id="post-job-title" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-teal-500 focus:border-teal-500">
-              <option value="">-- Select Standard Job Title --</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Job Role *</label>
+            <select id="post-input-role" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs">
+              <option value="">-- Select Job Title --</option>
               <option value="Support worker">1. Support worker</option>
               <option value="House keeper">2. House keeper</option>
               <option value="General Cleaner">3. General Cleaner</option>
@@ -320,248 +250,222 @@
 
           <!-- Service Description -->
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1">Service Description / Care Notes</label>
-            <textarea id="post-desc" rows="3" placeholder="Provide shift briefing, duties, wardrobe requirements or special instructions..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-teal-500 focus:border-teal-500"></textarea>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Service Description / Care Notes</label>
+            <textarea id="post-input-desc" rows="3" placeholder="Duties, medication support notes or wardrobe requirements..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs"></textarea>
           </div>
 
-          <!-- Date & Time Grid -->
+          <!-- Date & Time -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">Shift Date *</label>
-              <input type="date" id="post-date" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Shift Date *</label>
+              <input type="date" id="post-input-date" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">Start Time *</label>
-              <input type="time" id="post-start" required value="09:00" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Start Time *</label>
+              <input type="time" id="post-input-start" required value="09:00" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">End Time *</label>
-              <input type="time" id="post-end" required value="17:00" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">End Time *</label>
+              <input type="time" id="post-input-end" required value="17:00" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
             </div>
           </div>
 
-          <!-- Pay Rate & Charge Rate -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Staff Pay & Client Charge -->
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">Staff Pay Rate (£/hr) *</label>
-              <input type="number" id="post-staff-rate" step="0.25" min="10" value="14.50" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Staff Pay (£/hr) *</label>
+              <input type="number" id="post-input-staff-rate" step="0.25" min="10" value="14.50" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs" />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-1">Client Charge Rate (£/hr) *</label>
-              <input type="number" id="post-client-rate" step="0.25" min="12" value="21.50" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Client Charge (£/hr) *</label>
+              <input type="number" id="post-input-client-rate" step="0.25" min="12" value="21.50" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs" />
             </div>
           </div>
 
-          <!-- Assignment Mode: Open Marketplace vs Direct Staff Assignment -->
-          <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-xl space-y-3">
-            <label class="block text-sm font-bold text-teal-900">Shift Allocation / Assignment</label>
+          <!-- Direct Assignment vs Open Marketplace -->
+          <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl space-y-2">
+            <span class="block text-xs font-bold text-teal-900">Shift Allocation</span>
             <div class="flex items-center space-x-4">
-              <label class="flex items-center space-x-2 text-sm text-slate-800 cursor-pointer">
-                <input type="radio" name="assignMode" value="marketplace" checked onchange="toggleAssignSelect()" class="text-teal-600 focus:ring-teal-500" />
-                <span>Post to Open Marketplace</span>
+              <label class="flex items-center space-x-2 text-xs cursor-pointer">
+                <input type="radio" name="postAllocation" value="marketplace" checked onchange="togglePostAllocationUI()" class="text-teal-600" />
+                <span>Publish to Open Marketplace</span>
               </label>
-              <label class="flex items-center space-x-2 text-sm text-slate-800 cursor-pointer">
-                <input type="radio" name="assignMode" value="direct" onchange="toggleAssignSelect()" class="text-teal-600 focus:ring-teal-500" />
-                <span>Directly Assign to Staff Member</span>
+              <label class="flex items-center space-x-2 text-xs cursor-pointer">
+                <input type="radio" name="postAllocation" value="direct" onchange="togglePostAllocationUI()" class="text-teal-600" />
+                <span>Directly Assign to Staff</span>
               </label>
             </div>
-            <!-- Direct Assign Dropdown -->
-            <div id="direct-assign-box" class="hidden">
-              <select id="post-assignee" class="w-full bg-white border border-teal-300 rounded-lg px-3 py-2 text-sm font-medium focus:ring-teal-500 focus:border-teal-500">
-                <option value="">-- Choose Registered Staff Member --</option>
+            <div id="post-direct-staff-wrapper" class="hidden pt-1">
+              <select id="post-input-assignee" class="w-full bg-white border border-teal-300 rounded-lg px-3 py-1.5 text-xs">
+                <option value="">-- Choose Staff Member --</option>
               </select>
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>Confirm & Publish Shift</span>
+          <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-lg text-xs transition">
+            Publish Shift
           </button>
         </form>
       </div>
     </section>
 
 
-    <!-- TAB 4: TIMESHEETS & CLOCK IN/OUT -->
-    <section id="view-timesheets" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-clock text-teal-600"></i>
-            Shift Timesheets & GPS Clock In
-          </h2>
-          <p class="text-sm text-slate-500">Verify attendance, GPS verification, manager sign-off and digital signatures.</p>
-        </div>
+    <!-- ================= TAB 4: TIMESHEETS ================= -->
+    <section id="view-timesheets" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <h2 class="text-base font-bold text-slate-900">Shift Timesheets</h2>
+        <p class="text-xs text-slate-500">Attendance tracking, sign-offs, and completion records.</p>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
-                <th class="p-3.5">Staff Member</th>
-                <th class="p-3.5">Client / Facility</th>
-                <th class="p-3.5">Date</th>
-                <th class="p-3.5">Hours</th>
-                <th class="p-3.5">Staff Pay</th>
-                <th class="p-3.5">Status</th>
-                <th class="p-3.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="timesheets-table-body" class="divide-y divide-slate-200">
-              <!-- Dynamically rendered -->
-            </tbody>
-          </table>
-        </div>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+              <th class="p-3">Staff</th>
+              <th class="p-3">Facility</th>
+              <th class="p-3">Date</th>
+              <th class="p-3">Hours</th>
+              <th class="p-3">Pay Rate</th>
+              <th class="p-3">Status</th>
+              <th class="p-3 text-right">Sign Off</th>
+            </tr>
+          </thead>
+          <tbody id="timesheets-body" class="divide-y divide-slate-200">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
       </div>
     </section>
 
 
-    <!-- TAB 5: INVOICES -->
-    <section id="view-invoices" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <!-- ================= TAB 5: INVOICES ================= -->
+    <section id="view-invoices" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-file-invoice-dollar text-teal-600"></i>
-            Client Invoicing & Billing
-          </h2>
-          <p class="text-sm text-slate-500">Generate, view, and print invoices with VAT calculation per facility.</p>
+          <h2 class="text-base font-bold text-slate-900">Client Invoices</h2>
+          <p class="text-xs text-slate-500">Generate itemized billing with VAT per facility.</p>
         </div>
-        <div class="flex flex-wrap items-center gap-3">
-          <select id="invoice-client-select" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
-            <option value="">-- Select Client for Invoice --</option>
+        <div class="flex items-center gap-2">
+          <select id="invoice-facility-select" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <option value="">-- Select Client --</option>
           </select>
-          <button onclick="generateInvoiceForClient()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-receipt"></i>
-            <span>Generate Invoice</span>
+          <button onclick="handleGenerateInvoice()" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            Generate
           </button>
         </div>
       </div>
 
-      <div id="invoice-preview-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 hidden">
-        <!-- Printable Invoice Output -->
+      <div id="invoice-output-box" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hidden">
+        <!-- Rendered printable invoice -->
       </div>
     </section>
 
 
-    <!-- TAB 6: STAFF DIRECTORY -->
-    <section id="view-staff-dir" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-users text-teal-600"></i>
-            Accredited Staff Directory
-          </h2>
-          <p class="text-sm text-slate-500">List of registered healthcare and domestic workforce staff synced from cloud.</p>
-        </div>
+    <!-- ================= TAB 6: STAFF DIRECTORY ================= -->
+    <section id="view-staff-dir" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <h2 class="text-base font-bold text-slate-900">Accredited Staff Directory</h2>
+        <p class="text-xs text-slate-500">Active workforce registered and synced from Firebase cloud.</p>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
-                <th class="p-3.5">Name</th>
-                <th class="p-3.5">Email</th>
-                <th class="p-3.5">Role</th>
-                <th class="p-3.5">Primary Job Title</th>
-                <th class="p-3.5">Status</th>
-                <th class="p-3.5 text-right">Access</th>
-              </tr>
-            </thead>
-            <tbody id="staff-directory-body" class="divide-y divide-slate-200">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+              <th class="p-3">Staff Name</th>
+              <th class="p-3">Email Address</th>
+              <th class="p-3">System Role</th>
+              <th class="p-3">Job Role</th>
+              <th class="p-3 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody id="staff-directory-rows" class="divide-y divide-slate-200">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
       </div>
     </section>
 
 
-    <!-- TAB 7: CLIENTS / FACILITIES -->
-    <section id="view-clients" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <!-- ================= TAB 7: CLIENTS / FACILITIES ================= -->
+    <section id="view-clients" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-building-user text-teal-600"></i>
-            Clients & Care Facilities
-          </h2>
-          <p class="text-sm text-slate-500">Manage unique client locations, billing rates, and points of contact.</p>
+          <h2 class="text-base font-bold text-slate-900">Clients & Facilities</h2>
+          <p class="text-xs text-slate-500">Care homes, hostels and partner facility profiles.</p>
         </div>
-        <button onclick="openAddClientModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1.5">
-          <i class="fa-solid fa-plus"></i>
-          <span>Add Facility</span>
+        <button onclick="openClientModal()" class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+          + Add Facility
         </button>
       </div>
 
-      <div id="clients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Dynamically rendered -->
+      <div id="clients-card-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Dynamically rendered client cards -->
       </div>
     </section>
 
 
-    <!-- TAB 8: IT ADMIN & CLOUD SETTINGS -->
-    <section id="view-it-admin" class="tab-view hidden space-y-5">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+    <!-- ================= TAB 8: IT ADMIN & CLOUD ================= -->
+    <section id="view-it-admin" class="tab-view hidden space-y-4">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-5">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-server text-teal-600"></i>
-            IT Admin & Cloud Infrastructure
-          </h2>
-          <p class="text-sm text-slate-500">Monitor real-time Firebase RTDB telemetry and EmailJS notification dispatchers.</p>
+          <h2 class="text-base font-bold text-slate-900">IT Administrator Cloud Dashboard</h2>
+          <p class="text-xs text-slate-500">Monitor live Firebase RTDB sync and test EmailJS dispatch.</p>
         </div>
 
-        <!-- Cloud Diagnostic Card -->
+        <!-- Connection Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Firebase Card -->
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <!-- Firebase Live Card -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-sm text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-fire text-amber-500"></i> Firebase Realtime DB
+              <span class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-fire text-amber-500"></i> Firebase Realtime Database
               </span>
-              <span id="it-firebase-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">CONNECTED</span>
+              <span id="it-rtdb-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">CHECKING...</span>
             </div>
             <div class="text-xs text-slate-600 space-y-1">
               <div><strong>Project ID:</strong> ennins-domestic-hr</div>
-              <div class="truncate"><strong>Endpoint:</strong> https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app</div>
-              <div><strong>Active Cloud Shifts:</strong> <span id="it-count-shifts">0</span></div>
-              <div><strong>Registered Users:</strong> <span id="it-count-users">0</span></div>
+              <div class="truncate"><strong>Database URL:</strong> https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app</div>
+              <div><strong>Cloud Shifts Count:</strong> <span id="it-stat-shifts">0</span></div>
+              <div><strong>Cloud Staff Users Count:</strong> <span id="it-stat-users">0</span></div>
             </div>
-            <button onclick="syncAllToFirebase()" class="w-full bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-              <i class="fa-solid fa-rotate mr-1"></i> Force Full Cloud Sync
-            </button>
+            <div class="pt-1 flex gap-2">
+              <button onclick="testFirebaseLiveConnection()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-vial mr-1"></i> Test Read / Write
+              </button>
+              <button onclick="forceSyncAllCloud()" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Push Sync All
+              </button>
+            </div>
           </div>
 
           <!-- EmailJS Card -->
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-sm text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-envelope text-indigo-500"></i> EmailJS Service
+              <span class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-envelope text-indigo-500"></i> EmailJS Notification Service
               </span>
-              <span id="it-email-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">READY</span>
+              <span id="it-email-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">CONFIGURED</span>
             </div>
             <div class="text-xs text-slate-600 space-y-1">
-              <div><strong>Service ID:</strong> <span id="lbl-emailjs-service">service_gtchr</span></div>
-              <div><strong>Template ID:</strong> <span id="lbl-emailjs-template">template_shift_alert</span></div>
-              <div><strong>Public Key:</strong> <span id="lbl-emailjs-key">Configured</span></div>
+              <div><strong>Service ID:</strong> <span id="it-lbl-email-service">service_gtchr</span></div>
+              <div><strong>Template ID:</strong> <span id="it-lbl-email-template">template_shift_alert</span></div>
+              <div><strong>Public Key:</strong> <span id="it-lbl-email-key">Configured</span></div>
             </div>
-            <button onclick="openEmailJsConfigModal()" class="w-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-              <i class="fa-solid fa-gear mr-1"></i> Configure EmailJS Credentials
-            </button>
+            <div class="pt-1 flex gap-2">
+              <button onclick="openEmailConfigModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-gear mr-1"></i> Edit Settings
+              </button>
+              <button onclick="testEmailJsDispatch()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-paper-plane mr-1"></i> Send Test Email
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Danger Zone / Data Management -->
-        <div class="p-4 bg-red-50 border border-red-200 rounded-xl space-y-3">
-          <h4 class="font-bold text-sm text-red-900">Database Tools & Export</h4>
-          <div class="flex flex-wrap items-center gap-3">
-            <button onclick="exportDataJSON()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-lg text-xs font-semibold">
-              <i class="fa-solid fa-download mr-1"></i> Export Local JSON Backup
-            </button>
-            <button onclick="resetDefaultTestData()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-xs font-semibold">
-              <i class="fa-solid fa-rotate-left mr-1"></i> Reset Standard Demo Facilities & Shifts
-            </button>
-          </div>
+        <!-- Master Account Reminder -->
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900">
+          <strong>Master IT Login:</strong> Email: <code class="font-mono bg-white px-1 py-0.5 rounded">admin@gtchr.co.uk</code> | Password: <code class="font-mono bg-white px-1 py-0.5 rounded">cookies</code> (case-insensitive)
         </div>
       </div>
     </section>
@@ -569,33 +473,173 @@
   </main>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-xs">
-    <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
-      <p class="font-medium text-slate-300">GTC Domestic HR & Healthcare Staffing Solutions</p>
-      <p>Registered Address: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ</p>
-      <p>Portal & Documentation: <a href="https://gtchr.co.uk" target="_blank" class="text-teal-400 hover:underline">https://gtchr.co.uk</a> | Master Login: <code class="bg-slate-800 px-1.5 py-0.5 rounded text-slate-200">admin@gtchr.co.uk</code> / <code class="bg-slate-800 px-1.5 py-0.5 rounded text-slate-200">cookies</code></p>
+  <footer class="bg-slate-900 text-slate-400 py-5 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 text-center space-y-1.5">
+      <p class="font-semibold text-slate-300">GTC Domestic HR & Healthcare Staffing Portal</p>
+      <p>Registered Office: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ</p>
+      <p><a href="https://gtchr.co.uk" target="_blank" class="text-teal-400 hover:underline">https://gtchr.co.uk</a></p>
     </div>
   </footer>
 
   <!-- ================= MODALS ================= -->
 
-  <!-- MODAL 1: AUTH LOGIN / SIGNUP -->
-  <div id="modal-auth" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900" id="auth-modal-title">Staff & Portal Login</h3>
-        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+  <!-- MODAL 1: AMEND SHIFT (Consultants, Managers, IT Admins) -->
+  <div id="modal-amend-shift" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-teal-600"></i> Amend Shift Details
+        </h3>
+        <button onclick="closeAmendShiftModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <form id="form-auth" onsubmit="handleAuthSubmit(event)" class="space-y-3">
-        <div id="auth-signup-fields" class="space-y-3 hidden">
+      <form id="form-amend-shift-modal" onsubmit="handleSaveAmendShift(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="amend-target-id" />
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Facility Name</label>
+          <input type="text" id="amend-input-facility" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Job Role</label>
+          <select id="amend-input-role" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs">
+            <option value="Support worker">Support worker</option>
+            <option value="House keeper">House keeper</option>
+            <option value="General Cleaner">General Cleaner</option>
+            <option value="Domestic Assistant">Domestic Assistant</option>
+            <option value="Maintenance person">Maintenance person</option>
+            <option value="Kitchen Porter">Kitchen Porter</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
-            <input type="text" id="auth-name" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="block font-semibold text-slate-700 mb-1">Date</label>
+            <input type="date" id="amend-input-date" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 text-xs" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Account Role *</label>
-            <select id="auth-role" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <label class="block font-semibold text-slate-700 mb-1">Start</label>
+            <input type="time" id="amend-input-start" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 text-xs" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">End</label>
+            <input type="time" id="amend-input-end" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 text-xs" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Staff Rate (£/hr)</label>
+            <input type="number" id="amend-input-staff-rate" step="0.25" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Client Charge (£/hr)</label>
+            <input type="number" id="amend-input-client-rate" step="0.25" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Care Notes</label>
+          <textarea id="amend-input-desc" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs"></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeAmendShiftModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button>
+          <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-1.5 rounded-lg font-bold">Save & Sync</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL 2: REASSIGN SHIFT (Consultants, Managers, IT Admins) -->
+  <div id="modal-reassign-shift" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-user-pen text-teal-600"></i> Reassign Shift Worker
+        </h3>
+        <button onclick="closeReassignShiftModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <input type="hidden" id="reassign-target-id" />
+
+        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1">
+          <div><strong>Facility:</strong> <span id="reassign-info-facility">-</span></div>
+          <div><strong>Shift:</strong> <span id="reassign-info-datetime">-</span></div>
+          <div><strong>Current Staff:</strong> <span id="reassign-info-current" class="font-bold text-teal-700">-</span></div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Assign To:</label>
+          <select id="reassign-select-worker" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs">
+            <option value="__marketplace__">⚠️ Return to Open Marketplace (Unclaimed)</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeReassignShiftModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button>
+          <button type="button" onclick="handleConfirmReassignment()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-1.5 rounded-lg font-bold">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL 3: ADD FACILITY -->
+  <div id="modal-client" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">Add New Care Facility</h3>
+        <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="form-new-client" onsubmit="handleSaveClientSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Unique Facility Name *</label>
+          <input type="text" id="new-client-input-name" required placeholder="e.g. Changing Lives - The Vineries" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Address & Postcode</label>
+          <input type="text" id="new-client-input-address" placeholder="e.g. The Vineries, Newcastle, NE4 8BE" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Contact Manager</label>
+          <input type="text" id="new-client-input-contact" placeholder="e.g. Sarah Taylor" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Default Hourly Charge (£)</label>
+          <input type="number" id="new-client-input-rate" step="0.5" value="21.50" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeClientModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button>
+          <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-1.5 rounded-lg font-bold">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL 4: AUTH (LOGIN & REGISTRATION) -->
+  <div id="modal-auth-dialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900" id="auth-dialog-title">Login to GTC HR</h3>
+        <button onclick="closeAuthDialog()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="form-auth-dialog" onsubmit="handleAuthDialogSubmit(event)" class="space-y-3 text-xs">
+        <div id="auth-reg-fields" class="space-y-3 hidden">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Full Name *</label>
+            <input type="text" id="auth-input-name" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Role *</label>
+            <select id="auth-input-role" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs">
               <option value="staff">Care / Domestic Staff</option>
               <option value="consultant">Consultant</option>
               <option value="manager">Manager</option>
@@ -603,8 +647,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Primary Job Role</label>
-            <select id="auth-job-title" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <label class="block font-semibold text-slate-700 mb-1">Primary Job Role</label>
+            <select id="auth-input-job" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs">
               <option value="Support worker">Support worker</option>
               <option value="House keeper">House keeper</option>
               <option value="General Cleaner">General Cleaner</option>
@@ -616,216 +660,68 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address *</label>
-          <input type="email" id="auth-email" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="e.g. admin@gtchr.co.uk" />
+          <label class="block font-semibold text-slate-700 mb-1">Email *</label>
+          <input type="email" id="auth-input-email" required placeholder="admin@gtchr.co.uk" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Password *</label>
-          <input type="password" id="auth-password" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="••••••••" />
+          <label class="block font-semibold text-slate-700 mb-1">Password *</label>
+          <input type="password" id="auth-input-password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
         </div>
 
-        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 rounded-lg text-sm transition">
-          <span id="auth-submit-label">Sign In</span>
+        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition" id="auth-btn-submit">
+          Sign In
         </button>
       </form>
 
-      <div class="text-center text-xs text-slate-500 pt-2">
-        <span id="auth-toggle-msg">New staff member?</span>
-        <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-teal-600 font-bold ml-1 hover:underline">Register Account</button>
+      <div class="text-center text-[11px] text-slate-500 pt-1">
+        <span id="auth-msg-toggle">Don't have an account?</span>
+        <button type="button" onclick="toggleAuthRegistrationMode()" id="auth-btn-toggle" class="text-teal-600 font-bold ml-1 hover:underline">Register Here</button>
       </div>
     </div>
   </div>
 
 
-  <!-- MODAL 2: AMEND SHIFT (For Consultants, Managers, IT Admins) -->
-  <div id="modal-amend-shift" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-teal-600"></i>
-          Amend Shift Details
-        </h3>
-        <button onclick="closeAmendModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+  <!-- MODAL 5: EMAILJS CONFIG -->
+  <div id="modal-email-config" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">EmailJS Credentials</h3>
+        <button onclick="closeEmailConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <form id="form-amend-shift" onsubmit="handleSaveAmendShift(event)" class="space-y-3 text-sm">
-        <input type="hidden" id="amend-shift-id" />
-
-        <!-- Facility Name (Readonly or Editable) -->
+      <div class="space-y-3 text-xs">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Client / Care Facility</label>
-          <input type="text" id="amend-client" required class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+          <label class="block font-semibold text-slate-700 mb-1">Service ID</label>
+          <input type="text" id="cfg-email-service" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
         </div>
-
-        <!-- Role -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Required Job Role</label>
-          <select id="amend-job-title" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm">
-            <option value="Support worker">Support worker</option>
-            <option value="House keeper">House keeper</option>
-            <option value="General Cleaner">General Cleaner</option>
-            <option value="Domestic Assistant">Domestic Assistant</option>
-            <option value="Maintenance person">Maintenance person</option>
-            <option value="Kitchen Porter">Kitchen Porter</option>
-          </select>
+          <label class="block font-semibold text-slate-700 mb-1">Template ID</label>
+          <input type="text" id="cfg-email-template" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
         </div>
-
-        <!-- Date & Times -->
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Date</label>
-            <input type="date" id="amend-date" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Start Time</label>
-            <input type="time" id="amend-start" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">End Time</label>
-            <input type="time" id="amend-end" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs" />
-          </div>
-        </div>
-
-        <!-- Pay & Charge -->
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Staff Pay (£/hr)</label>
-            <input type="number" id="amend-staff-rate" step="0.25" min="10" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Client Charge (£/hr)</label>
-            <input type="number" id="amend-client-rate" step="0.25" min="12" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-          </div>
-        </div>
-
-        <!-- Notes -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Care Notes & Instructions</label>
-          <textarea id="amend-desc" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+          <label class="block font-semibold text-slate-700 mb-1">Public Key</label>
+          <input type="text" id="cfg-email-key" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
         </div>
 
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeAmendModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-sm">Cancel</button>
-          <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-bold text-sm shadow transition">Save & Sync Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-  <!-- MODAL 3: REASSIGN SHIFT (For Consultants, Managers, IT Admins) -->
-  <div id="modal-reassign-shift" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-user-gear text-teal-600"></i>
-          Reassign Staff Member
-        </h3>
-        <button onclick="closeReassignModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="space-y-4 text-sm">
-        <input type="hidden" id="reassign-shift-id" />
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
-          <div><strong>Facility:</strong> <span id="reassign-display-client">-</span></div>
-          <div><strong>Shift Date & Time:</strong> <span id="reassign-display-datetime">-</span></div>
-          <div><strong>Current Staff:</strong> <span id="reassign-display-current" class="font-bold text-teal-700">-</span></div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Select New Assigned Worker</label>
-          <select id="reassign-staff-select" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm font-medium focus:ring-teal-500 focus:border-teal-500">
-            <option value="__marketplace__">⚠️ Return to Open Marketplace (Unclaimed)</option>
-            <!-- Injected dynamically with registered staff -->
-          </select>
-        </div>
-
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeReassignModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-sm">Cancel</button>
-          <button type="button" onclick="handleConfirmReassign()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-bold text-sm shadow transition">Confirm Reassignment</button>
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeEmailConfigModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold">Cancel</button>
+          <button type="button" onclick="saveEmailCredentials()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-1.5 rounded-lg font-bold">Save</button>
         </div>
       </div>
     </div>
   </div>
 
 
-  <!-- MODAL 4: ADD CLIENT / CARE FACILITY -->
-  <div id="modal-add-client" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900">Add New Client / Care Facility</h3>
-        <button onclick="closeAddClientModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <form id="form-add-client" onsubmit="handleSaveNewClient(event)" class="space-y-3 text-sm">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Unique Facility Name *</label>
-          <input type="text" id="new-client-name" required placeholder="e.g. Changing Lives - The Vineries" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Facility Address & Postcode</label>
-          <input type="text" id="new-client-address" placeholder="e.g. 12 High St, Newcastle, NE1 4ST" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Manager / Contact Person</label>
-          <input type="text" id="new-client-contact" placeholder="e.g. Sarah Jenkins" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Default Hourly Charge (£)</label>
-          <input type="number" id="new-client-rate" step="0.5" value="21.50" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeAddClientModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-sm">Cancel</button>
-          <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-bold text-sm shadow transition">Save Facility</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <!-- Toast Alerts Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
 
-  <!-- MODAL 5: EMAILJS CONFIGURATION -->
-  <div id="modal-emailjs-config" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900">EmailJS Notification Settings</h3>
-        <button onclick="closeEmailJsConfigModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="space-y-3 text-sm">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">EmailJS Service ID</label>
-          <input type="text" id="cfg-emailjs-service" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">EmailJS Template ID</label>
-          <input type="text" id="cfg-emailjs-template" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">EmailJS Public Key</label>
-          <input type="text" id="cfg-emailjs-key" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm" />
-        </div>
-
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeEmailJsConfigModal()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-sm">Cancel</button>
-          <button type="button" onclick="saveEmailJsConfig()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-bold text-sm shadow transition">Save Settings</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ================= NOTIFICATION TOAST ================= -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
-
-  <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
+  <!-- ================= APPLICATION SCRIPTS ================= -->
   <script>
-    /* =========================================================================
-       1. FIREBASE & CLOUD INITIALIZATION
-       ========================================================================= */
+    /* ---------------------------------------------------------
+       1. FIREBASE REALTIME DATABASE INITIALIZATION
+       --------------------------------------------------------- */
     const firebaseConfig = {
       apiKey: "AIzaSyAJ9oUoS6U8itt27BB1ulWF4msnnfiJHMw",
       authDomain: "ennins-domestic-hr.firebaseapp.com",
@@ -838,236 +734,239 @@
     };
 
     let fbApp = null;
-    let fbDatabase = null;
+    let fbDb = null;
     let isCloudConnected = false;
 
     try {
       if (typeof firebase !== 'undefined') {
         fbApp = firebase.initializeApp(firebaseConfig);
-        fbDatabase = firebase.database();
-        console.log("Firebase initialized successfully for ennins-domestic-hr");
+        fbDb = firebase.database();
 
         // Monitor Cloud Connection
-        fbDatabase.ref(".info/connected").on("value", (snap) => {
-          if (snap.val() === true) {
-            isCloudConnected = true;
-            updateCloudStatusUI(true);
-          } else {
-            isCloudConnected = false;
-            updateCloudStatusUI(false);
-          }
+        fbDb.ref(".info/connected").on("value", (snap) => {
+          isCloudConnected = snap.val() === true;
+          updateCloudUI(isCloudConnected);
         });
       }
     } catch (err) {
-      console.warn("Firebase direct connection notice:", err);
-      updateCloudStatusUI(false);
+      console.warn("Firebase Init Notice:", err);
+      updateCloudUI(false);
     }
 
-    function updateCloudStatusUI(connected) {
-      const badge = document.getElementById("cloud-status-badge");
+    function updateCloudUI(connected) {
+      const dot = document.getElementById("cloud-status-dot");
       const text = document.getElementById("cloud-status-text");
-      const itStatus = document.getElementById("it-firebase-status");
+      const badge = document.getElementById("it-rtdb-badge");
 
       if (connected) {
-        if (text) text.textContent = "Cloud Sync Live";
-        if (badge) badge.className = "hidden sm:flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-emerald-950 border border-emerald-700 font-medium text-emerald-300";
-        if (itStatus) {
-          itStatus.textContent = "CONNECTED (LIVE)";
-          itStatus.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        if (text) text.textContent = "Firebase Live";
+        if (badge) {
+          badge.textContent = "CONNECTED (LIVE)";
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800";
         }
       } else {
-        if (text) text.textContent = "Local Storage Active";
-        if (badge) badge.className = "hidden sm:flex items-center space-x-2 text-xs px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 font-medium text-slate-300";
-        if (itStatus) {
-          itStatus.textContent = "OFFLINE / LOCAL STORAGE";
-          itStatus.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800";
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+        if (text) text.textContent = "Local Synced";
+        if (badge) {
+          badge.textContent = "OFFLINE / LOCAL";
+          badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800";
         }
       }
     }
 
-    /* =========================================================================
-       2. APPLICATION STATE & LOCAL STORAGE SYNC
-       ========================================================================= */
-    const DEFAULT_CLIENTS = [
+    function testFirebaseLiveConnection() {
+      if (!fbDb) {
+        showToast("Firebase not initialized", "error");
+        return;
+      }
+      showToast("Testing Firebase read/write access...", "info");
+      const testKey = "test_" + Date.now();
+      fbDb.ref(`_gtc_ping/${testKey}`).set({ ping: true, timestamp: Date.now() })
+        .then(() => {
+          showToast("Firebase Live Connected! Realtime Database read/write verified.", "success");
+          updateCloudUI(true);
+        })
+        .catch(err => {
+          showToast("Firebase Test Error: " + err.message, "error");
+          updateCloudUI(false);
+        });
+    }
+
+    /* ---------------------------------------------------------
+       2. DATA REPOSITORY (PRESERVE REGISTERED STAFF & SHIFTS)
+       --------------------------------------------------------- */
+    const INITIAL_FACILITIES = [
       { id: "c1", name: "Changing Lives - The Vineries", address: "The Vineries, Newcastle, NE4 8BE", contactPerson: "Sarah Taylor", defaultRate: 21.50 },
       { id: "c2", name: "CL - Salvation Army - Cambria House", address: "Cambria House, London, WC1X 8JS", contactPerson: "David Smith", defaultRate: 22.00 },
       { id: "c3", name: "St Mungos - High Street Hostel", address: "142 High Street, Birmingham, B1 2LL", contactPerson: "Rachel Green", defaultRate: 21.00 },
       { id: "c4", name: "Riverside Care - Riverside Walk", address: "Riverside Walk, Leeds, LS1 4HY", contactPerson: "Michael Brown", defaultRate: 23.50 }
     ];
 
-    const DEFAULT_USERS = [
-      { id: "u_admin", name: "IT Administrator", email: "admin@gtchr.co.uk", password: "cookies", role: "admin", jobTitle: "Support worker", status: "active" },
-      { id: "u_consultant", name: "Emma Watson", email: "emma.consultant@gtchr.co.uk", password: "cookies", role: "consultant", jobTitle: "Support worker", status: "active" },
-      { id: "u_manager", name: "James Carter", email: "james.manager@gtchr.co.uk", password: "cookies", role: "manager", jobTitle: "Support worker", status: "active" },
-      { id: "u_staff1", name: "Okoh Comfort", email: "okoh.comfort@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "Support worker", status: "active" },
-      { id: "u_staff2", name: "Kofi Mensah", email: "kofi.mensah@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "House keeper", status: "active" },
-      { id: "u_staff3", name: "Amara Diallo", email: "amara.diallo@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "General Cleaner", status: "active" }
+    const INITIAL_USERS = [
+      { id: "u_admin", name: "IT Administrator", email: "admin@gtchr.co.uk", password: "cookies", role: "admin", jobTitle: "Support worker" },
+      { id: "u_consultant", name: "Emma Watson", email: "emma.consultant@gtchr.co.uk", password: "cookies", role: "consultant", jobTitle: "Support worker" },
+      { id: "u_manager", name: "James Carter", email: "james.manager@gtchr.co.uk", password: "cookies", role: "manager", jobTitle: "Support worker" },
+      { id: "u_staff1", name: "Okoh Comfort", email: "okoh.comfort@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "Support worker" },
+      { id: "u_staff2", name: "Kofi Mensah", email: "kofi.mensah@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "House keeper" },
+      { id: "u_staff3", name: "Amara Diallo", email: "amara.diallo@gtchr.co.uk", password: "cookies", role: "staff", jobTitle: "General Cleaner" }
     ];
 
-    // Helper: get current week's Monday in YYYY-MM-DD format
-    function getMondayOfCurrentWeek(date = new Date()) {
-      const d = new Date(date);
+    function getMondayOfTargetWeek(offsetWeeks = 0) {
+      const d = new Date();
       const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
-      return new Date(d.setDate(diff));
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(d.setDate(diff));
+      monday.setDate(monday.getDate() + (offsetWeeks * 7));
+      return monday;
     }
 
-    function formatDateISO(d) {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+    function toISODate(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
 
-    // Seed initial demo shifts for the current week matching media_1789737793490.png
-    function generateSeedShifts() {
-      const mon = getMondayOfCurrentWeek();
+    function createInitialSeedShifts() {
+      const mon = getMondayOfTargetWeek(0);
       const tue = new Date(mon); tue.setDate(mon.getDate() + 1);
       const wed = new Date(mon); wed.setDate(mon.getDate() + 2);
       const thu = new Date(mon); thu.setDate(mon.getDate() + 3);
-      const fri = new Date(mon); fri.setDate(mon.getDate() + 4);
 
       return [
         {
-          id: "shift_demo_1",
+          id: "shift_seed_1",
           clientName: "Changing Lives - The Vineries",
           jobTitle: "Support worker",
-          date: formatDateISO(mon),
+          date: toISODate(mon),
           startTime: "09:00",
           endTime: "13:00",
           staffRate: 14.50,
           clientRate: 21.50,
-          description: "Morning support shift and medication prompt.",
+          description: "Morning resident support and welfare check.",
           status: "claimed",
           claimedBy: "Okoh Comfort",
           claimedById: "u_staff1",
           createdBy: "IT Administrator",
-          creatorRole: "admin",
-          createdAt: new Date().toISOString()
+          creatorRole: "admin"
         },
         {
-          id: "shift_demo_2",
+          id: "shift_seed_2",
           clientName: "Changing Lives - The Vineries",
           jobTitle: "Support worker",
-          date: formatDateISO(tue),
+          date: toISODate(tue),
           startTime: "09:00",
           endTime: "15:00",
           staffRate: 14.50,
           clientRate: 21.50,
-          description: "Day support and resident accompaniment.",
+          description: "Day support and appointment accompaniment.",
           status: "claimed",
           claimedBy: "Okoh Comfort",
           claimedById: "u_staff1",
           createdBy: "IT Administrator",
-          creatorRole: "admin",
-          createdAt: new Date().toISOString()
+          creatorRole: "admin"
         },
         {
-          id: "shift_demo_3",
+          id: "shift_seed_3",
           clientName: "Changing Lives - The Vineries",
           jobTitle: "House keeper",
-          date: formatDateISO(wed),
+          date: toISODate(wed),
           startTime: "09:00",
           endTime: "13:00",
           staffRate: 14.50,
           clientRate: 21.50,
-          description: "Facility sanitation and communal area upkeep.",
+          description: "Communal area cleaning and maintenance.",
           status: "open",
           claimedBy: null,
           claimedById: null,
           createdBy: "Emma Watson",
-          creatorRole: "consultant",
-          createdAt: new Date().toISOString()
+          creatorRole: "consultant"
         },
         {
-          id: "shift_demo_4",
+          id: "shift_seed_4",
           clientName: "CL - Salvation Army - Cambria House",
           jobTitle: "Support worker",
-          date: formatDateISO(mon),
+          date: toISODate(mon),
           startTime: "10:00",
           endTime: "18:00",
           staffRate: 15.00,
           clientRate: 22.00,
-          description: "Hostel intake support and welfare check.",
+          description: "Hostel intake support.",
           status: "claimed",
           claimedBy: "Kofi Mensah",
           claimedById: "u_staff2",
           createdBy: "Emma Watson",
-          creatorRole: "consultant",
-          createdAt: new Date().toISOString()
+          creatorRole: "consultant"
         },
         {
-          id: "shift_demo_5",
+          id: "shift_seed_5",
           clientName: "CL - Salvation Army - Cambria House",
           jobTitle: "General Cleaner",
-          date: formatDateISO(thu),
+          date: toISODate(thu),
           startTime: "08:00",
           endTime: "16:00",
           staffRate: 14.00,
           clientRate: 20.50,
-          description: "Deep clean of residential corridors.",
+          description: "Sanitation of living spaces.",
           status: "open",
           claimedBy: null,
           claimedById: null,
           createdBy: "James Carter",
-          creatorRole: "manager",
-          createdAt: new Date().toISOString()
+          creatorRole: "manager"
         }
       ];
     }
 
-    // App Data State Variables
-    let clients = JSON.parse(localStorage.getItem("gtc_clients")) || DEFAULT_CLIENTS;
-    let users = JSON.parse(localStorage.getItem("gtc_users")) || DEFAULT_USERS;
-    let shifts = JSON.parse(localStorage.getItem("gtc_shifts")) || generateSeedShifts();
-    let timesheets = JSON.parse(localStorage.getItem("gtc_timesheets")) || [];
-
-    // Current Session User (Default to Master IT Admin for seamless access)
+    // State Variables
+    let clients = JSON.parse(localStorage.getItem("gtc_clients")) || INITIAL_FACILITIES;
+    let users = JSON.parse(localStorage.getItem("gtc_users")) || INITIAL_USERS;
+    let shifts = JSON.parse(localStorage.getItem("gtc_shifts")) || createInitialSeedShifts();
     let currentUser = JSON.parse(localStorage.getItem("gtc_current_user")) || users[0];
+    let rosterOffsetWeeks = 0;
+    const collapsedFacilities = new Set(); // tracks collapsed accordion rows
 
-    // Roster Week State
-    let rosterWeekOffset = 0; // 0 = Current week, -1 = Prev week, +1 = Next week
-
-    // Save to LocalStorage helper
-    function saveLocalData() {
+    function persistState() {
       localStorage.setItem("gtc_clients", JSON.stringify(clients));
       localStorage.setItem("gtc_users", JSON.stringify(users));
       localStorage.setItem("gtc_shifts", JSON.stringify(shifts));
-      localStorage.setItem("gtc_timesheets", JSON.stringify(timesheets));
       localStorage.setItem("gtc_current_user", JSON.stringify(currentUser));
-      updateCountsUI();
+      updateStatNumbers();
     }
 
-    // Cloud Listeners & Push
-    function setupCloudListeners() {
-      if (!fbDatabase) return;
+    // Realtime Cloud Listeners
+    function attachCloudDatabaseListeners() {
+      if (!fbDb) return;
 
-      // Shifts Listener
-      fbDatabase.ref("gtc_shifts").on("value", (snap) => {
+      fbDb.ref("gtc_shifts").on("value", (snap) => {
         const val = snap.val();
         if (val) {
           shifts = Object.values(val);
           localStorage.setItem("gtc_shifts", JSON.stringify(shifts));
           renderRosterGrid();
-          renderMarketplace();
-          updateCountsUI();
+          renderMarketplaceView();
+          updateStatNumbers();
         }
       });
 
-      // Users Listener
-      fbDatabase.ref("gtc_users").on("value", (snap) => {
+      fbDb.ref("gtc_users").on("value", (snap) => {
         const val = snap.val();
         if (val) {
-          users = Object.values(val);
+          // Merge to protect existing staff
+          const cloudUsers = Object.values(val);
+          cloudUsers.forEach(cu => {
+            const idx = users.findIndex(u => u.email === cu.email);
+            if (idx === -1) users.push(cu);
+            else users[idx] = Object.assign(users[idx], cu);
+          });
           localStorage.setItem("gtc_users", JSON.stringify(users));
           populateStaffDropdowns();
-          renderStaffDirectory();
-          updateCountsUI();
+          renderStaffDirectoryView();
+          updateStatNumbers();
         }
       });
 
-      // Clients Listener
-      fbDatabase.ref("gtc_clients").on("value", (snap) => {
+      fbDb.ref("gtc_clients").on("value", (snap) => {
         const val = snap.val();
         if (val) {
           clients = Object.values(val);
@@ -1079,529 +978,483 @@
       });
     }
 
-    function syncShiftToCloud(shift) {
-      if (fbDatabase) {
-        fbDatabase.ref(`gtc_shifts/${shift.id}`).set(shift);
+    function syncSingleShiftToCloud(shift) {
+      if (fbDb) {
+        fbDb.ref(`gtc_shifts/${shift.id}`).set(shift);
       }
     }
 
-    function deleteShiftFromCloud(shiftId) {
-      if (fbDatabase) {
-        fbDatabase.ref(`gtc_shifts/${shiftId}`).remove();
+    function removeSingleShiftFromCloud(shiftId) {
+      if (fbDb) {
+        fbDb.ref(`gtc_shifts/${shiftId}`).remove();
       }
     }
 
-    function syncAllToFirebase() {
-      if (!fbDatabase) {
-        showToast("Firebase not initialized or offline", "error");
+    function forceSyncAllCloud() {
+      if (!fbDb) {
+        showToast("Firebase is offline", "error");
         return;
       }
       showToast("Syncing all records to Firebase cloud...", "info");
-      const shiftObj = {};
-      shifts.forEach(s => { shiftObj[s.id] = s; });
-      const userObj = {};
-      users.forEach(u => { userObj[u.id] = u; });
-      const clientObj = {};
-      clients.forEach(c => { clientObj[c.id] = c; });
+      const sObj = {}; shifts.forEach(s => { sObj[s.id] = s; });
+      const uObj = {}; users.forEach(u => { uObj[u.id] = u; });
+      const cObj = {}; clients.forEach(c => { cObj[c.id] = c; });
 
       Promise.all([
-        fbDatabase.ref("gtc_shifts").set(shiftObj),
-        fbDatabase.ref("gtc_users").set(userObj),
-        fbDatabase.ref("gtc_clients").set(clientObj)
+        fbDb.ref("gtc_shifts").set(sObj),
+        fbDb.ref("gtc_users").set(uObj),
+        fbDb.ref("gtc_clients").set(cObj)
       ]).then(() => {
-        showToast("Full Cloud Sync Complete!", "success");
+        showToast("All data synced to Firebase!", "success");
       }).catch(err => {
-        showToast("Cloud sync failed: " + err.message, "error");
+        showToast("Cloud push failed: " + err.message, "error");
       });
     }
 
-    /* =========================================================================
-       3. NAVIGATION & ROLE-BASED ACCESS CONTROL
-       ========================================================================= */
+    /* ---------------------------------------------------------
+       3. NAVIGATION & PRIVILEGES
+       --------------------------------------------------------- */
     function switchTab(tabId) {
       localStorage.setItem("gtc_active_tab", tabId);
 
-      // Hide all tabs
-      document.querySelectorAll(".tab-view").forEach(v => v.classList.add("hidden"));
-      document.querySelectorAll(".nav-tab").forEach(t => {
-        t.className = "nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2";
+      document.querySelectorAll(".tab-view").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".nav-tab").forEach(btn => {
+        btn.className = "nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap text-slate-300 hover:text-white hover:bg-slate-800";
       });
 
-      // Show selected tab
-      const target = document.getElementById(`view-${tabId}`);
-      const btn = document.getElementById(`tab-btn-${tabId}`);
-      if (target) target.classList.remove("hidden");
-      if (btn) btn.className = "nav-tab px-3.5 py-1.5 rounded-lg transition whitespace-nowrap bg-teal-600 text-white font-semibold flex items-center gap-2";
+      const activeView = document.getElementById(`view-${tabId}`);
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeView) activeView.classList.remove("hidden");
+      if (activeBtn) activeBtn.className = "nav-tab px-3 py-1.5 rounded-md transition whitespace-nowrap bg-teal-600 text-white font-semibold";
 
-      // Render tab specific content
       if (tabId === "roster") renderRosterGrid();
-      if (tabId === "marketplace") renderMarketplace();
-      if (tabId === "timesheets") renderTimesheets();
-      if (tabId === "staff-dir") renderStaffDirectory();
+      if (tabId === "marketplace") renderMarketplaceView();
+      if (tabId === "timesheets") renderTimesheetsView();
+      if (tabId === "staff-dir") renderStaffDirectoryView();
       if (tabId === "clients") renderClientsView();
     }
 
-    function updateNavProfileUI() {
-      const avatar = document.getElementById("nav-user-avatar");
+    // Role verification: Consultants, Managers, and IT Admins have full shift management powers
+    function isManagerOrConsultant() {
+      if (!currentUser) return false;
+      const role = currentUser.role.toLowerCase();
+      return ["admin", "manager", "consultant"].includes(role);
+    }
+
+    function updateNavUserUI() {
+      const avatar = document.getElementById("nav-avatar");
       const name = document.getElementById("nav-user-name");
       const role = document.getElementById("nav-user-role");
-      const btnLabel = document.getElementById("auth-btn-label");
+      const authBtnText = document.getElementById("btn-auth-text");
 
       if (currentUser) {
         avatar.textContent = currentUser.name.charAt(0).toUpperCase();
         name.textContent = currentUser.name;
         role.textContent = currentUser.role.toUpperCase();
-        btnLabel.textContent = "Logout";
+        authBtnText.textContent = "Logout";
       } else {
         avatar.textContent = "G";
-        name.textContent = "Guest User";
+        name.textContent = "Guest";
         role.textContent = "VIEW ONLY";
-        btnLabel.textContent = "Login";
+        authBtnText.textContent = "Login";
       }
 
-      // Check role privileges for "Schedule Shift" quick button
-      const quickAddBtn = document.getElementById("btn-roster-quick-add");
-      if (quickAddBtn) {
-        if (canManageShifts()) {
-          quickAddBtn.classList.remove("hidden");
-        } else {
-          quickAddBtn.classList.add("hidden");
-        }
+      const addBtn = document.getElementById("btn-roster-add-shift");
+      if (addBtn) {
+        addBtn.style.display = isManagerOrConsultant() ? "flex" : "none";
       }
     }
 
-    // True for Consultants, Managers, and IT Admins
-    function canManageShifts() {
-      if (!currentUser) return false;
-      return ["admin", "manager", "consultant"].includes(currentUser.role.toLowerCase());
-    }
-
-    /* =========================================================================
-       4. WEEKLY MATRIX ROSTER SCHEDULER (Matched to media_1789737793490.png)
-       ========================================================================= */
-    function changeRosterWeek(delta) {
-      rosterWeekOffset += delta;
+    /* ---------------------------------------------------------
+       4. WEEKLY ROSTER SCHEDULER (media_1789737793490.png)
+       --------------------------------------------------------- */
+    function navigateWeek(delta) {
+      if (delta === 0) rosterOffsetWeeks = 0;
+      else rosterOffsetWeeks += delta;
       renderRosterGrid();
     }
 
-    function resetRosterWeek() {
-      rosterWeekOffset = 0;
-      renderRosterGrid();
-    }
-
-    // Generates the 7 days of the active week (Mon - Sun)
     function getActiveWeekDays() {
-      const baseMonday = getMondayOfCurrentWeek();
-      baseMonday.setDate(baseMonday.getDate() + (rosterWeekOffset * 7));
-
+      const monday = getMondayOfTargetWeek(rosterOffsetWeeks);
       const days = [];
-      const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
       for (let i = 0; i < 7; i++) {
-        const d = new Date(baseMonday);
-        d.setDate(baseMonday.getDate() + i);
+        const cur = new Date(monday);
+        cur.setDate(monday.getDate() + i);
         days.push({
-          dateObj: d,
-          dateStr: formatDateISO(d),
-          dayName: dayNames[i],
-          dayNum: d.getDate(),
-          monthName: d.toLocaleString('en-GB', { month: 'short' }),
-          isToday: formatDateISO(d) === formatDateISO(new Date())
+          dateObj: cur,
+          isoDate: toISODate(cur),
+          dayName: dayLabels[i],
+          dayNum: cur.getDate(),
+          monthName: cur.toLocaleString('en-GB', { month: 'short' }),
+          isToday: toISODate(cur) === toISODate(new Date())
         });
       }
       return days;
     }
 
+    function toggleFacilityCollapse(facilityName) {
+      if (collapsedFacilities.has(facilityName)) {
+        collapsedFacilities.delete(facilityName);
+      } else {
+        collapsedFacilities.add(facilityName);
+      }
+      renderRosterGrid();
+    }
+
     function renderRosterGrid() {
       const weekDays = getActiveWeekDays();
-      const firstDay = weekDays[0];
-      const lastDay = weekDays[6];
+      const first = weekDays[0];
+      const last = weekDays[6];
 
-      // Update Week Label
-      const label = document.getElementById("roster-week-label");
-      if (label) {
-        label.textContent = `Schedule for: ${firstDay.dayName} ${firstDay.dayNum} ${firstDay.monthName} — ${lastDay.dayName} ${lastDay.dayNum} ${lastDay.monthName} ${lastDay.dateObj.getFullYear()}`;
+      // Update Week Display
+      const weekLabel = document.getElementById("roster-week-display");
+      if (weekLabel) {
+        weekLabel.textContent = `${first.dayNum} ${first.dayName} ${first.monthName} — ${last.dayNum} ${last.dayName} ${last.monthName} ${last.dateObj.getFullYear()}`;
       }
 
-      // Render Table Header with 7 Day Columns
-      const headerRow = document.getElementById("roster-header-row");
-      if (headerRow) {
-        headerRow.innerHTML = `
-          <th class="w-60 p-3.5 text-left font-bold border-r border-slate-700 bg-slate-900">
-            <div class="flex items-center space-x-2">
-              <i class="fa-solid fa-hospital text-teal-400"></i>
-              <span>Client / Facility</span>
-            </div>
-          </th>
-        `;
-
+      // Build Headers: Client column + 7 Day Columns
+      const theadRow = document.getElementById("roster-table-headers");
+      if (theadRow) {
+        theadRow.innerHTML = `<th class="w-60 p-3 text-left font-bold border-r border-slate-700 bg-slate-900">Client / Facility</th>`;
         weekDays.forEach(day => {
-          const todayBadge = day.isToday 
-            ? `<span class="ml-1.5 bg-teal-500 text-white text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Today</span>` 
-            : '';
-          
-          headerRow.innerHTML += `
-            <th class="p-3 text-center border-r border-slate-700 font-semibold min-w-[135px] ${day.isToday ? 'bg-slate-800' : 'bg-slate-900'}">
-              <div class="text-sm font-bold text-white flex items-center justify-center">
-                <span>${day.dayNum} ${day.dayName}</span>
-                ${todayBadge}
-              </div>
+          theadRow.innerHTML += `
+            <th class="p-2.5 text-center border-r border-slate-700 min-w-[130px] ${day.isToday ? 'bg-slate-800 text-teal-300' : 'bg-slate-900'}">
+              <div class="font-bold text-xs">${day.dayNum} ${day.dayName}</div>
+              ${day.isToday ? `<span class="text-[9px] uppercase font-bold tracking-wider text-teal-400">Today</span>` : ''}
             </th>
           `;
         });
       }
 
-      // Filter settings
-      const filterClient = document.getElementById("roster-filter-client")?.value || "all";
+      // Apply Filters
+      const filterFac = document.getElementById("roster-filter-facility")?.value || "all";
       const filterRole = document.getElementById("roster-filter-role")?.value || "all";
       const filterCreator = document.getElementById("roster-filter-creator")?.value || "all";
 
-      // Group shifts by facility
+      const weekDates = weekDays.map(d => d.isoDate);
+      let relevantShifts = shifts.filter(s => weekDates.includes(s.date) && s.status !== "cancelled");
+
+      if (filterFac !== "all") relevantShifts = relevantShifts.filter(s => s.clientName === filterFac);
+      if (filterRole !== "all") relevantShifts = relevantShifts.filter(s => s.jobTitle === filterRole);
+      if (filterCreator !== "all") relevantShifts = relevantShifts.filter(s => s.createdBy === filterCreator);
+
+      let targetFacilities = clients.map(c => c.name);
+      if (filterFac !== "all") targetFacilities = [filterFac];
+
       const tbody = document.getElementById("roster-table-body");
       if (!tbody) return;
-
-      // Filter shifts
-      const activeWeekDateStrings = weekDays.map(d => d.dateStr);
-      let relevantShifts = shifts.filter(s => activeWeekDateStrings.includes(s.date) && s.status !== "cancelled");
-
-      if (filterClient !== "all") relevantShifts = relevantShifts.filter(s => s.clientName === filterClient);
-      if (filterRole !== "all") relevantShifts = relevantShifts.filter(s => s.jobTitle === filterRole);
-      if (filterCreator !== "all") relevantShifts = relevantShifts.filter(s => (s.createdBy === filterCreator || s.creatorEmail === filterCreator));
-
-      // Build List of Facilities to show
-      let displayFacilities = clients.map(c => c.name);
-      if (filterClient !== "all") {
-        displayFacilities = [filterClient];
-      }
-
       tbody.innerHTML = "";
 
-      displayFacilities.forEach((facilityName, facIndex) => {
-        const facilityShiftsThisWeek = relevantShifts.filter(s => s.clientName === facilityName);
-        const shiftCount = facilityShiftsThisWeek.length;
+      targetFacilities.forEach(facilityName => {
+        const facShifts = relevantShifts.filter(s => s.clientName === facilityName);
+        const shiftTotalCount = facShifts.length;
+        const isCollapsed = collapsedFacilities.has(facilityName);
 
-        // Facility Row
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-slate-50/60 transition border-b border-slate-200";
-
-        // Col 1: Facility Accordion Header
-        let html = `
-          <td class="p-3.5 align-top border-r border-slate-200 bg-slate-50/50">
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-slate-900 text-sm leading-snug">${facilityName}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
-                  ${shiftCount} Shift${shiftCount === 1 ? '' : 's'}
+        // Facility Accordion Row
+        const facRow = document.createElement("tr");
+        facRow.className = "bg-slate-100/70 border-b border-slate-200 cursor-pointer select-none";
+        facRow.innerHTML = `
+          <td colspan="8" class="p-2.5">
+            <div class="flex items-center justify-between" onclick="toggleFacilityCollapse('${facilityName.replace(/'/g, "\\'")}')">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-chevron-${isCollapsed ? 'right' : 'down'} text-slate-500 text-xs w-4"></i>
+                <span class="font-bold text-slate-900 text-xs">${facilityName}</span>
+                <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
+                  ${shiftTotalCount}
                 </span>
-                ${canManageShifts() ? `
-                  <button onclick="openQuickScheduleForClient('${facilityName.replace(/'/g, "\\'")}')" class="text-xs text-teal-700 hover:text-teal-900 font-semibold flex items-center gap-1 hover:underline">
-                    <i class="fa-solid fa-plus text-[10px]"></i> Add
-                  </button>
-                ` : ''}
               </div>
+              ${isManagerOrConsultant() ? `
+                <button onclick="event.stopPropagation(); openScheduleShiftForClient('${facilityName.replace(/'/g, "\\'")}')" class="text-[11px] text-teal-700 font-bold hover:underline">
+                  + Add Shift
+                </button>
+              ` : ''}
             </div>
           </td>
         `;
+        tbody.appendChild(facRow);
 
-        // Cols 2-8: 7 Day Columns
-        weekDays.forEach(day => {
-          const dayShifts = facilityShiftsThisWeek.filter(s => s.date === day.dateStr);
+        // If expanded, render the shift cells row
+        if (!isCollapsed) {
+          const shiftRow = document.createElement("tr");
+          shiftRow.className = "border-b border-slate-200";
 
-          html += `
-            <td class="p-2 align-top border-r border-slate-200 min-w-[135px] ${day.isToday ? 'bg-teal-50/30' : ''}">
-              <div class="space-y-2">
-          `;
+          // Column 1: Blank or Facility mini-label
+          let cellsHtml = `<td class="p-2 border-r border-slate-200 bg-slate-50/40 text-[11px] text-slate-400 align-top">${facilityName}</td>`;
 
-          if (dayShifts.length === 0) {
-            html += `
-              <div class="h-16 flex items-center justify-center rounded-lg border border-dashed border-slate-200 text-slate-300 hover:border-teal-300 hover:text-teal-600 transition group cursor-pointer"
-                   onclick="${canManageShifts() ? `openQuickScheduleForDay('${facilityName.replace(/'/g, "\\'")}', '${day.dateStr}')` : ''}"
-                   title="No shifts scheduled">
-                ${canManageShifts() ? `<i class="fa-solid fa-plus text-xs group-hover:scale-110 transition"></i>` : `<span class="text-xs">—</span>`}
-              </div>
+          // Columns 2-8: 7 Days
+          weekDays.forEach(day => {
+            const dayShifts = facShifts.filter(s => s.date === day.isoDate);
+
+            cellsHtml += `
+              <td class="p-1.5 border-r border-slate-200 align-top min-w-[130px] ${day.isToday ? 'bg-teal-50/20' : ''}">
+                <div class="space-y-1.5">
             `;
-          } else {
-            dayShifts.forEach((shift, sIndex) => {
-              const isAssigned = shift.status === "claimed" && shift.claimedBy;
-              const isManagerOrCreator = canManageShifts();
 
-              html += `
-                <div class="bg-teal-600 text-white rounded-xl shadow-sm p-2.5 space-y-1.5 border border-teal-500/80 hover:shadow-md transition relative group text-xs">
-                  
-                  <!-- Slot Count & Quick Action Menu -->
-                  <div class="flex items-center justify-between pb-1 border-b border-teal-500/60">
-                    <span class="font-extrabold bg-teal-800/80 px-1.5 py-0.5 rounded text-[11px] text-teal-100">#${sIndex + 1}</span>
-                    
-                    ${isManagerOrCreator ? `
-                      <div class="relative inline-block text-left">
-                        <button onclick="toggleShiftDropdown('${shift.id}')" class="text-teal-100 hover:text-white px-1 rounded transition">
-                          <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </button>
-                        <!-- Action Popup Menu -->
-                        <div id="shift-menu-${shift.id}" class="hidden absolute right-0 mt-1 w-36 bg-white text-slate-800 rounded-lg shadow-xl border border-slate-200 py-1 z-30 font-medium text-xs">
-                          <button onclick="openAmendModal('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 text-slate-700">
-                            <i class="fa-solid fa-pen-to-square text-teal-600"></i> Amend
-                          </button>
-                          <button onclick="openReassignModal('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 text-slate-700">
-                            <i class="fa-solid fa-user-pen text-indigo-600"></i> Reassign
-                          </button>
-                          <button onclick="handleCancelShift('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-2">
-                            <i class="fa-solid fa-trash-can"></i> Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ` : ''}
-                  </div>
-
-                  <!-- Time Range -->
-                  <div class="font-bold text-sm tracking-tight flex items-center gap-1 text-white">
-                    <i class="fa-regular fa-clock text-[11px] text-teal-200"></i>
-                    <span>${shift.startTime} - ${shift.endTime}</span>
-                  </div>
-
-                  <!-- Job Role Badge -->
-                  <div class="text-[11px] font-semibold text-teal-100 truncate" title="${shift.jobTitle}">
-                    ${shift.jobTitle}
-                  </div>
-
-                  <!-- Assigned Worker / Marketplace Pill -->
-                  <div class="pt-0.5">
-                    ${isAssigned ? `
-                      <div class="bg-teal-800 text-teal-100 px-2 py-1 rounded-md font-medium flex items-center justify-between truncate" title="${shift.claimedBy}">
-                        <span class="truncate"><i class="fa-solid fa-check text-emerald-300 mr-1"></i>${shift.claimedBy}</span>
-                      </div>
-                    ` : `
-                      <div class="bg-amber-400 text-amber-950 px-2 py-1 rounded-md font-bold flex items-center justify-between truncate">
-                        <span><i class="fa-solid fa-store mr-1"></i>Open / Unclaimed</span>
-                      </div>
-                    `}
-                  </div>
-
+            if (dayShifts.length === 0) {
+              cellsHtml += `
+                <div class="h-14 rounded-lg border border-dashed border-slate-200 flex items-center justify-center text-slate-300 text-xs">
+                  —
                 </div>
               `;
-            });
-          }
+            } else {
+              dayShifts.forEach((shift, idx) => {
+                const isClaimed = shift.status === "claimed" && shift.claimedBy;
+                const canManage = isManagerOrConsultant();
 
-          html += `
-              </div>
-            </td>
-          `;
-        });
+                cellsHtml += `
+                  <!-- Signature Teal Shift Card matching media_1789737793490.png -->
+                  <div class="bg-teal-600 text-white rounded-xl shadow-sm p-2.5 space-y-1 border border-teal-500 text-xs relative">
+                    
+                    <!-- Top Slot Number & 3-Dots Action Menu -->
+                    <div class="flex items-center justify-between pb-0.5 border-b border-teal-500/50">
+                      <span class="font-extrabold bg-teal-800/80 px-1.5 py-0.5 rounded text-[10px] text-teal-100">#${idx + 1}</span>
+                      
+                      ${canManage ? `
+                        <div class="relative">
+                          <button onclick="toggleCardMenu('${shift.id}')" class="text-teal-100 hover:text-white px-1">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                          </button>
+                          <!-- Action Menu: Amend, Reassign, Cancel -->
+                          <div id="card-menu-${shift.id}" class="hidden absolute right-0 mt-1 w-32 bg-white text-slate-800 rounded-lg shadow-lg border border-slate-200 py-1 z-30 font-semibold text-xs">
+                            <button onclick="openAmendShiftModal('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 text-slate-700">
+                              <i class="fa-solid fa-pen text-teal-600"></i> Amend
+                            </button>
+                            <button onclick="openReassignShiftModal('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 text-slate-700">
+                              <i class="fa-solid fa-user-pen text-indigo-600"></i> Reassign
+                            </button>
+                            <button onclick="handleCancelShift('${shift.id}')" class="w-full text-left px-3 py-1.5 hover:bg-red-50 text-red-600 flex items-center gap-2">
+                              <i class="fa-solid fa-trash"></i> Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ` : ''}
+                    </div>
 
-        tr.innerHTML = html;
-        tbody.appendChild(tr);
+                    <!-- Shift Time -->
+                    <div class="font-bold text-xs tracking-tight flex items-center gap-1">
+                      <i class="fa-regular fa-clock text-[10px] text-teal-200"></i>
+                      <span>${shift.startTime} - ${shift.endTime}</span>
+                    </div>
+
+                    <!-- Facility / Role Tag -->
+                    <div class="text-[11px] text-teal-100 truncate" title="${shift.jobTitle}">
+                      ${shift.jobTitle}
+                    </div>
+
+                    <!-- Assigned Staff Pill -->
+                    <div class="pt-0.5">
+                      ${isClaimed ? `
+                        <div class="bg-teal-800 text-teal-100 px-2 py-0.5 rounded text-[11px] font-medium truncate flex items-center justify-between" title="${shift.claimedBy}">
+                          <span class="truncate"><i class="fa-solid fa-check text-emerald-300 mr-1"></i>${shift.claimedBy}</span>
+                        </div>
+                      ` : `
+                        <div class="bg-amber-400 text-amber-950 px-2 py-0.5 rounded text-[11px] font-bold truncate">
+                          <span><i class="fa-solid fa-store mr-1"></i>Open</span>
+                        </div>
+                      `}
+                    </div>
+
+                  </div>
+                `;
+              });
+            }
+
+            cellsHtml += `
+                </div>
+              </td>
+            `;
+          });
+
+          shiftRow.innerHTML = cellsHtml;
+          tbody.appendChild(shiftRow);
+        }
       });
     }
 
-    // Toggle 3-dot dropdown menu for shift actions
-    function toggleShiftDropdown(shiftId) {
-      const menu = document.getElementById(`shift-menu-${shiftId}`);
+    function toggleCardMenu(shiftId) {
+      const menu = document.getElementById(`card-menu-${shiftId}`);
       if (!menu) return;
-      
-      // Close other open menus
-      document.querySelectorAll("[id^='shift-menu-']").forEach(m => {
+      document.querySelectorAll("[id^='card-menu-']").forEach(m => {
         if (m !== menu) m.classList.add("hidden");
       });
-
       menu.classList.toggle("hidden");
     }
 
-    // Close menus when clicking outside
     window.addEventListener("click", (e) => {
       if (!e.target.closest(".relative")) {
-        document.querySelectorAll("[id^='shift-menu-']").forEach(m => m.classList.add("hidden"));
+        document.querySelectorAll("[id^='card-menu-']").forEach(m => m.classList.add("hidden"));
       }
     });
 
-    /* =========================================================================
-       5. SHIFT MANAGEMENT: AMEND, REASSIGN & CANCEL
-       ========================================================================= */
-
-    // 1) AMEND SHIFT
-    function openAmendModal(shiftId) {
+    /* ---------------------------------------------------------
+       5. SHIFT ACTIONS: AMEND, REASSIGN & CANCEL
+       --------------------------------------------------------- */
+    function openAmendShiftModal(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
       if (!shift) return;
 
-      document.getElementById("amend-shift-id").value = shift.id;
-      document.getElementById("amend-client").value = shift.clientName;
-      document.getElementById("amend-job-title").value = shift.jobTitle;
-      document.getElementById("amend-date").value = shift.date;
-      document.getElementById("amend-start").value = shift.startTime;
-      document.getElementById("amend-end").value = shift.endTime;
-      document.getElementById("amend-staff-rate").value = shift.staffRate;
-      document.getElementById("amend-client-rate").value = shift.clientRate;
-      document.getElementById("amend-desc").value = shift.description || "";
+      document.getElementById("amend-target-id").value = shift.id;
+      document.getElementById("amend-input-facility").value = shift.clientName;
+      document.getElementById("amend-input-role").value = shift.jobTitle;
+      document.getElementById("amend-input-date").value = shift.date;
+      document.getElementById("amend-input-start").value = shift.startTime;
+      document.getElementById("amend-input-end").value = shift.endTime;
+      document.getElementById("amend-input-staff-rate").value = shift.staffRate;
+      document.getElementById("amend-input-client-rate").value = shift.clientRate;
+      document.getElementById("amend-input-desc").value = shift.description || "";
 
       document.getElementById("modal-amend-shift").classList.remove("hidden");
     }
 
-    function closeAmendModal() {
+    function closeAmendShiftModal() {
       document.getElementById("modal-amend-shift").classList.add("hidden");
     }
 
     function handleSaveAmendShift(e) {
       e.preventDefault();
-      const shiftId = document.getElementById("amend-shift-id").value;
-      const shiftIndex = shifts.findIndex(s => s.id === shiftId);
-      if (shiftIndex === -1) return;
+      const shiftId = document.getElementById("amend-target-id").value;
+      const idx = shifts.findIndex(s => s.id === shiftId);
+      if (idx === -1) return;
 
-      shifts[shiftIndex].clientName = document.getElementById("amend-client").value.trim();
-      shifts[shiftIndex].jobTitle = document.getElementById("amend-job-title").value;
-      shifts[shiftIndex].date = document.getElementById("amend-date").value;
-      shifts[shiftIndex].startTime = document.getElementById("amend-start").value;
-      shifts[shiftIndex].endTime = document.getElementById("amend-end").value;
-      shifts[shiftIndex].staffRate = parseFloat(document.getElementById("amend-staff-rate").value);
-      shifts[shiftIndex].clientRate = parseFloat(document.getElementById("amend-client-rate").value);
-      shifts[shiftIndex].description = document.getElementById("amend-desc").value.trim();
+      shifts[idx].clientName = document.getElementById("amend-input-facility").value.trim();
+      shifts[idx].jobTitle = document.getElementById("amend-input-role").value;
+      shifts[idx].date = document.getElementById("amend-input-date").value;
+      shifts[idx].startTime = document.getElementById("amend-input-start").value;
+      shifts[idx].endTime = document.getElementById("amend-input-end").value;
+      shifts[idx].staffRate = parseFloat(document.getElementById("amend-input-staff-rate").value);
+      shifts[idx].clientRate = parseFloat(document.getElementById("amend-input-client-rate").value);
+      shifts[idx].description = document.getElementById("amend-input-desc").value.trim();
 
-      saveLocalData();
-      syncShiftToCloud(shifts[shiftIndex]);
-      closeAmendModal();
+      persistState();
+      syncSingleShiftToCloud(shifts[idx]);
+      closeAmendShiftModal();
       renderRosterGrid();
-      renderMarketplace();
-      showToast("Shift amended and cloud synced successfully!", "success");
+      renderMarketplaceView();
+      showToast("Shift amended and synced to cloud.", "success");
     }
 
-    // 2) REASSIGN SHIFT
-    function openReassignModal(shiftId) {
+    function openReassignShiftModal(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
       if (!shift) return;
 
-      document.getElementById("reassign-shift-id").value = shift.id;
-      document.getElementById("reassign-display-client").textContent = shift.clientName;
-      document.getElementById("reassign-display-datetime").textContent = `${shift.date} (${shift.startTime} - ${shift.endTime})`;
-      document.getElementById("reassign-display-current").textContent = shift.claimedBy ? shift.claimedBy : "Unassigned (Open Marketplace)";
+      document.getElementById("reassign-target-id").value = shift.id;
+      document.getElementById("reassign-info-facility").textContent = shift.clientName;
+      document.getElementById("reassign-info-datetime").textContent = `${shift.date} (${shift.startTime} - ${shift.endTime})`;
+      document.getElementById("reassign-info-current").textContent = shift.claimedBy || "Unclaimed (Open Marketplace)";
 
-      // Populate workers dropdown
-      const select = document.getElementById("reassign-staff-select");
-      select.innerHTML = `<option value="__marketplace__">⚠️ Return to Open Marketplace (Unassigned)</option>`;
+      const sel = document.getElementById("reassign-select-worker");
+      sel.innerHTML = `<option value="__marketplace__">⚠️ Return to Open Marketplace (Unclaimed)</option>`;
 
       users.forEach(u => {
-        const option = document.createElement("option");
-        option.value = u.id;
-        option.textContent = `👤 ${u.name} (${u.role.toUpperCase()} - ${u.jobTitle || 'Support Worker'})`;
-        if (shift.claimedById === u.id) option.selected = true;
-        select.appendChild(option);
+        const opt = document.createElement("option");
+        opt.value = u.id;
+        opt.textContent = `👤 ${u.name} (${u.role.toUpperCase()} - ${u.jobTitle || 'Support worker'})`;
+        if (shift.claimedById === u.id) opt.selected = true;
+        sel.appendChild(opt);
       });
 
       document.getElementById("modal-reassign-shift").classList.remove("hidden");
     }
 
-    function closeReassignModal() {
+    function closeReassignShiftModal() {
       document.getElementById("modal-reassign-shift").classList.add("hidden");
     }
 
-    function handleConfirmReassign() {
-      const shiftId = document.getElementById("reassign-shift-id").value;
-      const shiftIndex = shifts.findIndex(s => s.id === shiftId);
-      if (shiftIndex === -1) return;
+    function handleConfirmReassignment() {
+      const shiftId = document.getElementById("reassign-target-id").value;
+      const idx = shifts.findIndex(s => s.id === shiftId);
+      if (idx === -1) return;
 
-      const selectedValue = document.getElementById("reassign-staff-select").value;
+      const chosenVal = document.getElementById("reassign-select-worker").value;
 
-      if (selectedValue === "__marketplace__") {
-        shifts[shiftIndex].claimedBy = null;
-        shifts[shiftIndex].claimedById = null;
-        shifts[shiftIndex].status = "open";
+      if (chosenVal === "__marketplace__") {
+        shifts[idx].claimedBy = null;
+        shifts[idx].claimedById = null;
+        shifts[idx].status = "open";
         showToast("Shift returned to Open Marketplace", "info");
       } else {
-        const worker = users.find(u => u.id === selectedValue);
-        if (worker) {
-          shifts[shiftIndex].claimedBy = worker.name;
-          shifts[shiftIndex].claimedById = worker.id;
-          shifts[shiftIndex].status = "claimed";
-          showToast(`Shift reassigned to ${worker.name}`, "success");
+        const staff = users.find(u => u.id === chosenVal);
+        if (staff) {
+          shifts[idx].claimedBy = staff.name;
+          shifts[idx].claimedById = staff.id;
+          shifts[idx].status = "claimed";
+          showToast(`Shift reassigned to ${staff.name}`, "success");
         }
       }
 
-      saveLocalData();
-      syncShiftToCloud(shifts[shiftIndex]);
-      closeReassignModal();
+      persistState();
+      syncSingleShiftToCloud(shifts[idx]);
+      closeReassignShiftModal();
       renderRosterGrid();
-      renderMarketplace();
+      renderMarketplaceView();
     }
 
-    // 3) CANCEL SHIFT
     function handleCancelShift(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
       if (!shift) return;
 
-      const confirmDelete = confirm(`Are you sure you want to cancel and remove the shift at "${shift.clientName}" on ${shift.date}?`);
-      if (!confirmDelete) return;
+      if (!confirm(`Cancel shift at "${shift.clientName}" on ${shift.date}?`)) return;
 
       shifts = shifts.filter(s => s.id !== shiftId);
-      saveLocalData();
-      deleteShiftFromCloud(shiftId);
+      persistState();
+      removeSingleShiftFromCloud(shiftId);
 
       renderRosterGrid();
-      renderMarketplace();
-      showToast("Shift cancelled and deleted successfully.", "success");
+      renderMarketplaceView();
+      showToast("Shift cancelled and deleted.", "success");
     }
 
-    // Quick Schedule Helpers from Roster Matrix
-    function openQuickScheduleModal() {
+    function openScheduleShiftForClient(clientName = "") {
       switchTab("post-shift");
-    }
-
-    function openQuickScheduleForClient(clientName) {
-      switchTab("post-shift");
-      const clientSelect = document.getElementById("post-client");
-      if (clientSelect) clientSelect.value = clientName;
-    }
-
-    function openQuickScheduleForDay(clientName, dateStr) {
-      switchTab("post-shift");
-      const clientSelect = document.getElementById("post-client");
-      const dateInput = document.getElementById("post-date");
-      if (clientSelect) clientSelect.value = clientName;
-      if (dateInput) dateInput.value = dateStr;
-    }
-
-    /* =========================================================================
-       6. POST SHIFT LOGIC
-       ========================================================================= */
-    function toggleAssignSelect() {
-      const mode = document.querySelector('input[name="assignMode"]:checked').value;
-      const box = document.getElementById("direct-assign-box");
-      if (mode === "direct") {
-        box.classList.remove("hidden");
-      } else {
-        box.classList.add("hidden");
+      if (clientName) {
+        const sel = document.getElementById("post-input-client");
+        if (sel) sel.value = clientName;
       }
     }
 
-    function handlePostShift(e) {
+    /* ---------------------------------------------------------
+       6. POST SHIFT & DIRECT ASSIGNMENT
+       --------------------------------------------------------- */
+    function togglePostAllocationUI() {
+      const mode = document.querySelector('input[name="postAllocation"]:checked').value;
+      const wrap = document.getElementById("post-direct-staff-wrapper");
+      if (mode === "direct") wrap.classList.remove("hidden");
+      else wrap.classList.add("hidden");
+    }
+
+    function handleCreateShiftSubmit(e) {
       e.preventDefault();
-      if (!canManageShifts()) {
+      if (!isManagerOrConsultant()) {
         showToast("Only Consultants, Managers and IT Admins can post shifts.", "error");
         return;
       }
 
-      const clientName = document.getElementById("post-client").value;
-      const jobTitle = document.getElementById("post-job-title").value;
-      const desc = document.getElementById("post-desc").value.trim();
-      const date = document.getElementById("post-date").value;
-      const startTime = document.getElementById("post-start").value;
-      const endTime = document.getElementById("post-end").value;
-      const staffRate = parseFloat(document.getElementById("post-staff-rate").value);
-      const clientRate = parseFloat(document.getElementById("post-client-rate").value);
-      const assignMode = document.querySelector('input[name="assignMode"]:checked').value;
+      const clientName = document.getElementById("post-input-client").value;
+      const jobTitle = document.getElementById("post-input-role").value;
+      const description = document.getElementById("post-input-desc").value.trim();
+      const date = document.getElementById("post-input-date").value;
+      const startTime = document.getElementById("post-input-start").value;
+      const endTime = document.getElementById("post-input-end").value;
+      const staffRate = parseFloat(document.getElementById("post-input-staff-rate").value);
+      const clientRate = parseFloat(document.getElementById("post-input-client-rate").value);
+      const mode = document.querySelector('input[name="postAllocation"]:checked').value;
 
       let claimedBy = null;
       let claimedById = null;
       let status = "open";
 
-      if (assignMode === "direct") {
-        const assigneeId = document.getElementById("post-assignee").value;
-        if (!assigneeId) {
-          showToast("Please choose a staff member to directly assign.", "error");
+      if (mode === "direct") {
+        const staffId = document.getElementById("post-input-assignee").value;
+        if (!staffId) {
+          showToast("Please select a staff member for direct assignment.", "error");
           return;
         }
-        const staff = users.find(u => u.id === assigneeId);
-        if (staff) {
-          claimedBy = staff.name;
-          claimedById = staff.id;
+        const assignedStaff = users.find(u => u.id === staffId);
+        if (assignedStaff) {
+          claimedBy = assignedStaff.name;
+          claimedById = assignedStaff.id;
           status = "claimed";
         }
       }
@@ -1610,7 +1463,7 @@
         id: "shift_" + Date.now(),
         clientName,
         jobTitle,
-        description: desc,
+        description,
         date,
         startTime,
         endTime,
@@ -1620,267 +1473,233 @@
         claimedBy,
         claimedById,
         createdBy: currentUser ? currentUser.name : "IT Administrator",
-        creatorEmail: currentUser ? currentUser.email : "admin@gtchr.co.uk",
-        creatorRole: currentUser ? currentUser.role : "admin",
-        createdAt: new Date().toISOString()
+        creatorRole: currentUser ? currentUser.role : "admin"
       };
 
       shifts.push(newShift);
-      saveLocalData();
-      syncShiftToCloud(newShift);
+      persistState();
+      syncSingleShiftToCloud(newShift);
 
-      // Reset form
-      document.getElementById("form-post-shift").reset();
-      toggleAssignSelect();
+      document.getElementById("form-post-new-shift").reset();
+      togglePostAllocationUI();
 
-      showToast(`Shift posted successfully ${status === 'claimed' ? `and assigned to ${claimedBy}` : 'to Marketplace'}!`, "success");
+      showToast("Shift published successfully!", "success");
       switchTab("roster");
     }
 
-    /* =========================================================================
-       7. MARKETPLACE (Open shifts for staff)
-       ========================================================================= */
-    function renderMarketplace() {
-      const grid = document.getElementById("marketplace-grid");
-      if (!grid) return;
+    /* ---------------------------------------------------------
+       7. MARKETPLACE & TIMESHEETS
+       --------------------------------------------------------- */
+    function renderMarketplaceView() {
+      const container = document.getElementById("marketplace-card-container");
+      if (!container) return;
 
-      const searchTerm = (document.getElementById("market-search")?.value || "").toLowerCase();
+      const filter = (document.getElementById("market-filter-input")?.value || "").toLowerCase();
       const openShifts = shifts.filter(s => s.status === "open");
 
-      const filtered = openShifts.filter(s => 
-        s.clientName.toLowerCase().includes(searchTerm) ||
-        s.jobTitle.toLowerCase().includes(searchTerm) ||
-        (s.description && s.description.toLowerCase().includes(searchTerm))
+      const matches = openShifts.filter(s => 
+        s.clientName.toLowerCase().includes(filter) ||
+        s.jobTitle.toLowerCase().includes(filter)
       );
 
-      grid.innerHTML = "";
+      container.innerHTML = "";
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full bg-white rounded-2xl p-10 text-center border border-slate-200">
-            <i class="fa-solid fa-clipboard-check text-4xl text-teal-600 mb-3"></i>
-            <h3 class="text-base font-bold text-slate-800">No Open Shifts Currently Available</h3>
-            <p class="text-xs text-slate-500 mt-1">Check back later or view the Weekly Roster Matrix.</p>
+      if (matches.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-xl p-8 text-center border border-slate-200 text-slate-400">
+            <i class="fa-solid fa-store text-3xl mb-2 text-teal-600"></i>
+            <p class="font-bold text-slate-700">No open marketplace shifts found</p>
           </div>
         `;
         return;
       }
 
-      filtered.forEach(shift => {
-        const card = document.createElement("div");
-        card.className = "bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4 hover:shadow-md transition";
-        card.innerHTML = `
+      matches.forEach(shift => {
+        const div = document.createElement("div");
+        div.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3";
+        div.innerHTML = `
           <div class="flex items-start justify-between">
             <div>
-              <span class="bg-teal-100 text-teal-800 font-bold text-xs px-2.5 py-1 rounded-full uppercase tracking-wider">${shift.jobTitle}</span>
-              <h3 class="text-base font-bold text-slate-900 mt-2">${shift.clientName}</h3>
+              <span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${shift.jobTitle}</span>
+              <h3 class="font-bold text-sm text-slate-900 mt-1">${shift.clientName}</h3>
             </div>
-            <div class="text-right">
-              <span class="text-lg font-extrabold text-teal-700">£${shift.staffRate.toFixed(2)}</span>
-              <span class="text-xs text-slate-500 block">/ hour</span>
+            <div class="text-right font-extrabold text-teal-700 text-sm">
+              £${shift.staffRate.toFixed(2)}<span class="text-[10px] font-normal text-slate-400 block">/ hr</span>
             </div>
           </div>
-
-          <div class="space-y-1.5 text-xs text-slate-600">
-            <div class="flex items-center gap-2"><i class="fa-regular fa-calendar text-teal-600"></i> ${shift.date}</div>
-            <div class="flex items-center gap-2"><i class="fa-regular fa-clock text-teal-600"></i> ${shift.startTime} - ${shift.endTime}</div>
-            ${shift.description ? `<p class="mt-2 text-slate-500 italic bg-slate-50 p-2 rounded-lg">"${shift.description}"</p>` : ''}
+          <div class="text-xs text-slate-500 space-y-1">
+            <div><i class="fa-regular fa-calendar text-teal-600 mr-1.5"></i> ${shift.date}</div>
+            <div><i class="fa-regular fa-clock text-teal-600 mr-1.5"></i> ${shift.startTime} - ${shift.endTime}</div>
           </div>
-
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400">Posted by: ${shift.createdBy || 'Coordinator'}</span>
-            <button onclick="handleClaimShift('${shift.id}')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+            <span class="text-[10px] text-slate-400">By: ${shift.createdBy}</span>
+            <button onclick="handleClaimOpenShift('${shift.id}')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
               Claim Shift
             </button>
           </div>
         `;
-        grid.appendChild(card);
+        container.appendChild(div);
       });
     }
 
-    function handleClaimShift(shiftId) {
+    function handleClaimOpenShift(shiftId) {
       if (!currentUser) {
-        openAuthModal();
-        showToast("Please login or register to claim shifts.", "info");
+        openAuthDialog();
+        showToast("Please login to claim shifts.", "info");
         return;
       }
+      const idx = shifts.findIndex(s => s.id === shiftId);
+      if (idx === -1) return;
 
-      const shiftIndex = shifts.findIndex(s => s.id === shiftId);
-      if (shiftIndex === -1) return;
+      shifts[idx].claimedBy = currentUser.name;
+      shifts[idx].claimedById = currentUser.id;
+      shifts[idx].status = "claimed";
 
-      shifts[shiftIndex].claimedBy = currentUser.name;
-      shifts[shiftIndex].claimedById = currentUser.id;
-      shifts[shiftIndex].status = "claimed";
-
-      saveLocalData();
-      syncShiftToCloud(shifts[shiftIndex]);
-
-      showToast(`Shift at ${shifts[shiftIndex].clientName} confirmed!`, "success");
-      renderMarketplace();
+      persistState();
+      syncSingleShiftToCloud(shifts[idx]);
+      renderMarketplaceView();
       renderRosterGrid();
+      showToast(`Shift at ${shifts[idx].clientName} claimed!`, "success");
     }
 
-    /* =========================================================================
-       8. TIMESHEETS, GPS CLOCK-IN & INVOICES
-       ========================================================================= */
-    function renderTimesheets() {
-      const tbody = document.getElementById("timesheets-table-body");
+    function renderTimesheetsView() {
+      const tbody = document.getElementById("timesheets-body");
       if (!tbody) return;
-
       tbody.innerHTML = "";
-      const claimedShifts = shifts.filter(s => s.status === "claimed" || s.status === "completed");
 
-      if (claimedShifts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No active claimed shifts for timesheet submission.</td></tr>`;
+      const active = shifts.filter(s => s.status === "claimed" || s.status === "completed");
+      if (active.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No shifts to display in timesheets.</td></tr>`;
         return;
       }
 
-      claimedShifts.forEach(s => {
+      active.forEach(s => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50";
         tr.innerHTML = `
-          <td class="p-3.5 font-semibold text-slate-900">${s.claimedBy || 'Assigned'}</td>
-          <td class="p-3.5 text-slate-700">${s.clientName}</td>
-          <td class="p-3.5 text-slate-600">${s.date}</td>
-          <td class="p-3.5 text-slate-600">${s.startTime} - ${s.endTime}</td>
-          <td class="p-3.5 font-bold text-teal-700">£${s.staffRate.toFixed(2)}/hr</td>
-          <td class="p-3.5">
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${s.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">
+          <td class="p-3 font-semibold text-slate-900">${s.claimedBy}</td>
+          <td class="p-3 text-slate-600">${s.clientName}</td>
+          <td class="p-3 text-slate-600">${s.date}</td>
+          <td class="p-3 text-slate-600">${s.startTime} - ${s.endTime}</td>
+          <td class="p-3 font-bold text-teal-700">£${s.staffRate.toFixed(2)}/hr</td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">
               ${s.status.toUpperCase()}
             </span>
           </td>
-          <td class="p-3.5 text-right">
+          <td class="p-3 text-right">
             ${s.status !== 'completed' ? `
-              <button onclick="handleClockInOut('${s.id}')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow">
-                <i class="fa-solid fa-location-dot mr-1"></i> Clock Out / Complete
+              <button onclick="handleSignOffTimesheet('${s.id}')" class="bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-semibold px-2.5 py-1 rounded">
+                Complete
               </button>
-            ` : `
-              <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-check mr-1"></i>Signed Off</span>
-            `}
+            ` : `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Signed</span>`}
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function handleClockInOut(shiftId) {
-      const shift = shifts.find(s => s.id === shiftId);
-      if (!shift) return;
-
-      shift.status = "completed";
-      saveLocalData();
-      syncShiftToCloud(shift);
-
-      showToast(`Timesheet signed and completed for ${shift.clientName}`, "success");
-      renderTimesheets();
+    function handleSignOffTimesheet(shiftId) {
+      const idx = shifts.findIndex(s => s.id === shiftId);
+      if (idx === -1) return;
+      shifts[idx].status = "completed";
+      persistState();
+      syncSingleShiftToCloud(shifts[idx]);
+      renderTimesheetsView();
+      showToast("Timesheet approved and completed.", "success");
     }
 
-    function generateInvoiceForClient() {
-      const select = document.getElementById("invoice-client-select");
+    /* ---------------------------------------------------------
+       8. INVOICES (PRESERVING SELECTED CLIENT)
+       --------------------------------------------------------- */
+    function handleGenerateInvoice() {
+      const select = document.getElementById("invoice-facility-select");
       const clientName = select.value;
       if (!clientName) {
-        showToast("Please choose a client facility to generate an invoice.", "info");
+        showToast("Please choose a client facility.", "info");
         return;
       }
 
       const clientShifts = shifts.filter(s => s.clientName === clientName);
-      const container = document.getElementById("invoice-preview-container");
-      container.classList.remove("hidden");
+      const box = document.getElementById("invoice-output-box");
+      box.classList.remove("hidden");
 
       let subtotal = 0;
-      let rowsHtml = "";
+      let rows = "";
 
-      clientShifts.forEach((s, idx) => {
-        // approximate 6 hours if not computed
-        const hours = 6;
+      clientShifts.forEach((s, i) => {
+        const hours = 6; // standard estimated session
         const total = hours * s.clientRate;
         subtotal += total;
 
-        rowsHtml += `
+        rows += `
           <tr class="border-b border-slate-100 text-xs">
-            <td class="py-2.5">${idx + 1}</td>
-            <td class="py-2.5 font-semibold">${s.date}</td>
-            <td class="py-2.5">${s.jobTitle} (${s.claimedBy || 'Staff Member'})</td>
-            <td class="py-2.5 text-center">${hours} hrs</td>
-            <td class="py-2.5 text-right">£${s.clientRate.toFixed(2)}</td>
-            <td class="py-2.5 text-right font-bold">£${total.toFixed(2)}</td>
+            <td class="py-2">${i + 1}</td>
+            <td class="py-2">${s.date}</td>
+            <td class="py-2 font-medium">${s.jobTitle} (${s.claimedBy || 'Staff'})</td>
+            <td class="py-2 text-center">${hours} hrs</td>
+            <td class="py-2 text-right">£${s.clientRate.toFixed(2)}</td>
+            <td class="py-2 text-right font-bold">£${total.toFixed(2)}</td>
           </tr>
         `;
       });
 
       const vat = subtotal * 0.20;
-      const grandTotal = subtotal + vat;
-      const invNumber = "INV-" + Math.floor(100000 + Math.random() * 900000);
+      const totalDue = subtotal + vat;
 
-      container.innerHTML = `
-        <div class="space-y-6">
-          <div class="flex items-start justify-between border-b border-slate-200 pb-5">
+      box.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex justify-between border-b pb-3">
             <div>
-              <h2 class="text-2xl font-extrabold text-slate-900">TAX INVOICE</h2>
-              <p class="text-xs text-slate-500 font-semibold mt-1">Invoice Number: <span class="text-teal-700">${invNumber}</span></p>
+              <h3 class="text-lg font-bold text-slate-900">INVOICE</h3>
+              <p class="text-xs text-slate-500">Facility: <strong>${clientName}</strong></p>
               <p class="text-xs text-slate-500">Date: ${new Date().toLocaleDateString('en-GB')}</p>
             </div>
             <div class="text-right text-xs text-slate-600">
-              <h4 class="font-bold text-slate-900 text-sm">GTC Domestic HR Ltd</h4>
+              <strong class="text-slate-900">GTC Domestic HR</strong>
               <p>71-75 Shelton Street, Covent Garden</p>
               <p>London, WC2H 9JQ</p>
-              <p>VAT Reg: GB 492 8812 04</p>
             </div>
           </div>
 
-          <div class="bg-slate-50 p-4 rounded-xl text-xs space-y-1">
-            <span class="text-slate-400 uppercase font-bold text-[10px]">Billed Facility:</span>
-            <h4 class="text-sm font-bold text-slate-900">${clientName}</h4>
-            <p class="text-slate-500">Care & Domestic Provision Accounts</p>
-          </div>
-
-          <table class="w-full text-left">
+          <table class="w-full text-left text-xs">
             <thead>
-              <tr class="border-b-2 border-slate-200 text-xs font-bold text-slate-600">
-                <th class="py-2">#</th>
-                <th class="py-2">Date</th>
-                <th class="py-2">Role & Staff</th>
-                <th class="py-2 text-center">Duration</th>
-                <th class="py-2 text-right">Rate</th>
-                <th class="py-2 text-right">Total</th>
+              <tr class="border-b text-slate-600 font-bold">
+                <th class="py-1.5">#</th>
+                <th class="py-1.5">Date</th>
+                <th class="py-1.5">Role / Staff</th>
+                <th class="py-1.5 text-center">Hours</th>
+                <th class="py-1.5 text-right">Rate</th>
+                <th class="py-1.5 text-right">Total</th>
               </tr>
             </thead>
             <tbody>
-              ${rowsHtml || `<tr><td colspan="6" class="py-4 text-center text-slate-400">No shifts recorded for this client.</td></tr>`}
+              ${rows || `<tr><td colspan="6" class="p-3 text-center text-slate-400">No shifts recorded for this facility.</td></tr>`}
             </tbody>
           </table>
 
-          <div class="flex justify-end border-t border-slate-200 pt-4">
-            <div class="w-64 space-y-2 text-xs">
-              <div class="flex justify-between text-slate-600">
-                <span>Net Subtotal:</span>
-                <span class="font-semibold">£${subtotal.toFixed(2)}</span>
-              </div>
-              <div class="flex justify-between text-slate-600">
-                <span>VAT (20%):</span>
-                <span class="font-semibold">£${vat.toFixed(2)}</span>
-              </div>
-              <div class="flex justify-between text-sm font-extrabold text-slate-900 border-t border-slate-200 pt-2">
-                <span>Grand Total Due:</span>
-                <span class="text-teal-700">£${grandTotal.toFixed(2)}</span>
-              </div>
+          <div class="flex justify-end pt-2 border-t text-xs">
+            <div class="w-52 space-y-1 text-right">
+              <div>Subtotal: £${subtotal.toFixed(2)}</div>
+              <div>VAT (20%): £${vat.toFixed(2)}</div>
+              <div class="font-bold text-sm text-teal-700 pt-1 border-t">Total Due: £${totalDue.toFixed(2)}</div>
             </div>
           </div>
 
-          <div class="flex justify-end pt-4 gap-3">
-            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg">
-              <i class="fa-solid fa-print mr-1"></i> Print / Save PDF
+          <div class="flex justify-end pt-2">
+            <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded font-semibold">
+              <i class="fa-solid fa-print mr-1"></i> Print Invoice
             </button>
           </div>
         </div>
       `;
     }
 
-    /* =========================================================================
-       9. STAFF DIRECTORY & CLIENTS MANAGEMENT
-       ========================================================================= */
-    function renderStaffDirectory() {
-      const tbody = document.getElementById("staff-directory-body");
+    /* ---------------------------------------------------------
+       9. DIRECTORY & CLIENTS VIEW
+       --------------------------------------------------------- */
+    function renderStaffDirectoryView() {
+      const tbody = document.getElementById("staff-directory-rows");
       if (!tbody) return;
       tbody.innerHTML = "";
 
@@ -1888,202 +1707,166 @@
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50";
         tr.innerHTML = `
-          <td class="p-3.5 font-bold text-slate-900">${u.name}</td>
-          <td class="p-3.5 text-slate-600">${u.email}</td>
-          <td class="p-3.5">
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : u.role === 'manager' ? 'bg-indigo-100 text-indigo-800' : u.role === 'consultant' ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-800'}">
-              ${u.role}
-            </span>
-          </td>
-          <td class="p-3.5 text-slate-700">${u.jobTitle || 'Support worker'}</td>
-          <td class="p-3.5"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Accredited</span></td>
-          <td class="p-3.5 text-right text-xs text-slate-400">Active</td>
+          <td class="p-3 font-semibold text-slate-900">${u.name}</td>
+          <td class="p-3 text-slate-600">${u.email}</td>
+          <td class="p-3 uppercase font-bold text-[10px] text-teal-700">${u.role}</td>
+          <td class="p-3 text-slate-600">${u.jobTitle || 'Support worker'}</td>
+          <td class="p-3 text-right"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Accredited</span></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     function renderClientsView() {
-      const grid = document.getElementById("clients-grid");
-      if (!grid) return;
-      grid.innerHTML = "";
+      const container = document.getElementById("clients-card-list");
+      if (!container) return;
+      container.innerHTML = "";
 
       clients.forEach(c => {
         const div = document.createElement("div");
-        div.className = "bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-3";
+        div.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-2";
         div.innerHTML = `
           <div class="flex items-start justify-between">
-            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-lg">
-              <i class="fa-solid fa-hospital"></i>
-            </div>
-            <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">£${c.defaultRate.toFixed(2)}/hr</span>
+            <h4 class="font-bold text-sm text-slate-900">${c.name}</h4>
+            <span class="text-xs font-bold text-teal-700">£${c.defaultRate.toFixed(2)}/hr</span>
           </div>
-          <h3 class="text-base font-bold text-slate-900">${c.name}</h3>
           <p class="text-xs text-slate-500">${c.address}</p>
-          <div class="pt-2 border-t border-slate-100 text-xs text-slate-600">
+          <div class="text-[11px] text-slate-600 pt-1 border-t">
             <strong>Contact:</strong> ${c.contactPerson}
           </div>
         `;
-        grid.appendChild(div);
+        container.appendChild(div);
       });
     }
 
-    function openAddClientModal() {
-      document.getElementById("modal-add-client").classList.remove("hidden");
-    }
+    function openClientModal() { document.getElementById("modal-client").classList.remove("hidden"); }
+    function closeClientModal() { document.getElementById("modal-client").classList.add("hidden"); }
 
-    function closeAddClientModal() {
-      document.getElementById("modal-add-client").classList.add("hidden");
-    }
-
-    function handleSaveNewClient(e) {
+    function handleSaveClientSubmit(e) {
       e.preventDefault();
-      const name = document.getElementById("new-client-name").value.trim();
-      const address = document.getElementById("new-client-address").value.trim();
-      const contactPerson = document.getElementById("new-client-contact").value.trim();
-      const defaultRate = parseFloat(document.getElementById("new-client-rate").value) || 21.50;
+      const name = document.getElementById("new-client-input-name").value.trim();
+      const address = document.getElementById("new-client-input-address").value.trim();
+      const contactPerson = document.getElementById("new-client-input-contact").value.trim();
+      const defaultRate = parseFloat(document.getElementById("new-client-input-rate").value) || 21.50;
 
-      const newClient = {
-        id: "c_" + Date.now(),
-        name,
-        address,
-        contactPerson,
-        defaultRate
-      };
-
+      const newClient = { id: "c_" + Date.now(), name, address, contactPerson, defaultRate };
       clients.push(newClient);
-      saveLocalData();
+      persistState();
 
-      if (fbDatabase) {
-        fbDatabase.ref(`gtc_clients/${newClient.id}`).set(newClient);
-      }
+      if (fbDb) fbDb.ref(`gtc_clients/${newClient.id}`).set(newClient);
 
       populateClientDropdowns();
       renderClientsView();
-      closeAddClientModal();
-      showToast(`Facility "${name}" added successfully!`, "success");
+      closeClientModal();
+      showToast(`Facility "${name}" added!`, "success");
     }
 
-    /* =========================================================================
-       10. DROPDOWNS POPULATION & INITIALIZATION
-       ========================================================================= */
+    /* ---------------------------------------------------------
+       10. POPULATE DROPDOWNS & COUNTS
+       --------------------------------------------------------- */
     function populateClientDropdowns() {
-      const rosterFilter = document.getElementById("roster-filter-client");
-      const postSelect = document.getElementById("post-client");
-      const invSelect = document.getElementById("invoice-client-select");
+      const rFilter = document.getElementById("roster-filter-facility");
+      const postSel = document.getElementById("post-input-client");
+      const invSel = document.getElementById("invoice-facility-select");
 
-      const preserveRoster = rosterFilter ? rosterFilter.value : "all";
-      const preservePost = postSelect ? postSelect.value : "";
-      const preserveInv = invSelect ? invSelect.value : "";
+      const curR = rFilter ? rFilter.value : "all";
+      const curP = postSel ? postSel.value : "";
+      const curI = invSel ? invSel.value : "";
 
-      if (rosterFilter) {
-        rosterFilter.innerHTML = `<option value="all">All Facilities</option>`;
-        clients.forEach(c => {
-          rosterFilter.innerHTML += `<option value="${c.name}">${c.name}</option>`;
-        });
-        rosterFilter.value = preserveRoster;
+      if (rFilter) {
+        rFilter.innerHTML = `<option value="all">All Facilities</option>`;
+        clients.forEach(c => { rFilter.innerHTML += `<option value="${c.name}">${c.name}</option>`; });
+        rFilter.value = curR;
       }
-
-      if (postSelect) {
-        postSelect.innerHTML = `<option value="">-- Select Client / Facility --</option>`;
-        clients.forEach(c => {
-          postSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
-        });
-        postSelect.value = preservePost;
+      if (postSel) {
+        postSel.innerHTML = `<option value="">-- Select Client / Facility --</option>`;
+        clients.forEach(c => { postSel.innerHTML += `<option value="${c.name}">${c.name}</option>`; });
+        postSel.value = curP;
       }
-
-      if (invSelect) {
-        invSelect.innerHTML = `<option value="">-- Select Client for Invoice --</option>`;
-        clients.forEach(c => {
-          invSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
-        });
-        invSelect.value = preserveInv;
+      if (invSel) {
+        invSel.innerHTML = `<option value="">-- Select Client --</option>`;
+        clients.forEach(c => { invSel.innerHTML += `<option value="${c.name}">${c.name}</option>`; });
+        invSel.value = curI;
       }
     }
 
     function populateStaffDropdowns() {
-      const postAssignee = document.getElementById("post-assignee");
-      const rosterCreator = document.getElementById("roster-filter-creator");
+      const postAssignee = document.getElementById("post-input-assignee");
+      const rCreator = document.getElementById("roster-filter-creator");
 
       if (postAssignee) {
-        postAssignee.innerHTML = `<option value="">-- Choose Registered Staff Member --</option>`;
+        postAssignee.innerHTML = `<option value="">-- Choose Staff Member --</option>`;
         users.forEach(u => {
-          postAssignee.innerHTML += `<option value="${u.id}">👤 ${u.name} (${u.role.toUpperCase()} - ${u.jobTitle || 'Support Worker'})</option>`;
+          postAssignee.innerHTML += `<option value="${u.id}">👤 ${u.name} (${u.role.toUpperCase()} - ${u.jobTitle || 'Support worker'})</option>`;
         });
       }
 
-      if (rosterCreator) {
-        const preserve = rosterCreator.value || "all";
-        rosterCreator.innerHTML = `<option value="all">All Schedulers</option>`;
-        const uniqueCreators = Array.from(new Set(shifts.map(s => s.createdBy).filter(Boolean)));
-        uniqueCreators.forEach(name => {
-          rosterCreator.innerHTML += `<option value="${name}">${name}</option>`;
+      if (rCreator) {
+        const curC = rCreator.value || "all";
+        rCreator.innerHTML = `<option value="all">All Schedulers</option>`;
+        const creators = Array.from(new Set(shifts.map(s => s.createdBy).filter(Boolean)));
+        creators.forEach(name => {
+          rCreator.innerHTML += `<option value="${name}">${name}</option>`;
         });
-        rosterCreator.value = preserve;
+        rCreator.value = curC;
       }
     }
 
-    function updateCountsUI() {
-      const sCount = document.getElementById("it-count-shifts");
-      const uCount = document.getElementById("it-count-users");
+    function updateStatNumbers() {
+      const sCount = document.getElementById("it-stat-shifts");
+      const uCount = document.getElementById("it-stat-users");
       if (sCount) sCount.textContent = shifts.length;
       if (uCount) uCount.textContent = users.length;
     }
 
-    /* =========================================================================
-       11. AUTHENTICATION & SESSION
-       ========================================================================= */
-    let isSignupMode = false;
+    /* ---------------------------------------------------------
+       11. AUTHENTICATION & REGISTRATION
+       --------------------------------------------------------- */
+    let isRegMode = false;
 
-    function handleAuthAction() {
+    function handleAuthButtonClick() {
       if (currentUser) {
-        // Logout
         currentUser = null;
         localStorage.removeItem("gtc_current_user");
-        updateNavProfileUI();
-        showToast("Logged out successfully.", "info");
+        updateNavUserUI();
+        showToast("Logged out.", "info");
       } else {
-        openAuthModal();
+        openAuthDialog();
       }
     }
 
-    function openAuthModal() {
-      document.getElementById("modal-auth").classList.remove("hidden");
-    }
+    function openAuthDialog() { document.getElementById("modal-auth-dialog").classList.remove("hidden"); }
+    function closeAuthDialog() { document.getElementById("modal-auth-dialog").classList.add("hidden"); }
 
-    function closeAuthModal() {
-      document.getElementById("modal-auth").classList.add("hidden");
-    }
+    function toggleAuthRegistrationMode() {
+      isRegMode = !isRegMode;
+      const title = document.getElementById("auth-dialog-title");
+      const fields = document.getElementById("auth-reg-fields");
+      const btnSub = document.getElementById("auth-btn-submit");
+      const msg = document.getElementById("auth-msg-toggle");
+      const btnTog = document.getElementById("auth-btn-toggle");
 
-    function toggleAuthMode() {
-      isSignupMode = !isSignupMode;
-      const title = document.getElementById("auth-modal-title");
-      const fields = document.getElementById("auth-signup-fields");
-      const submit = document.getElementById("auth-submit-label");
-      const msg = document.getElementById("auth-toggle-msg");
-      const btn = document.getElementById("auth-toggle-btn");
-
-      if (isSignupMode) {
+      if (isRegMode) {
         title.textContent = "Register Staff Member";
         fields.classList.remove("hidden");
-        submit.textContent = "Register";
+        btnSub.textContent = "Register";
         msg.textContent = "Already have an account?";
-        btn.textContent = "Sign In";
+        btnTog.textContent = "Sign In";
       } else {
-        title.textContent = "Staff & Portal Login";
+        title.textContent = "Login to GTC HR";
         fields.classList.add("hidden");
-        submit.textContent = "Sign In";
-        msg.textContent = "New staff member?";
-        btn.textContent = "Register Account";
+        btnSub.textContent = "Sign In";
+        msg.textContent = "Don't have an account?";
+        btnTog.textContent = "Register Here";
       }
     }
 
-    function handleAuthSubmit(e) {
+    function handleAuthDialogSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById("auth-email").value.trim().toLowerCase();
-      const password = document.getElementById("auth-password").value.trim().toLowerCase();
+      const email = document.getElementById("auth-input-email").value.trim().toLowerCase();
+      const password = document.getElementById("auth-input-password").value.trim().toLowerCase();
 
-      // Master Login Bypass: admin@gtchr.co.uk / cookies
+      // Master Account: admin@gtchr.co.uk / cookies
       if (email === "admin@gtchr.co.uk" && password === "cookies") {
         currentUser = users.find(u => u.email === "admin@gtchr.co.uk") || {
           id: "u_admin",
@@ -2092,119 +1875,107 @@
           role: "admin",
           jobTitle: "Support worker"
         };
-        localStorage.setItem("gtc_current_user", JSON.stringify(currentUser));
-        updateNavProfileUI();
-        closeAuthModal();
+        persistState();
+        updateNavUserUI();
+        closeAuthDialog();
         showToast("Logged in as IT Administrator!", "success");
         return;
       }
 
-      if (isSignupMode) {
-        const name = document.getElementById("auth-name").value.trim();
-        const role = document.getElementById("auth-role").value;
-        const jobTitle = document.getElementById("auth-job-title").value;
+      if (isRegMode) {
+        const name = document.getElementById("auth-input-name").value.trim();
+        const role = document.getElementById("auth-input-role").value;
+        const jobTitle = document.getElementById("auth-input-job").value;
 
-        const newUser = {
-          id: "u_" + Date.now(),
-          name,
-          email,
-          password,
-          role,
-          jobTitle,
-          status: "active"
-        };
-
+        const newUser = { id: "u_" + Date.now(), name, email, password, role, jobTitle };
         users.push(newUser);
         currentUser = newUser;
-        saveLocalData();
+        persistState();
 
-        if (fbDatabase) {
-          fbDatabase.ref(`gtc_users/${newUser.id}`).set(newUser);
-        }
+        if (fbDb) fbDb.ref(`gtc_users/${newUser.id}`).set(newUser);
 
         populateStaffDropdowns();
-        renderStaffDirectory();
-        updateNavProfileUI();
-        closeAuthModal();
-        showToast(`Welcome, ${name}! Registered as ${role.toUpperCase()}.`, "success");
+        renderStaffDirectoryView();
+        updateNavUserUI();
+        closeAuthDialog();
+        showToast(`Welcome, ${name}!`, "success");
       } else {
-        const found = users.find(u => u.email.toLowerCase() === email && u.password.toLowerCase() === password);
-        if (found) {
-          currentUser = found;
-          localStorage.setItem("gtc_current_user", JSON.stringify(currentUser));
-          updateNavProfileUI();
-          closeAuthModal();
+        const matched = users.find(u => u.email.toLowerCase() === email && u.password.toLowerCase() === password);
+        if (matched) {
+          currentUser = matched;
+          persistState();
+          updateNavUserUI();
+          closeAuthDialog();
           showToast(`Welcome back, ${currentUser.name}!`, "success");
         } else {
-          showToast("Invalid email or password. Use admin@gtchr.co.uk / cookies for master access.", "error");
+          showToast("Invalid credentials. Master login: admin@gtchr.co.uk / cookies", "error");
         }
       }
     }
 
-    /* =========================================================================
-       12. EMAILJS & BACKUP HELPERS
-       ========================================================================= */
-    function openEmailJsConfigModal() {
-      document.getElementById("cfg-emailjs-service").value = localStorage.getItem("gtc_emailjs_service") || "service_gtchr";
-      document.getElementById("cfg-emailjs-template").value = localStorage.getItem("gtc_emailjs_template") || "template_shift_alert";
-      document.getElementById("cfg-emailjs-key").value = localStorage.getItem("gtc_emailjs_key") || "";
-      document.getElementById("modal-emailjs-config").classList.remove("hidden");
+    /* ---------------------------------------------------------
+       12. EMAILJS DISPATCH & TOASTS
+       --------------------------------------------------------- */
+    function openEmailConfigModal() {
+      document.getElementById("cfg-email-service").value = localStorage.getItem("gtc_email_service") || "service_gtchr";
+      document.getElementById("cfg-email-template").value = localStorage.getItem("gtc_email_template") || "template_shift_alert";
+      document.getElementById("cfg-email-key").value = localStorage.getItem("gtc_email_key") || "";
+      document.getElementById("modal-email-config").classList.remove("hidden");
     }
 
-    function closeEmailJsConfigModal() {
-      document.getElementById("modal-emailjs-config").classList.add("hidden");
-    }
+    function closeEmailConfigModal() { document.getElementById("modal-email-config").classList.add("hidden"); }
 
-    function saveEmailJsConfig() {
-      const s = document.getElementById("cfg-emailjs-service").value.trim();
-      const t = document.getElementById("cfg-emailjs-template").value.trim();
-      const k = document.getElementById("cfg-emailjs-key").value.trim();
+    function saveEmailCredentials() {
+      const s = document.getElementById("cfg-email-service").value.trim();
+      const t = document.getElementById("cfg-email-template").value.trim();
+      const k = document.getElementById("cfg-email-key").value.trim();
 
-      localStorage.setItem("gtc_emailjs_service", s);
-      localStorage.setItem("gtc_emailjs_template", t);
-      localStorage.setItem("gtc_emailjs_key", k);
+      localStorage.setItem("gtc_email_service", s);
+      localStorage.setItem("gtc_email_template", t);
+      localStorage.setItem("gtc_email_key", k);
 
-      document.getElementById("lbl-emailjs-service").textContent = s;
-      document.getElementById("lbl-emailjs-template").textContent = t;
-      closeEmailJsConfigModal();
+      document.getElementById("it-lbl-email-service").textContent = s;
+      document.getElementById("it-lbl-email-template").textContent = t;
+      closeEmailConfigModal();
       showToast("EmailJS settings updated!", "success");
     }
 
-    function exportDataJSON() {
-      const data = { clients, users, shifts, timesheets };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `gtc_domestic_hr_backup_${formatDateISO(new Date())}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+    function testEmailJsDispatch() {
+      const s = localStorage.getItem("gtc_email_service") || "service_gtchr";
+      const t = localStorage.getItem("gtc_email_template") || "template_shift_alert";
+      const k = localStorage.getItem("gtc_email_key");
+
+      if (!k) {
+        showToast("Please configure your EmailJS Public Key first.", "info");
+        openEmailConfigModal();
+        return;
+      }
+
+      showToast("Dispatching test notification via EmailJS...", "info");
+      try {
+        emailjs.init(k);
+        emailjs.send(s, t, {
+          to_name: currentUser ? currentUser.name : "Staff Member",
+          message: "This is a live test notification from GTC Domestic HR.",
+          date: new Date().toLocaleDateString('en-GB')
+        }).then(() => {
+          showToast("EmailJS Notification Sent Successfully!", "success");
+        }).catch(err => {
+          showToast("EmailJS Error: " + (err.text || err.message), "error");
+        });
+      } catch (err) {
+        showToast("EmailJS Exception: " + err.message, "error");
+      }
     }
 
-    function resetDefaultTestData() {
-      if (!confirm("Reset database to standard demo facilities and shifts?")) return;
-      clients = DEFAULT_CLIENTS;
-      users = DEFAULT_USERS;
-      shifts = generateSeedShifts();
-      timesheets = [];
-      saveLocalData();
-      syncAllToFirebase();
-      renderRosterGrid();
-      renderMarketplace();
-      showToast("Default demonstration data restored!", "success");
-    }
-
-    // Custom Toast Notifications
-    function showToast(message, type = "info") {
+    function showToast(msg, type = "info") {
       const container = document.getElementById("toast-container");
       if (!container) return;
 
       const toast = document.createElement("div");
-      const bg = type === "success" ? "bg-emerald-600 text-white" : type === "error" ? "bg-red-600 text-white" : "bg-slate-900 text-white";
-      const icon = type === "success" ? "fa-circle-check" : type === "error" ? "fa-triangle-exclamation" : "fa-circle-info";
-
-      toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2.5 text-xs font-semibold pointer-events-auto transition-all duration-300 opacity-0 transform translate-y-2`;
-      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+      const bg = type === "success" ? "bg-emerald-600" : type === "error" ? "bg-red-600" : "bg-slate-900";
+      toast.className = `${bg} text-white px-3.5 py-2.5 rounded-lg shadow-lg flex items-center space-x-2 text-xs font-semibold pointer-events-auto transition-all duration-300 opacity-0 translate-y-2`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info'}"></i><span>${msg}</span>`;
 
       container.appendChild(toast);
       setTimeout(() => { toast.classList.remove("opacity-0", "translate-y-2"); }, 20);
@@ -2214,16 +1985,15 @@
       }, 3500);
     }
 
-    /* =========================================================================
-       13. BOOTSTRAP APPLICATION
-       ========================================================================= */
+    /* ---------------------------------------------------------
+       13. APP STARTUP
+       --------------------------------------------------------- */
     window.addEventListener("DOMContentLoaded", () => {
       populateClientDropdowns();
       populateStaffDropdowns();
-      updateNavProfileUI();
-      setupCloudListeners();
+      updateNavUserUI();
+      attachCloudDatabaseListeners();
 
-      // Restore active tab or default to Roster Scheduler
       const savedTab = localStorage.getItem("gtc_active_tab") || "roster";
       switchTab(savedTab);
     });
