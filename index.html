@@ -615,11 +615,24 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
             <h3 class="text-sm font-bold text-snoo-navy">Compile Client Invoice</h3>
+            
             <div>
               <label class="font-bold block mb-1">Select Domestic Client:</label>
               <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium"></select>
             </div>
-            <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="font-bold block mb-1">From Date:</label>
+                <input type="date" id="invoiceFilterStart" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
+              </div>
+              <div>
+                <label class="font-bold block mb-1">To Date:</label>
+                <input type="date" id="invoiceFilterEnd" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
+              </div>
+            </div>
+
+            <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer mt-2">
               <i class="fa-solid fa-file-invoice"></i> Compile Invoice
             </button>
             <button onclick="window.print()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
@@ -628,7 +641,7 @@
           </div>
 
           <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
-            <div class="flex justify-between pb-6 border-b">
+            <div class="flex justify-between pb-6 border-b border-slate-200">
               <div>
                 <h2 class="font-black text-snoo-navy text-xl tracking-tight">Golden Tree HR Ltd</h2>
                 <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
@@ -637,7 +650,8 @@
               <div class="text-right">
                 <span class="text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">Official Invoice</span>
                 <p id="invNum" class="font-bold text-snoo-navy text-sm mt-1.5">INV-2026-001</p>
-                <p class="text-slate-400">Due: 14 Days Net</p>
+                <p class="text-slate-400 mb-1">Due: 14 Days Net</p>
+                <p id="invDateRange" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 inline-block">Period: All Time</p>
               </div>
             </div>
             <div class="py-4">
@@ -653,11 +667,11 @@
                   <th class="py-2.5 px-2 text-right">Total</th>
                 </tr>
               </thead>
-              <tbody id="invoiceRows" class="divide-y">
+              <tbody id="invoiceRows" class="divide-y divide-slate-100">
                 <tr><td colspan="4" class="p-4 text-center text-slate-400">Select client & click compile invoice</td></tr>
               </tbody>
             </table>
-            <div class="flex justify-between items-end pt-4 border-t">
+            <div class="flex justify-between items-end pt-4 border-t border-slate-200">
               <div class="text-slate-500 space-y-1">
                 <p class="font-bold text-slate-700">Bank Transfer Details:</p>
                 <p>Barclays UK | Sort Code: 20-40-71 | Acc: 83920184</p>
@@ -665,7 +679,7 @@
               <div class="w-48 space-y-1 text-right">
                 <div class="flex justify-between text-slate-600"><span>Subtotal:</span><span id="invSub">£0.00</span></div>
                 <div class="flex justify-between text-slate-600"><span>VAT (20%):</span><span id="invVat">£0.00</span></div>
-                <div class="flex justify-between font-bold text-snoo-navy text-base border-t pt-1"><span>Total Due:</span><span id="invTot">£0.00</span></div>
+                <div class="flex justify-between font-bold text-snoo-navy text-base border-t pt-1 mt-1"><span>Total Due:</span><span id="invTot">£0.00</span></div>
               </div>
             </div>
           </div>
@@ -2272,26 +2286,51 @@
     function generateInvoice() {
       const cid = parseInt(document.getElementById('invoiceClientSelect').value);
       const cl = clients.find(x => x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
-      const sList = shifts.filter(s => s.clientId === cid);
+      
+      const start = document.getElementById('invoiceFilterStart').value;
+      const end = document.getElementById('invoiceFilterEnd').value;
+      
+      let sList = shifts.filter(s => s.clientId === cid);
+      
+      if (start) sList = sList.filter(s => s.date >= start);
+      if (end) sList = sList.filter(s => s.date <= end);
+      
       let sub = 0;
       document.getElementById('invClient').textContent = `${cl.name} (${cl.address})`;
-      document.getElementById('invoiceRows').innerHTML = sList.map(s => {
-        const tot = s.hours * cl.rate;
-        sub += tot;
-        const st = users.find(u => u.id === s.staffId);
-        return `
-          <tr>
-            <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td>
-            <td class="py-2.5 px-2 text-right">${s.hours}</td>
-            <td class="py-2.5 px-2 text-right">£${cl.rate.toFixed(2)}</td>
-            <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
-          </tr>
-        `;
-      }).join('');
+      
+      const dr = document.getElementById('invDateRange');
+      if (start && end) dr.textContent = `Period: ${start} to ${end}`;
+      else if (start) dr.textContent = `Period: From ${start}`;
+      else if (end) dr.textContent = `Period: Up to ${end}`;
+      else dr.textContent = `Period: All Time`;
+
+      if (sList.length === 0) {
+        document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No shifts found for this period</td></tr>`;
+      } else {
+        document.getElementById('invoiceRows').innerHTML = sList.map(s => {
+          const rate = s.chargeRate || cl.rate;
+          const tot = s.hours * rate;
+          sub += tot;
+          const st = users.find(u => u.id === s.staffId);
+          return `
+            <tr>
+              <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td>
+              <td class="py-2.5 px-2 text-right">${s.hours}</td>
+              <td class="py-2.5 px-2 text-right">£${rate.toFixed(2)}</td>
+              <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+      
       const vat = sub * 0.20;
       document.getElementById('invSub').textContent = `£${sub.toFixed(2)}`;
       document.getElementById('invVat').textContent = `£${vat.toFixed(2)}`;
       document.getElementById('invTot').textContent = `£${(sub + vat).toFixed(2)}`;
+      
+      const randStr = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('invNum').textContent = `INV-${new Date().getFullYear()}-${randStr}`;
+      
       showToast('Client invoice compiled!', 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
@@ -2309,3 +2348,4 @@
   </script>
 </body>
 </html>
+```
