@@ -51,7 +51,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.2
+    v4.1.4
   </div>
 
   <!-- ================= 1. AUTHENTICATION & LOGIN SCREEN ================= -->
@@ -902,6 +902,8 @@
 
     let fbApp = null;
     let fbDb = null;
+    let emailConfig = null; // Stores global EmailJS configuration from Firebase
+
     try {
       if (typeof firebase !== 'undefined') {
         fbApp = firebase.initializeApp(firebaseConfig);
@@ -930,7 +932,7 @@
         const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
         const c = JSON.parse(localStorage.getItem('enin_live_clients_v4'));
         
-        // CRITICAL BUG FIX: Stripping out NULL ghost arrays left behind by Firebase deletions
+        // CRITICAL BUG FIX: Filter out null ghost arrays left behind by Firebase
         if (u && Array.isArray(u)) users = u.filter(x => x !== null);
         if (s && Array.isArray(s)) shifts = s.filter(x => x !== null);
         if (c && Array.isArray(c)) clients = c.filter(x => x !== null);
@@ -955,11 +957,9 @@
         }
       }
 
+      // Load test email if saved
       setTimeout(() => {
         if(document.getElementById('emailjsTestEmail')) document.getElementById('emailjsTestEmail').value = localStorage.getItem('enin_email_test_recipient') || '';
-        if(document.getElementById('emailjsKey')) document.getElementById('emailjsKey').value = localStorage.getItem('enin_email_key') || '';
-        if(document.getElementById('emailjsService')) document.getElementById('emailjsService').value = localStorage.getItem('enin_email_service') || '';
-        if(document.getElementById('emailjsTemplate')) document.getElementById('emailjsTemplate').value = localStorage.getItem('enin_email_template') || '';
       }, 500);
 
       pullFromCloud(false);
@@ -1003,17 +1003,27 @@
         showToast("Syncing with live Firebase database...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
       }
 
+      // 1. Sync EmailJS API config globally across all devices
+      fbDb.ref('config/emailjs').on('value', (snap) => {
+        emailConfig = snap.val() || null;
+        if (emailConfig && document.getElementById('emailjsKey')) {
+          if (!document.getElementById('emailjsKey').value) {
+            document.getElementById('emailjsKey').value = emailConfig.publicKey || '';
+            document.getElementById('emailjsService').value = emailConfig.serviceId || '';
+            document.getElementById('emailjsTemplate').value = emailConfig.templateId || '';
+          }
+        }
+      });
+
       fbDb.ref('users').on('value', (snap) => {
         if (snap.val()) {
-          const cloudUsers = Object.values(snap.val()).filter(x => x !== null);
-          cloudUsers.forEach(cu => {
-            if (!cu || !cu.email) return;
-            const idx = users.findIndex(u => u && u.email && u.email.toLowerCase() === cu.email.toLowerCase());
-            if (idx >= 0) users[idx] = Object.assign(users[idx], cu);
-            else users.push(cu);
-          });
-          if (!users.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
+          let cloudUsers = Object.values(snap.val()).filter(x => x !== null);
+          if (!cloudUsers.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) {
+            cloudUsers.unshift(masterAdmin);
+          }
+          users = cloudUsers;
           localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
+          
           if (currentUser && currentUser.email) {
             currentUser = users.find(u => u && u.email && u.email.toLowerCase() === currentUser.email.toLowerCase()) || currentUser;
           }
@@ -1058,7 +1068,6 @@
     }
 
     function pushToCloud() {
-      // Filter out any lingering nulls before saving
       users = users.filter(x => x !== null);
       shifts = shifts.filter(x => x !== null);
       clients = clients.filter(x => x !== null);
@@ -1308,10 +1317,21 @@
       
       if (!testEmail || !pKey || !sId || !tId) return showToast("Please fill all 4 EmailJS fields to test and save", "bg-rose-50 text-rose-800 border-rose-200");
       
+      // Save locally as a backup / for UI loading
       localStorage.setItem('enin_email_test_recipient', testEmail);
       localStorage.setItem('enin_email_key', pKey);
       localStorage.setItem('enin_email_service', sId);
       localStorage.setItem('enin_email_template', tId);
+
+      // SAVE TO LIVE FIREBASE CLOUD SO STAFF DEVICES CAN READ IT!
+      if (fbDb) {
+        fbDb.ref('config/emailjs').set({
+          publicKey: pKey,
+          serviceId: sId,
+          templateId: tId
+        });
+        emailConfig = { publicKey: pKey, serviceId: sId, templateId: tId };
+      }
 
       try {
         if (typeof emailjs === 'undefined') {
@@ -1324,7 +1344,7 @@
           subject: "Golden Tree HR API Test",
           message: "Test connection successful! Golden Tree HR notifications are active."
         }, pKey).then(() => {
-          showToast("✓ EmailJS Notification Sent Successfully! Config Saved.", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          showToast("✓ API Keys saved to Cloud! EmailJS Notification Sent Successfully.", "bg-emerald-50 text-emerald-800 border-emerald-200");
         }).catch(err => {
           showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800 border-rose-200");
         });
@@ -1338,9 +1358,10 @@
       const s = users.find(u => u && u.id === staffId);
       if (!s || !s.email) return;
 
-      const pKey = localStorage.getItem('enin_email_key');
-      const sId = localStorage.getItem('enin_email_service');
-      const tId = localStorage.getItem('enin_email_template');
+      // FIRST pull from Cloud configuration so staff phones work, fallback to local storage
+      const pKey = (emailConfig && emailConfig.publicKey) || localStorage.getItem('enin_email_key');
+      const sId = (emailConfig && emailConfig.serviceId) || localStorage.getItem('enin_email_service');
+      const tId = (emailConfig && emailConfig.templateId) || localStorage.getItem('enin_email_template');
 
       if (pKey && sId && tId) {
         try {
@@ -1362,7 +1383,7 @@
           console.error("Error triggering EmailJS:", e);
         }
       } else {
-        console.warn("EmailJS credentials not configured. Email not sent.");
+        console.warn("EmailJS credentials not configured globally. Email not sent.");
       }
     }
 
@@ -1511,6 +1532,7 @@
         s.time = document.getElementById('amendShiftTime').value;
         s.pay = parseFloat(document.getElementById('amendShiftPay').value);
         s.chargeRate = parseFloat(document.getElementById('amendShiftCharge').value);
+        
         pushToCloud();
         document.getElementById('modal-amend-shift').classList.add('hidden');
         renderRosterGrid();
@@ -1577,6 +1599,12 @@
         const shiftDate = s.date || s.dateRangeStr;
         
         shifts = shifts.filter(x => x && x.id !== id);
+
+        // DIRECTLY DELETE FROM FIREBASE DATABASE
+        if (fbDb) {
+           fbDb.ref('shifts/' + id).remove();
+        }
+
         pushToCloud();
         renderRosterGrid();
         renderShifts();
@@ -1969,6 +1997,12 @@
       if (!c) return;
       if (confirm(`Are you sure you want to permanently delete client: ${c.name}?`)) {
         clients = clients.filter(x => x && x.id !== id);
+        
+        // DIRECTLY DELETE FROM FIREBASE DATABASE
+        if (fbDb) {
+           fbDb.ref('clients/' + id).remove();
+        }
+
         pushToCloud();
         updateITDirectory();
         populateDropdowns();
@@ -2096,7 +2130,7 @@
       const u = users.find(x => x && x.id === id);
       if (!u) return;
       if (u.email === 'minute2131@gmail.com') return showToast("Cannot delete Master Admin", "bg-rose-50 text-rose-800 border-rose-200");
-      if (u.id === currentUser.id) return showToast("Cannot delete your own account while logged in", "bg-rose-50 text-rose-800 border-rose-200");
+      if (currentUser && u.id === currentUser.id) return showToast("Cannot delete your own account while logged in", "bg-rose-50 text-rose-800 border-rose-200");
 
       if (confirm(`Are you sure you want to permanently delete ${u.name}'s account?`)) {
         users = users.filter(x => x && x.id !== id);
@@ -2107,6 +2141,11 @@
             s.status = 'open';
           }
         });
+
+        // DIRECTLY DELETE FROM FIREBASE DATABASE
+        if (fbDb) {
+           fbDb.ref('users/' + id).remove();
+        }
 
         pushToCloud();
         updateITDirectory();
@@ -2252,143 +2291,4 @@
       if (kpi) kpi.classList.toggle('hidden', !showFin);
       if (disp) disp.classList.toggle('hidden', !showFin);
 
-      let filteredShifts = [...shifts].filter(x => x !== null);
-      const tsStart = document.getElementById('tsFilterStart')?.value;
-      const tsEnd = document.getElementById('tsFilterEnd')?.value;
-      const tsStaff = document.getElementById('tsFilterStaff')?.value;
-
-      if (tsStart) {
-          filteredShifts = filteredShifts.filter(s => s.date >= tsStart);
-      }
-      if (tsEnd) {
-          filteredShifts = filteredShifts.filter(s => s.date <= tsEnd);
-      }
-      if (tsStaff && tsStaff !== 'all') {
-          filteredShifts = filteredShifts.filter(s => s.staffId == tsStaff);
-      }
-
-      filteredShifts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      let rev = 0, wages = 0;
-      
-      filteredShifts.forEach(s => {
-        if (s.status === 'completed') {
-          const shiftGross = s.hours * s.chargeRate;
-          const shiftWage = s.hours * s.pay;
-          rev += shiftGross;
-          wages += shiftWage;
-        }
-      });
-
-      const netProfit = rev - wages;
-      document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
-      document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
-      document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
-
-      document.getElementById('managerTableHeader').innerHTML = `
-        <tr>
-          <th class="p-3">Staff & Client</th>
-          <th class="p-3">Status</th>
-          ${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th>
-                       <th class="p-3 text-right text-emerald-700">Gross Margin</th>` : ''}
-        </tr>
-      `;
-
-      document.getElementById('managerTable').innerHTML = filteredShifts.length === 0 
-        ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>`
-        : filteredShifts.map(s => {
-        const cl = clients.find(x => x && x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
-        const st = users.find(u => u && u.id === s.staffId);
-        const shiftGross = s.hours * s.chargeRate;
-        const staffEarned = s.hours * s.pay;
-        const profit = shiftGross - staffEarned;
-
-        return `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p>
-              <p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p>
-              <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span>
-            </td>
-            <td class="p-3">
-              ${s.status === 'completed' ? `
-                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span>
-                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>
-              ` : '<span class="text-slate-400 italic">Not completed</span>'}
-            </td>
-            ${showFin ? `
-              <td class="p-3 text-right">
-                <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
-              </td>
-              <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
-            ` : ''}
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function generateInvoice() {
-      const cid = parseInt(document.getElementById('invoiceClientSelect').value);
-      const cl = clients.find(x => x && x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
-      
-      const start = document.getElementById('invoiceFilterStart').value;
-      const end = document.getElementById('invoiceFilterEnd').value;
-      
-      let sList = shifts.filter(s => s && s.clientId === cid);
-      
-      if (start) sList = sList.filter(s => s.date >= start);
-      if (end) sList = sList.filter(s => s.date <= end);
-      
-      let sub = 0;
-      document.getElementById('invClient').textContent = `${cl.name} (${cl.address})`;
-      
-      const dr = document.getElementById('invDateRange');
-      if (start && end) dr.textContent = `Period: ${start} to ${end}`;
-      else if (start) dr.textContent = `Period: From ${start}`;
-      else if (end) dr.textContent = `Period: Up to ${end}`;
-      else dr.textContent = `Period: All Time`;
-
-      if (sList.length === 0) {
-        document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No shifts found for this period</td></tr>`;
-      } else {
-        document.getElementById('invoiceRows').innerHTML = sList.map(s => {
-          const rate = s.chargeRate || cl.rate;
-          const tot = s.hours * rate;
-          sub += tot;
-          const st = users.find(u => u && u.id === s.staffId);
-          return `
-            <tr>
-              <td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td>
-              <td class="py-2.5 px-2 text-right">${s.hours}</td>
-              <td class="py-2.5 px-2 text-right">£${rate.toFixed(2)}</td>
-              <td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td>
-            </tr>
-          `;
-        }).join('');
-      }
-      
-      const vat = sub * 0.20;
-      document.getElementById('invSub').textContent = `£${sub.toFixed(2)}`;
-      document.getElementById('invVat').textContent = `£${vat.toFixed(2)}`;
-      document.getElementById('invTot').textContent = `£${(sub + vat).toFixed(2)}`;
-      
-      const randStr = Math.floor(1000 + Math.random() * 9000);
-      document.getElementById('invNum').textContent = `INV-${new Date().getFullYear()}-${randStr}`;
-      
-      showToast('Client invoice compiled!', 'bg-emerald-50 text-emerald-800 border-emerald-200');
-    }
-
-    function showToast(m, cls) {
-      const t = document.getElementById('toast');
-      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative ${cls}`;
-      document.getElementById('toast-msg').textContent = m;
-      t.classList.remove('hidden');
-      setTimeout(hideToast, 6000);
-    }
-    function hideToast() { document.getElementById('toast').classList.add('hidden'); }
-
-    // Initialize App & Connect Cloud Database
-    initApp();
-  </script>
-</body>
-</html>
+      let
