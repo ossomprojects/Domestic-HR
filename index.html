@@ -165,9 +165,12 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto custom-scroll">
+        <!-- Roster (Hidden from pending users) -->
         <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-calendar-week"></i> Roster Scheduler
         </button>
+        
+        <!-- Shifts (Always visible, shows pending banner if unapproved) -->
         <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2 whitespace-nowrap">
           <i class="fa-regular fa-calendar-check"></i> Shift Marketplace
         </button>
@@ -242,12 +245,12 @@
               <i class="fa-solid fa-hourglass-half animate-pulse"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-amber-950">Account Pending Admin Authorization</h3>
+              <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted. Once approved on the Directory console, the shift marketplace will automatically unlock for you.
+                Your sign-up has been transmitted securely. Once approved on the Directory console by an IT Administrator, the portal and roster will automatically unlock for you.
               </p>
               <button onclick="pullFromCloud(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
-                <i class="fa-solid fa-rotate text-[11px]"></i> Check Status Now
+                <i class="fa-solid fa-rotate text-[11px]"></i> Refresh Status
               </button>
             </div>
           </div>
@@ -1060,6 +1063,10 @@
       localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
       pushToCloud();
 
+      // Email Automation for Sign Up
+      notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
+      notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
+
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
@@ -1090,11 +1097,17 @@
       renderShifts();
       renderRosterGrid();
       updateITDirectory();
+
+      // Retrieve last active tab, force shifts tab if pending
+      let savedTab = localStorage.getItem('enin_active_tab') || 'shifts';
+      if (isPending) savedTab = 'shifts';
+      navigateTab(savedTab, true);
     }
 
     function handleLogout() {
       currentUser = null;
       localStorage.removeItem('enin_active_session');
+      localStorage.removeItem('enin_active_tab');
       document.getElementById('mainApp').classList.add('hidden');
       document.getElementById('authScreen').classList.remove('hidden');
       document.getElementById('loginEmail').value = '';
@@ -1107,6 +1120,9 @@
       const isManagerOrIT = currentUser && isApproved && (currentUser.role === 'manager' || currentUser.role === 'it_admin' || currentUser.role === 'consultant');
       const isAdminTabAccess = currentUser && isApproved && (currentUser.role === 'it_admin' || currentUser.role === 'consultant');
       const isSuperAdmin = currentUser && isApproved && currentUser.role === 'it_admin';
+
+      // Hide tabs entirely if pending (even if consultant)
+      document.getElementById('tab-roster').classList.toggle('hidden', !isApproved);
 
       document.querySelectorAll('.manager-only').forEach(el => {
         el.classList.toggle('hidden', !isManagerOrIT);
@@ -1121,7 +1137,14 @@
       });
     }
 
-    function navigateTab(tabName) {
+    function navigateTab(tabName, skipSave = false) {
+      const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
+      
+      // Strict block for unapproved users
+      if (!isApproved && tabName !== 'shifts') {
+        tabName = 'shifts';
+      }
+
       if (tabName === 'it-admin' && (currentUser.role !== 'it_admin' && currentUser.role !== 'consultant')) {
         showToast("Access Denied: Admin or Consultant privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
@@ -1130,7 +1153,7 @@
         showToast("Access Denied: Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
-      if (['manager', 'invoices'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
+      if (['manager', 'invoices'].includes(tabName) && (currentUser.role === 'staff' || !isApproved)) {
         showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1148,13 +1171,15 @@
         btn.classList.add('border-snoo-blue', 'text-snoo-blue');
       }
 
+      if (!skipSave) localStorage.setItem('enin_active_tab', tabName);
+
       if (tabName === 'manager' || tabName === 'it-admin') updateManagerView();
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'roster') renderRosterGrid();
     }
 
     /* =====================================================================
-       SYSTEM DIAGNOSTICS LOGIC (IT ADMIN)
+       SYSTEM DIAGNOSTICS & NOTIFICATION LOGIC (IT ADMIN)
        ===================================================================== */
     function testFirebaseConnection() {
       if (!fbDb) return showToast("Firebase SDK not loaded. Check script imports.", "bg-rose-50 text-rose-800 border-rose-200");
@@ -1164,7 +1189,6 @@
         if (snap.val() === true) {
           showToast("✓ Firebase Connection Successful! Live socket is active.", "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
-          // If offline, the listener will handle the UI, but we can notify via Toast
           showToast("Firebase is currently disconnected. Reconnecting...", "bg-amber-50 text-amber-800 border-amber-200");
         }
       });
@@ -1217,6 +1241,13 @@
       } else {
         console.warn("EmailJS credentials not configured. Email not sent.");
       }
+    }
+
+    // Helper to blast all IT admins a notification
+    function notifyITAdmin(subject, details) {
+      users.filter(u => u.role === 'it_admin').forEach(admin => {
+        notifyStaff(admin.id, subject, details);
+      });
     }
 
 
@@ -1316,7 +1347,7 @@
                     ${actionMenu}
                   </div>
                   <div class="font-bold text-[11px] mb-0.5 tracking-tight">${s.time}</div>
-                  <div class="text-[9px] mb-1 truncate text-teal-100">${s.jobTitle || s.title}</div>
+                  <div class="text-[9px] mb-1 truncate text-teal-100">${s.jobTitle || s.title} <span class="italic text-[8px] opacity-75">by ${s.postedByName || 'Admin'}</span></div>
                   ${pillHTML}
                 </div>
               `;
@@ -1562,6 +1593,7 @@
                 <span>Rate: £${s.pay.toFixed(2)}/hr</span>
                 <span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span>
               </div>
+              <p class="text-[10px] text-slate-400 italic mb-2 text-right">Dispatched by: ${s.postedByName || 'Admin'}</p>
             </div>
             <div>
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Shift'}</button>` : ''}
@@ -1719,6 +1751,10 @@
         else if (roleToAssign === 'consultant') u.title = 'Consultant';
         else u.title = 'Domestic Staff';
         pushToCloud();
+        
+        // Notify user they have been approved!
+        notifyStaff(u.id, "Account Authorized", `Congratulations! Your Golden Tree HR account has been fully authorized as ${u.title}. You can now log in to the portal and access the roster matrix and shift board.`);
+
         updateITDirectory();
         populateDropdowns();
         showToast(`✓ Authorized ${u.name} as ${u.title}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
@@ -1883,7 +1919,9 @@
         shifts.push({ 
           id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", 
           hours: h, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId,
-          clockOutTime: null
+          clockOutTime: null,
+          postedBy: currentUser.id,
+          postedByName: currentUser.name
         });
         
         if (parsedAssigneeId) {
@@ -1942,7 +1980,9 @@
           chargeRate: ch,
           status: shiftStatus,
           staffId: parsedAssigneeId,
-          clockOutTime: null
+          clockOutTime: null,
+          postedBy: currentUser.id,
+          postedByName: currentUser.name
         });
         
         if (parsedAssigneeId) {
