@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enin's Domestic HR & Shift Logistics</title>
+  <title>Golden Tree HR & Shift Logistics</title>
   
   <!-- SnooCode Signature Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +13,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Added: Firebase Compat SDKs (v9) & EmailJS -->
+  <!-- Firebase Compat SDKs (v9) & EmailJS -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -55,10 +55,8 @@
       
       <!-- Brand Header -->
       <div class="text-center mb-6">
-        <div class="inline-flex p-3.5 rounded-2xl bg-snoo-blue/10 text-snoo-blue mb-2 shadow-sm">
-          <i class="fa-solid fa-location-crosshairs text-2xl"></i>
-        </div>
-        <h1 class="text-xl font-extrabold text-snoo-navy tracking-tight">Enin's Domestic HR</h1>
+        <img src="golden-tree-logo.webp" alt="Golden Tree Care Logo" class="h-24 w-24 mx-auto mb-4 object-contain rounded-full shadow-md" onerror="this.outerHTML='<div class=\\'inline-flex p-3.5 rounded-2xl bg-snoo-blue/10 text-snoo-blue mb-2 shadow-sm\\'><i class=\\'fa-solid fa-tree text-2xl\\'></i></div>'">
+        <h1 class="text-xl font-extrabold text-snoo-navy tracking-tight">Golden Tree HR</h1>
         <p class="text-xs text-slate-500 font-medium">Live Cloud Portal & Shift Marketplace</p>
       </div>
 
@@ -115,7 +113,6 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Requested Role:</label>
-            <!-- Added Consultant role per prompt -->
             <select id="regRole" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy">
               <option value="staff">Staff</option>
               <option value="manager">Manager</option>
@@ -143,19 +140,18 @@
     <header class="bg-white/95 backdrop-blur-md text-slate-800 shadow-sm sticky top-0 z-40 border-b border-slate-200/90">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-snoo-blue flex items-center justify-center text-white shadow-md shadow-snoo-blue/20">
-            <i class="fa-solid fa-location-dot text-lg text-snoo-mint"></i>
+          <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
+            <img src="golden-tree-logo.webp" alt="Logo" class="h-full w-full object-cover" onerror="this.outerHTML='<i class=\\'fa-solid fa-tree text-lg text-snoo-blue\\'></i>'">
           </div>
           <div>
             <h1 class="font-extrabold text-base tracking-tight text-snoo-navy flex items-center gap-2">
-              Enin's <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
+              Golden Tree <span id="portalBadge" class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-snoo-blue/20">STAFF</span>
             </h1>
             <p id="roleBadge" class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Domestic Operations Portal</p>
           </div>
         </div>
 
         <div class="flex items-center space-x-3">
-          <!-- Real-Time Cloud Sync Button & Indicator -->
           <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
             <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
             <span class="hidden sm:inline">Sync Cloud</span>
@@ -175,15 +171,11 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto">
-        <!-- Added Roster Scheduler Tab -->
         <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
           <i class="fa-solid fa-calendar-week"></i> Roster Scheduler
         </button>
         <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2">
           <i class="fa-regular fa-calendar-check"></i> Shift Marketplace
-        </button>
-        <button onclick="navigateTab('clock')" id="tab-clock" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-location-crosshairs"></i> GPS Check-In / Out
         </button>
 
         <!-- Manager Views -->
@@ -214,7 +206,7 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
-      <!-- ================= ADDED: ROSTER SCHEDULER TAB ================= -->
+      <!-- ================= ROSTER SCHEDULER TAB ================= -->
       <section id="view-roster" class="tab-view hidden space-y-6">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
           <div>
@@ -278,46 +270,6 @@
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 2: GPS CLOCK-IN/OUT ================= -->
-      <section id="view-clock" class="tab-view hidden">
-        <div class="max-w-md mx-auto bg-white p-7 rounded-3xl shadow-sm border border-slate-200">
-          <div class="text-center mb-6">
-            <div class="p-4 bg-snoo-blue/10 text-snoo-blue rounded-2xl inline-block mb-3 shadow-xs">
-              <i class="fa-solid fa-location-crosshairs text-3xl"></i>
-            </div>
-            <h2 class="text-lg font-extrabold text-snoo-navy">GPS Shift Check-In</h2>
-            <p class="text-xs text-slate-500 font-medium mt-1">Verifies precise doorstep location proximity (7m radius).</p>
-          </div>
-
-          <div class="space-y-4 text-xs">
-            <div>
-              <label class="font-bold block mb-1.5 uppercase text-slate-700 text-[11px]">Select Active Shift / Today's Session:</label>
-              <select id="clockShiftSelect" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium"></select>
-            </div>
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-              <div class="flex justify-between">
-                <span class="text-slate-500 font-medium">GPS Signal:</span>
-                <span class="text-emerald-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[7px] text-emerald-500 animate-pulse"></i> Doorstep Proximity Active</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500 font-medium">Geofence Radius:</span>
-                <span class="font-bold text-slate-800 flex items-center gap-1">
-                  <span class="bg-snoo-blue text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">7 meters</span>
-                </span>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <button onclick="handleClock(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Clock In
-              </button>
-              <button onclick="handleClock(false)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Clock Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- ================= TAB 3: OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
         
@@ -338,7 +290,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          <!-- Dispatch Form with Postcode Auto-Lookup & Block Shift Scheduler -->
+          <!-- Dispatch Form -->
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
@@ -346,7 +298,7 @@
               </h3>
               <div class="flex bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
                 <button type="button" onclick="setClientMode('existing')" id="btnClientExisting" class="px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs">Existing</button>
-                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2 py-1 rounded-md text-slate-500 hover:text-slate-900">+ Postcode / GPS</button>
+                <button type="button" onclick="setClientMode('new')" id="btnClientNew" class="px-2 py-1 rounded-md text-slate-500 hover:text-slate-900">+ Manual Address</button>
               </div>
             </div>
 
@@ -356,45 +308,33 @@
             </div>
 
             <div id="sectionClientNew" class="hidden space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-              <button type="button" onclick="pickClosestPostcodeFromGPS()" class="w-full bg-snoo-blue/10 hover:bg-snoo-blue/20 text-snoo-blue font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-2 border border-snoo-blue/20 shadow-xs cursor-pointer">
-                <i class="fa-solid fa-location-crosshairs text-snoo-blue"></i> 📍 Detect Nearest Postcode from GPS
-              </button>
-
-              <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider my-1">— OR TYPE POSTCODE MANUALLY —</div>
-
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Client / Household Name:</label>
                 <input type="text" id="customClientName" placeholder="e.g. 21 Wythes Road" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
 
-              <div class="grid grid-cols-3 gap-2">
-                <div class="col-span-2">
-                  <label class="font-bold text-slate-700 block mb-1 text-[11px]">UK Postcode:</label>
-                  <input type="text" id="customPostcode" oninput="formatPostcode(this)" placeholder="e.g. E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold uppercase tracking-wider text-indigo-900">
-                </div>
-                <div>
-                  <label class="block text-slate-400 mb-1 text-[11px]">&nbsp;</label>
-                  <button type="button" onclick="lookupPostcode()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-2 rounded-xl text-[11px] transition cursor-pointer flex items-center justify-center gap-1 shadow-xs">
-                    <i class="fa-solid fa-magnifying-glass"></i> Lookup
-                  </button>
-                </div>
+              <div>
+                <label class="font-bold text-slate-700 block mb-1 text-[11px]">UK Postcode:</label>
+                <input type="text" id="customPostcode" oninput="formatPostcode(this)" placeholder="e.g. E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold uppercase tracking-wider text-indigo-900">
               </div>
 
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
                 <input type="text" id="customAddress" placeholder="e.g. Wythes Road, Newham, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
+            </div>
 
-              <div class="p-2.5 bg-white rounded-xl border border-slate-100 text-[10px] space-y-1">
-                <div class="flex justify-between text-slate-500">
-                  <span>Detected Region:</span>
-                  <span id="geoRegion" class="font-bold text-slate-800">Auto-detected upon search</span>
-                </div>
-                <div class="flex justify-between text-slate-500">
-                  <span>GPS Coordinates:</span>
-                  <span id="geoCoords" class="font-mono text-snoo-blue font-bold">51.5026, 0.0476</span>
-                </div>
-              </div>
+            <!-- Job Titles Dropdown -->
+            <div>
+              <label class="font-bold block mb-1 text-slate-700">Job Title:</label>
+              <select id="newShiftJobTitle" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium bg-slate-50">
+                <option value="Support worker">Support worker</option>
+                <option value="House keeper">House keeper</option>
+                <option value="General Cleaner">General Cleaner</option>
+                <option value="Domestic Assistant">Domestic Assistant</option>
+                <option value="Maintenance person">Maintenance person</option>
+                <option value="Kitchen Porter">Kitchen Porter</option>
+              </select>
             </div>
 
             <div>
@@ -409,7 +349,7 @@
                 </label>
                 <div class="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-bold">
                   <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs">Single Day</button>
-                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900">📦 Recurring Block Shift</button>
+                  <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900">📦 Recurring Block</button>
                 </div>
               </div>
 
@@ -454,7 +394,7 @@
                 
                 <div class="p-2.5 rounded-xl bg-snoo-blue/10 border border-snoo-blue/20 text-[10px] text-snoo-blue font-bold flex items-center gap-1.5">
                   <i class="fa-solid fa-cube text-snoo-blue"></i>
-                  <span>Posts as <strong>1 unified block shift</strong> for staff to claim in 1-click!</span>
+                  <span>Posts as <strong>1 unified block shift</strong>!</span>
                 </div>
               </div>
             </div>
@@ -485,7 +425,7 @@
                 <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
                   <tr>
                     <th class="p-3">Staff & Client</th>
-                    <th class="p-3">Clock In/Out</th>
+                    <th class="p-3">Status</th>
                     <th class="p-3 text-right text-amber-700">Staff Pay</th>
                     <th class="p-3 text-right text-emerald-700">Gross Margin</th>
                   </tr>
@@ -507,12 +447,12 @@
               <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
               <span class="text-xs text-indigo-700 font-bold">IT Management & Security Console</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Enin's IT Infrastructure & Authorizations</h2>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Golden Tree IT Infrastructure</h2>
             <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review and approve incoming staff sign-ups to unlock shift access.</p>
           </div>
         </div>
 
-        <!-- ADDED: FIREBASE & EMAIL JS DIAGNOSTICS -->
+        <!-- FIREBASE & EMAIL JS DIAGNOSTICS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
@@ -625,7 +565,7 @@
           <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
             <div class="flex justify-between pb-6 border-b">
               <div>
-                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Enin's Domestic Services Ltd</h2>
+                <h2 class="font-black text-snoo-navy text-xl tracking-tight">Golden Tree HR Ltd</h2>
                 <p class="text-slate-500 mt-1 font-medium">VAT Reg: GB 987 6543 21 | Company No. 12345678</p>
                 <p class="text-slate-500">100 High Street, London EC1A 1AA</p>
               </div>
@@ -728,7 +668,7 @@
     </main>
   </div>
 
-  <!-- ADDED: MODAL FOR AMEND SHIFT (ROSTER SCHEDULER) -->
+  <!-- MODAL FOR AMEND SHIFT (ROSTER SCHEDULER) -->
   <div id="modal-amend-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -756,7 +696,7 @@
     </div>
   </div>
 
-  <!-- ADDED: MODAL FOR REASSIGN SHIFT -->
+  <!-- MODAL FOR REASSIGN SHIFT -->
   <div id="modal-reassign-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -769,7 +709,6 @@
           <label class="font-bold text-slate-700 block mb-1">Assign to Staff:</label>
           <select id="reassignSelectStaff" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
             <option value="__marketplace__">⚠️ Return to Open Marketplace</option>
-            <!-- Generated dynamically -->
           </select>
         </div>
         <button onclick="saveReassignShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
@@ -778,7 +717,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- ================= 4. REAL-TIME CLOUD BACKEND ENGINE ================= -->
   <script>
@@ -795,7 +733,7 @@
       hourlyRate: 40.00 
     };
 
-    // ADDED: OFFICIAL FIREBASE SDK INITIALIZATION (from your config)
+    // FIREBASE SDK INITIALIZATION
     const firebaseConfig = {
       apiKey: "AIzaSyAJ9oUoS6U8itt27BB1ulWF4msnnfiJHMw",
       authDomain: "ennins-domestic-hr.firebaseapp.com",
@@ -820,21 +758,19 @@
 
     let users = [masterAdmin];
     let clients = [
-      { id: 1, name: "Lord & Lady Harrington", address: "14 Kensington Sq, London W8 5HH", lat: 51.5005, lng: -0.1915, rate: 26.00 },
-      { id: 2, name: "Dr. Robert Chen", address: "42 Richmond Hill, London TW10 6RN", lat: 51.4550, lng: -0.2980, rate: 25.00 }
+      { id: 1, name: "Lord & Lady Harrington", address: "14 Kensington Sq, London W8 5HH", rate: 26.00 },
+      { id: 2, name: "Dr. Robert Chen", address: "42 Richmond Hill, London TW10 6RN", rate: 25.00 }
     ];
     let shifts = [];
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
-    let currentResolvedCoords = { lat: 51.5026, lng: 0.0476 };
 
-    // ADDED: Roster week offset state
+    // Roster week offset state
     let rosterWeekOffset = 0; 
     let expandedFacilities = new Set(); // To toggle client rows
 
     function initApp() {
-      // 1. Restore local cache
       try {
         const u = JSON.parse(localStorage.getItem('enin_live_users_v4'));
         const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
@@ -848,7 +784,6 @@
         users.unshift(masterAdmin);
       }
 
-      // 2. Restore active login session across reloads
       const savedSession = localStorage.getItem('enin_active_session');
       if (savedSession) {
         try {
@@ -860,11 +795,9 @@
         } catch(e) {}
       }
 
-      // 3. Connect to live cloud database immediately (MODIFIED TO USE FIREBASE SDK)
       pullFromCloud(false);
     }
 
-    // MODIFIED: PULL CLOUD DATA using Firebase SDK real-time listeners
     function pullFromCloud(isManual = false) {
       if (!fbDb) return;
       if (isManual) {
@@ -873,19 +806,17 @@
         showToast("Syncing with live Firebase database...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
       }
 
-      // Connection Status Listener
       fbDb.ref('.info/connected').on('value', (snap) => {
         const isConnected = snap.val();
         const fbStatusUI = document.getElementById('itFbStatus');
         if (fbStatusUI) {
           fbStatusUI.textContent = isConnected ? "LIVE / CONNECTED" : "OFFLINE";
           fbStatusUI.className = isConnected 
-            ? "px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold" 
-            : "px-2 py-1 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold";
+            ? "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold border border-emerald-200" 
+            : "px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold border border-rose-200";
         }
       });
 
-      // Users Listener
       fbDb.ref('users').on('value', (snap) => {
         if (snap.val()) {
           const cloudUsers = Object.values(snap.val());
@@ -905,7 +836,6 @@
         }
       });
 
-      // Shifts Listener
       fbDb.ref('shifts').on('value', (snap) => {
         if (snap.val()) {
           shifts = Object.values(snap.val());
@@ -918,7 +848,6 @@
         }
       });
 
-      // Clients Listener
       fbDb.ref('clients').on('value', (snap) => {
         if (snap.val()) {
           clients = Object.values(snap.val());
@@ -938,7 +867,6 @@
       }
     }
 
-    // MODIFIED: PUSH CLOUD DATA using Firebase SDK
     function pushToCloud() {
       localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
       localStorage.setItem('enin_live_shifts_v4', JSON.stringify(shifts));
@@ -1125,7 +1053,7 @@
     }
 
     /* =====================================================================
-       ADDED: ROSTER SCHEDULER LOGIC 
+       ROSTER SCHEDULER LOGIC 
        ===================================================================== */
     function getMonday(d) {
       d = new Date(d);
@@ -1172,7 +1100,8 @@
 
       const firstDate = daysOfWeek[0].dateObj;
       const lastDate = daysOfWeek[6].dateObj;
-      document.getElementById("rosterWeekLabel").textContent = `${firstDate.getDate()} ${shortDays[firstDate.getDay()]} - ${lastDate.getDate()} ${shortDays[lastDate.getDay()]}`;
+      const rwl = document.getElementById("rosterWeekLabel");
+      if (rwl) rwl.textContent = `${firstDate.getDate()} ${shortDays[firstDate.getDay()]} - ${lastDate.getDate()} ${shortDays[lastDate.getDay()]}`;
 
       let bodyHTML = "";
       const isManagerOrAdmin = ['manager', 'it_admin', 'consultant'].includes(currentUser?.role);
@@ -1216,7 +1145,6 @@
                 </div>
               ` : '';
 
-              // Using your signature teal/emerald cards for the matrix
               bodyHTML += `
                 <div class="bg-[#0d9488] text-white rounded-xl shadow p-2 mb-1 border border-teal-500 relative">
                   <div class="flex justify-between items-center mb-0.5 border-b border-teal-500/50 pb-0.5">
@@ -1224,7 +1152,7 @@
                     ${actionMenu}
                   </div>
                   <div class="font-bold text-[11px] mb-0.5 tracking-tight">${s.time}</div>
-                  <div class="text-[9px] mb-1 truncate text-teal-100">${s.title}</div>
+                  <div class="text-[9px] mb-1 truncate text-teal-100">${s.jobTitle || s.title}</div>
                   ${pillHTML}
                 </div>
               `;
@@ -1307,7 +1235,7 @@
       }
     }
 
-    // ================== ADDED: EMAILJS TESTER ===================
+    // EMAILJS TESTER
     function testEmailJS() {
       const pKey = document.getElementById('emailjsKey').value.trim();
       const sId = document.getElementById('emailjsService').value.trim();
@@ -1319,7 +1247,7 @@
       emailjs.init(pKey);
       emailjs.send(sId, tId, {
         to_name: currentUser ? currentUser.name : "Admin",
-        message: "Test connection successful for Enin's Domestic HR."
+        message: "Test connection successful for Golden Tree HR."
       }).then(() => {
         showToast("✓ EmailJS Notification Sent Successfully!", "bg-emerald-50 text-emerald-800");
       }).catch(err => {
@@ -1328,7 +1256,7 @@
     }
 
     /* ---------------------------------------------------------
-       EXISTING OPERATIONS MANAGER/GPS LOGIC (UNTOUCHED)
+       OPERATIONS MANAGER LOGIC
        --------------------------------------------------------- */
     function setClientMode(mode) {
       clientDispatchMode = mode;
@@ -1374,91 +1302,6 @@
       input.value = input.value.toUpperCase();
     }
 
-    function pickClosestPostcodeFromGPS() {
-      showToast("📍 Querying device GPS sensors...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
-
-      if (!navigator.geolocation) {
-        fallbackReverseGeocode(51.5026, 0.0476);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          await reverseLookupCoordinates(lat, lng);
-        },
-        (error) => {
-          fallbackReverseGeocode(51.5026, 0.0476);
-        },
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
-    }
-
-    async function reverseLookupCoordinates(lat, lng) {
-      try {
-        const res = await fetch(`https://api.postcodes.io/postcodes?lon=${lng}&lat=${lat}&limit=1`);
-        const data = await res.json();
-
-        if (data.status === 200 && data.result && data.result.length > 0) {
-          const closest = data.result[0];
-          currentResolvedCoords = { lat: closest.latitude, lng: closest.longitude };
-          
-          document.getElementById('customPostcode').value = closest.postcode;
-          document.getElementById('customAddress').value = `${closest.parish || closest.admin_ward || 'Doorstep Location'}, ${closest.admin_district || ''}, ${closest.postcode}`;
-          document.getElementById('geoRegion').textContent = `${closest.admin_district || ''}, ${closest.region || closest.country}`;
-          document.getElementById('geoCoords').textContent = `${closest.latitude.toFixed(4)}, ${closest.longitude.toFixed(4)}`;
-
-          showToast(`✓ Nearest Postcode: ${closest.postcode} (GPS Matched)`, "bg-emerald-50 text-emerald-800 border-emerald-200");
-        } else {
-          fallbackReverseGeocode(lat, lng);
-        }
-      } catch (err) {
-        fallbackReverseGeocode(lat, lng);
-      }
-    }
-
-    function fallbackReverseGeocode(lat, lng) {
-      currentResolvedCoords = { lat: lat, lng: lng };
-      document.getElementById('customPostcode').value = "E16 2DN";
-      document.getElementById('customAddress').value = "21 Wythes Road, Newham, London E16 2DN";
-      document.getElementById('geoRegion').textContent = "Newham, London";
-      document.getElementById('geoCoords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      showToast("✓ Closest Postcode Matched: E16 2DN (Newham, London)", "bg-emerald-50 text-emerald-800 border-emerald-200");
-    }
-
-    async function lookupPostcode() {
-      const pc = document.getElementById('customPostcode').value.trim();
-      if (!pc) return showToast("Please enter a UK postcode (e.g. E16 2DN)", "bg-rose-50 text-rose-800 border-rose-200");
-
-      showToast(`Searching UK Postcode Directory for: ${pc}...`, 'bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20');
-
-      try {
-        const cleanPC = pc.replace(/\s+/g, '');
-        const res = await fetch(`https://api.postcodes.io/postcodes/${cleanPC}`);
-        const data = await res.json();
-
-        if (data.status === 200 && data.result) {
-          const r = data.result;
-          currentResolvedCoords = { lat: r.latitude, lng: r.longitude };
-          
-          document.getElementById('geoRegion').textContent = `${r.admin_district || ''}, ${r.region || r.country}`;
-          document.getElementById('geoCoords').textContent = `${r.latitude.toFixed(4)}, ${r.longitude.toFixed(4)}`;
-          
-          const currentAddr = document.getElementById('customAddress').value.trim();
-          if (!currentAddr) {
-            document.getElementById('customAddress').value = `${r.parish || r.admin_ward || 'Residential Area'}, ${r.admin_district || ''}, ${r.postcode}`;
-          }
-
-          showToast(`✓ Postcode recognized! GPS: ${r.latitude.toFixed(4)}, ${r.longitude.toFixed(4)}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-        } else {
-          fallbackReverseGeocode(51.5026, 0.0476);
-        }
-      } catch (err) {
-        fallbackReverseGeocode(51.5026, 0.0476);
-      }
-    }
-
     function populateDropdowns() {
       const opts = clients.map(c => `<option value="${c.id}">${c.name} (${c.address})</option>`).join('');
       document.getElementById('newShiftClient').innerHTML = opts;
@@ -1501,7 +1344,6 @@
             <p class="text-xs text-slate-400 mt-1">Managers can dispatch single shifts or multi-day block contracts from the Operations Hub.</p>
           </div>
         `;
-        document.getElementById('clockShiftSelect').innerHTML = '<option value="">No claimed shifts for today</option>';
         return;
       }
 
@@ -1519,11 +1361,12 @@
               <div class="flex justify-between items-center mb-2">
                 ${isBlock ? 
                   `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'in_progress' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20'))}">${s.status.replace('_', ' ')}</span>`
+                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20')}">${s.status.replace('_', ' ')}</span>`
                 }
                 <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} Total hrs</span>
               </div>
               <h3 class="font-extrabold text-snoo-navy text-base">${s.title}</h3>
+              <p class="text-xs text-slate-500 font-bold mb-1"><i class="fa-solid fa-user-tag text-snoo-blue"></i> ${s.jobTitle || 'General Staff'}</p>
               <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
               <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address}</p>
               
@@ -1546,17 +1389,12 @@
             </div>
             <div>
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Shift'}</button>` : ''}
-              ${isMine && s.status === 'claimed' ? `<button onclick="navigateTab('clock')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Ready for Today's Check-In</button>` : ''}
-              ${isMine && s.status === 'in_progress' ? `<button onclick="navigateTab('clock')" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Clocked In - Finish Session</button>` : ''}
+              ${isMine && s.status === 'claimed' ? `<button onclick="completeShift(${s.id})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Mark Shift as Completed</button>` : ''}
               ${!isMine && s.status !== 'open' ? `<span class="block text-center text-xs text-slate-400 font-bold py-2.5 bg-slate-50 rounded-xl">Booked Contract</span>` : ''}
             </div>
           </div>
         `;
       }).join('');
-
-      const active = shifts.filter(s => (currentUser.role !== 'staff' || s.staffId === currentUser.id) && s.status !== 'completed');
-      document.getElementById('clockShiftSelect').innerHTML = active.length ? 
-        active.map(s => `<option value="${s.id}">${s.title} (${s.isBlock ? s.dateRangeStr : s.date} - ${s.status})</option>`).join('') : '<option value="">No claimed shifts for today</option>';
     }
 
     function claimShift(id) {
@@ -1571,28 +1409,18 @@
       }
     }
 
-    function handleClock(isIn) {
-      const sid = parseInt(document.getElementById('clockShiftSelect').value);
-      const s = shifts.find(x => x.id === sid);
-      if (!s) return showToast('Please select an active shift', 'bg-rose-50 text-rose-800 border-rose-200');
-      
-      const now = new Date();
-      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-      
-      if (isIn) {
-        s.status = 'in_progress';
-        s.clockInTime = `Today ${timeStr}`;
-        s.verified = true;
-        s.distance = `${(Math.random() * 4 + 1.2).toFixed(1)}m`;
-        showToast(`GPS Verified: Within ${s.distance} (Doorstep Verified). Clocked in!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      } else {
+    function completeShift(id) {
+      const s = shifts.find(x => x.id === id);
+      if (!s) return;
+      if (confirm("Mark this shift as fully completed?")) {
         s.status = 'completed';
-        s.clockOutTime = `Today ${timeStr}`;
-        showToast('✓ Clocked out successfully! Timesheet submitted.', 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        const now = new Date();
+        s.clockOutTime = `Today ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        pushToCloud();
+        renderShifts();
+        if (currentUser.role !== 'staff') updateManagerView();
+        showToast('✓ Shift marked as completed!', 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
-      pushToCloud();
-      renderShifts();
-      if (currentUser.role !== 'staff') updateManagerView();
     }
 
     function updateITDirectory() {
@@ -1608,7 +1436,6 @@
         navBadge.classList.toggle('hidden', pCount === 0);
       }
 
-      // RENDER PENDING TABLE
       const pTable = document.getElementById('itPendingTable');
       if (pTable) {
         if (pendingUsers.length === 0) {
@@ -1643,7 +1470,6 @@
         }
       }
 
-      // RENDER ACTIVE DIRECTORY TABLE
       const dirTable = document.getElementById('itDirectoryTable');
       if (dirTable) {
         dirTable.innerHTML = activeUsers.map(u => `
@@ -1713,8 +1539,6 @@
           id: Date.now(),
           name: customName,
           address: customAddr,
-          lat: currentResolvedCoords.lat,
-          lng: currentResolvedCoords.lng,
           rate: ch
         };
 
@@ -1724,6 +1548,7 @@
       }
 
       const t = document.getElementById('newShiftTitle').value;
+      const jTitle = document.getElementById('newShiftJobTitle').value; // Added Job Title
       const p = parseFloat(document.getElementById('newShiftPay').value);
 
       if (scheduleMode === 'single') {
@@ -1731,9 +1556,9 @@
         const h = parseFloat(document.getElementById('newShiftHours').value);
 
         shifts.push({ 
-          id: Date.now(), clientId: finalClientId, title: t, isBlock: false, date: d, time: "09:00 - 13:00", 
+          id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", 
           hours: h, pay: p, chargeRate: ch, status: "open", staffId: null,
-          clockInTime: null, clockOutTime: null, verified: false
+          clockOutTime: null
         });
         showToast(`✓ Single shift published to cloud!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       } else {
@@ -1775,6 +1600,7 @@
           id: Date.now(),
           clientId: finalClientId,
           title: t,
+          jobTitle: jTitle, // Added Job Title
           isBlock: true,
           totalDays: validDays,
           dateRangeStr: rangeSummary,
@@ -1787,9 +1613,7 @@
           chargeRate: ch,
           status: "open",
           staffId: null,
-          clockInTime: null,
-          clockOutTime: null,
-          verified: false
+          clockOutTime: null
         });
 
         showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days, ${totalBlockHours}h total)!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
@@ -1833,11 +1657,10 @@
               <span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span>
             </td>
             <td class="p-3">
-              ${s.clockInTime ? `
-                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${s.clockInTime}</span>
-                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'On-site'}</span>
-                <span class="text-[10px] text-emerald-600 font-bold">GPS: ${s.distance || '3.2m'} (Doorstep Verified)</span>
-              ` : '<span class="text-slate-400 italic">Not clocked in</span>'}
+              ${s.status === 'completed' ? `
+                <span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span>
+                <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>
+              ` : '<span class="text-slate-400 italic">Not completed</span>'}
             </td>
             <td class="p-3 text-right">
               <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
