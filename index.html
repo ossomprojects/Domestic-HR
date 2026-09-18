@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Golden Tree HR & Shift Logistics</title>
   
-  <!-- SnooCode Signature Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +12,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Firebase Compat SDKs (v9) & EmailJS -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -51,21 +49,19 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.4
+    v4.1.5
   </div>
 
-  <!-- ================= 1. AUTHENTICATION & LOGIN SCREEN ================= -->
+  <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
   <div id="authScreen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-slate-100 my-8">
       
-      <!-- Brand Header -->
       <div class="text-center mb-6">
         <img src="golden-tree-logo.webp" alt="Golden Tree Care Logo" class="h-24 w-24 mx-auto mb-4 object-contain rounded-full shadow-md" onerror="this.outerHTML='<div class=\\'inline-flex p-3.5 rounded-2xl bg-snoo-blue/10 text-snoo-blue mb-2 shadow-sm\\'><i class=\\'fa-solid fa-tree text-2xl\\'></i></div>'">
         <h1 class="text-xl font-extrabold text-snoo-navy tracking-tight">Golden Tree HR</h1>
         <p class="text-xs text-slate-500 font-medium">Live Cloud Portal & Shift Marketplace</p>
       </div>
 
-      <!-- Auth Toggle -->
       <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-2xl mb-5 text-xs font-bold">
         <button type="button" onclick="toggleAuthMode('login')" id="btnAuthLogin" class="py-2.5 rounded-xl bg-white text-snoo-navy shadow-sm transition cursor-pointer">
           Sign In
@@ -92,7 +88,7 @@
         </button>
       </form>
 
-      <!-- B. REAL STAFF / MANAGER SIGN UP FORM -->
+      <!-- B. SIGN UP FORM -->
       <form id="formSignup" onsubmit="handleStaffSignup(event)" class="hidden space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Full Legal Name:</label>
@@ -128,14 +124,11 @@
           <i class="fa-solid fa-paper-plane"></i> Submit Registration
         </button>
       </form>
-
     </div>
   </div>
 
-  <!-- ================= 2. MAIN APPLICATION ================= -->
+  <!-- 2. MAIN APPLICATION -->
   <div id="mainApp" class="hidden flex-1 flex flex-col">
-    
-    <!-- Header Banner -->
     <header class="bg-white/95 backdrop-blur-md text-slate-800 shadow-sm sticky top-0 z-40 border-b border-slate-200/90">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
         <div class="flex items-center space-x-3">
@@ -172,33 +165,22 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto custom-scroll">
-        <!-- Roster (Hidden from pending users) -->
         <button onclick="navigateTab('roster')" id="tab-roster" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-calendar-week"></i> Roster Scheduler
         </button>
-        
-        <!-- Shifts (Always visible, shows pending banner if unapproved) -->
         <button onclick="navigateTab('shifts')" id="tab-shifts" class="tab-btn py-4 px-1 text-xs font-bold border-b-2 border-snoo-blue text-snoo-blue flex items-center gap-2 whitespace-nowrap">
           <i class="fa-regular fa-calendar-check"></i> Shift Marketplace
         </button>
-
-        <!-- Manager Views -->
         <button onclick="navigateTab('manager')" id="tab-manager" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
         </button>
-        
-        <!-- Client Invoices (Managers & IT ONLY - No Consultants) -->
         <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn invoice-access py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Client Invoices
         </button>
-
-        <!-- IT MANAGER & CONSULTANT TAB -->
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn admin-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-shield-halved text-indigo-600"></i> Directory & Approvals
           <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
         </button>
-
-        <!-- STRICT IT ADMIN ONLY: SYSTEM DIAGNOSTICS -->
         <button onclick="navigateTab('sys-diag')" id="tab-sys-diag" class="tab-btn super-admin-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-server text-rose-600"></i> System Diagnostics
         </button>
@@ -211,7 +193,6 @@
       <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-sm">&times;</button>
     </div>
 
-    <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
       <!-- ================= ROSTER SCHEDULER TAB ================= -->
@@ -221,17 +202,13 @@
             <h2 class="text-xl font-extrabold text-snoo-navy">Weekly Roster Matrix</h2>
             <p class="text-xs text-slate-500 font-medium">Track who is where and manage allocations live.</p>
           </div>
-          
           <div class="flex items-center space-x-3 flex-wrap justify-end gap-y-2">
-            <!-- Filter Dropdown (Consultants/Managers) -->
             <div class="flex items-center space-x-2 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
               <span class="pl-2 text-slate-400"><i class="fa-solid fa-filter"></i></span>
               <select id="rosterDispatcherFilter" onchange="renderRosterGrid()" class="bg-transparent border-none text-slate-700 outline-none font-bold py-1 pr-2 cursor-pointer max-w-[200px] truncate">
                 <option value="all">🌍 All Dispatched Shifts</option>
               </select>
             </div>
-            
-            <!-- Week Nav -->
             <div class="flex items-center space-x-1 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
               <button onclick="changeRosterWeek(-1)" class="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 transition cursor-pointer"><i class="fa-solid fa-chevron-left"></i> Prev</button>
               <button onclick="changeRosterWeek(0)" class="px-3 py-2 rounded-lg bg-slate-100 text-snoo-navy transition cursor-pointer">This Week</button>
@@ -244,32 +221,22 @@
           <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-left text-xs min-w-[1000px]">
               <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
-                <tr id="rosterHeaders">
-                  <!-- Headers injected by JS -->
-                </tr>
+                <tr id="rosterHeaders"></tr>
               </thead>
-              <tbody id="rosterBody" class="divide-y divide-slate-100">
-                <!-- Roster Data Injected by JS -->
-              </tbody>
+              <tbody id="rosterBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ================= TAB 1: SHIFT MARKETPLACE ================= -->
+      <!-- ================= SHIFT MARKETPLACE ================= -->
       <section id="view-shifts" class="tab-view">
-        
-        <!-- PENDING IT APPROVAL NOTICE -->
         <div id="pendingStaffNotice" class="hidden mb-6 p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 shadow-sm">
           <div class="flex items-start gap-4">
-            <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-xl">
-              <i class="fa-solid fa-hourglass-half animate-pulse"></i>
-            </div>
+            <div class="p-3 bg-amber-100 text-amber-800 rounded-2xl text-xl"><i class="fa-solid fa-hourglass-half animate-pulse"></i></div>
             <div>
               <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
-              <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted securely. Once approved on the Directory console by an IT Administrator, the portal and roster will automatically unlock for you.
-              </p>
+              <p class="text-xs text-amber-800 mt-1 leading-relaxed">Your sign-up has been transmitted securely. Once approved on the Directory console by an IT Administrator, the portal and roster will automatically unlock for you.</p>
               <button onclick="pullFromCloud(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
                 <i class="fa-solid fa-rotate text-[11px]"></i> Refresh Status
               </button>
@@ -287,16 +254,12 @@
           </span>
         </div>
         
-        <!-- STAFF EARNINGS HUB -->
         <div id="staffEarningsHub" class="hidden mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
-      <!-- ================= TAB 3: OPERATIONS MANAGER HUB ================= -->
+      <!-- ================= OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
-        
-        <!-- KPIs (Hidden from Consultants) -->
         <div id="kpiFinancials" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Filtered Client Revenue</span>
@@ -314,7 +277,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          <!-- Dispatch Form -->
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4 h-fit">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
@@ -336,12 +298,10 @@
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Client / Household Name:</label>
                 <input type="text" id="customClientName" placeholder="e.g. 21 Wythes Road" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
               </div>
-
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">UK Postcode:</label>
                 <input type="text" id="customPostcode" oninput="formatPostcode(this)" placeholder="e.g. E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold uppercase tracking-wider text-indigo-900">
               </div>
-
               <div>
                 <label class="font-bold text-slate-700 block mb-1 text-[11px]">Street & Area Address:</label>
                 <input type="text" id="customAddress" placeholder="e.g. Wythes Road, Newham, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
@@ -360,12 +320,10 @@
                   <option value="Kitchen Porter">Kitchen Porter</option>
                 </select>
               </div>
-              
               <div>
                 <label class="font-bold block mb-1 text-slate-700 text-indigo-700">Direct Assign To:</label>
                 <select id="newShiftAssignee" class="w-full border border-indigo-200 rounded-xl p-2.5 font-bold bg-indigo-50 text-indigo-900">
                   <option value="">🌍 Post to Open Marketplace</option>
-                  <!-- Dynamically populated in JS -->
                 </select>
               </div>
             </div>
@@ -408,7 +366,6 @@
                     <input type="date" id="newShiftEndDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
                   </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-2">
                   <div>
                     <label class="font-bold block mb-1 text-slate-700 text-[11px]">Repeat Days:</label>
@@ -424,7 +381,6 @@
                     <input type="number" id="newShiftRangeHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
                   </div>
                 </div>
-                
                 <div class="p-2.5 rounded-xl bg-snoo-blue/10 border border-snoo-blue/20 text-[10px] text-snoo-blue font-bold flex items-center gap-1.5">
                   <i class="fa-solid fa-cube text-snoo-blue"></i>
                   <span>Posts as <strong>1 unified block shift</strong>!</span>
@@ -432,7 +388,6 @@
               </div>
             </div>
 
-            <!-- Financials (Hidden from Consultants) -->
             <div id="dispatchFinancials" class="grid grid-cols-2 gap-2 hidden">
               <div>
                 <label class="font-bold block mb-1 text-slate-700">Staff Pay (£/hr):</label>
@@ -449,13 +404,11 @@
             </button>
           </div>
 
-          <!-- Timesheets Table -->
           <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <h3 class="text-sm font-bold text-snoo-navy mb-4 flex items-center gap-2">
               <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
             </h3>
             
-            <!-- TIMESHEET FILTERS -->
             <div class="mb-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
@@ -480,18 +433,15 @@
 
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]" id="managerTableHeader">
-                  <!-- Injected via JS based on role -->
-                </thead>
+                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]" id="managerTableHeader"></thead>
                 <tbody id="managerTable" class="divide-y"></tbody>
               </table>
             </div>
           </div>
         </div>
-
       </section>
 
-      <!-- ================= TAB 4: DIRECTORY & APPROVALS ================= -->
+      <!-- ================= DIRECTORY & APPROVALS ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
@@ -504,15 +454,12 @@
           </div>
         </div>
 
-        <!-- SECTION: DIRECT ONBOARDING (IT ONLY) -->
         <div id="itOnboardSection" class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-200 hidden">
           <div class="mb-4">
             <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
               <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct User Onboarding (IT Access)
             </h3>
-            <p class="text-xs text-slate-500 mt-1">Instantly create and authorize accounts for new staff, managers, or consultants.</p>
           </div>
-          
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs items-end">
             <div>
               <label class="font-bold text-slate-700 block mb-1">Full Name</label>
@@ -544,18 +491,15 @@
           </button>
         </div>
 
-        <!-- SECTION A: PENDING APPROVALS QUEUE -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-amber-200">
           <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
                 <i class="fa-solid fa-bell text-amber-600"></i> Pending Sign-Ups (Action Required)
               </h3>
-              <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
             </div>
             <span id="itPendingHeaderBadge" class="bg-amber-100 text-amber-800 font-extrabold text-xs px-3 py-1 rounded-full border border-amber-200">0 Pending</span>
           </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
@@ -571,15 +515,12 @@
           </div>
         </div>
 
-        <!-- SECTION B: ACTIVE DIRECTORY -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
           <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
-              <p class="text-xs text-slate-500">Manage approved staff and operations personnel.</p>
             </div>
           </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
@@ -595,12 +536,10 @@
           </div>
         </div>
 
-        <!-- SECTION C: CLIENT MANAGEMENT (IT ONLY) -->
         <div id="itClientSection" class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hidden">
           <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2"><i class="fa-solid fa-house-user text-indigo-600"></i> Client & Facility Management</h3>
-              <p class="text-xs text-slate-500">Remove clients that are no longer active.</p>
             </div>
           </div>
           <div class="overflow-x-auto">
@@ -620,7 +559,7 @@
 
       </section>
 
-      <!-- ================= TAB 5: CLIENT INVOICES ================= -->
+      <!-- ================= CLIENT INVOICES ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
@@ -696,9 +635,8 @@
         </div>
       </section>
 
-      <!-- ================= TAB 6: SYSTEM DIAGNOSTICS (STRICT IT ADMIN ONLY) ================= -->
+      <!-- ================= SYSTEM DIAGNOSTICS ================= -->
       <section id="view-sys-diag" class="tab-view hidden space-y-6">
-        
         <div id="sysDiagBanner" class="p-6 bg-rose-50 text-rose-900 rounded-3xl border border-rose-200 shadow-sm flex justify-between items-center transition-colors duration-500">
           <div>
             <div class="flex items-center gap-2 mb-1">
@@ -710,8 +648,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          <!-- FIREBASE DIAGNOSTICS -->
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
               <div>
@@ -739,7 +675,6 @@
             </div>
           </div>
 
-          <!-- EMAIL JS DIAGNOSTICS & NOTIFICATION SETTINGS -->
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
               <div>
@@ -751,17 +686,14 @@
               </button>
             </div>
             <div class="space-y-3 text-xs">
-              
               <div>
                 <label class="block text-slate-500 mb-1 font-bold">Test Recipient Email:</label>
                 <input type="email" id="emailjsTestEmail" placeholder="e.g. your-email@gmail.com" class="border border-slate-200 rounded-xl px-3 py-2 w-full font-medium bg-slate-50 text-indigo-900 focus:ring-1 focus:ring-indigo-500">
               </div>
-
               <div class="pt-2 border-t border-slate-100">
                 <label class="block text-slate-500 mb-1 font-bold">EmailJS Public Key:</label>
                 <input type="text" id="emailjsKey" placeholder="e.g. YOUR_PUBLIC_KEY" class="border border-slate-200 rounded-xl px-3 py-2 w-full font-mono bg-slate-50">
               </div>
-              
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-slate-500 mb-1 font-bold">Service ID:</label>
@@ -772,17 +704,15 @@
                   <input type="text" id="emailjsTemplate" placeholder="template_..." class="border border-slate-200 rounded-xl px-3 py-2 w-full font-mono bg-slate-50">
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- MODAL FOR EDIT USER -->
+  <!-- MODALS -->
   <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -812,14 +742,11 @@
             <option value="it_admin">IT Admin</option>
           </select>
         </div>
-        <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
-          Save Changes
-        </button>
+        <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">Save Changes</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL FOR AMEND SHIFT (ROSTER SCHEDULER) -->
   <div id="modal-amend-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -832,8 +759,6 @@
           <label class="font-bold text-slate-700 block mb-1">Shift Time</label>
           <input type="text" id="amendShiftTime" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="09:00 - 13:00">
         </div>
-        
-        <!-- Hidden from consultants -->
         <div id="amendFinancials" class="space-y-3 hidden">
           <div>
             <label class="font-bold text-slate-700 block mb-1">Staff Pay (£/hr)</label>
@@ -844,15 +769,11 @@
             <input type="number" id="amendShiftCharge" step="0.25" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
           </div>
         </div>
-
-        <button onclick="saveAmendedShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
-          Save Changes
-        </button>
+        <button onclick="saveAmendedShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">Save Changes</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL FOR REASSIGN SHIFT -->
   <div id="modal-reassign-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -867,28 +788,15 @@
             <option value="__marketplace__">⚠️ Return to Open Marketplace</option>
           </select>
         </div>
-        <button onclick="saveReassignShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
-          Confirm Reassignment
-        </button>
+        <button onclick="saveReassignShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">Confirm Reassignment</button>
       </div>
     </div>
   </div>
 
-  <!-- ================= 4. REAL-TIME CLOUD BACKEND ENGINE ================= -->
+  <!-- JAVASCRIPT ENGINE -->
   <script>
-    // PERMANENT MASTER IT ADMIN
-    const masterAdmin = { 
-      id: 999, 
-      name: "Enin IT Admin", 
-      email: "minute2131@gmail.com", 
-      password: "cookies", 
-      role: "it_admin", 
-      title: "Super Admin (Owner)",
-      status: "active", 
-      hourlyRate: 40.00 
-    };
+    const masterAdmin = { id: 999, name: "Enin IT Admin", email: "minute2131@gmail.com", password: "cookies", role: "it_admin", title: "Super Admin (Owner)", status: "active", hourlyRate: 40.00 };
 
-    // FIREBASE SDK INITIALIZATION
     const firebaseConfig = {
       apiKey: "AIzaSyAJ9oUoS6U8itt27BB1ulWF4msnnfiJHMw",
       authDomain: "ennins-domestic-hr.firebaseapp.com",
@@ -902,7 +810,7 @@
 
     let fbApp = null;
     let fbDb = null;
-    let emailConfig = null; // Stores global EmailJS configuration from Firebase
+    let emailConfig = null; 
 
     try {
       if (typeof firebase !== 'undefined') {
@@ -910,8 +818,6 @@
         fbDb = firebase.database();
       }
     } catch(err) { console.error("Firebase init failed:", err); }
-
-    let isCloudSyncing = false;
 
     let users = [masterAdmin];
     let clients = [
@@ -922,7 +828,6 @@
     let currentUser = null;
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
-
     let rosterWeekOffset = 0; 
     let expandedFacilities = new Set(); 
 
@@ -932,17 +837,12 @@
         const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
         const c = JSON.parse(localStorage.getItem('enin_live_clients_v4'));
         
-        // CRITICAL BUG FIX: Filter out null ghost arrays left behind by Firebase
         if (u && Array.isArray(u)) users = u.filter(x => x !== null);
         if (s && Array.isArray(s)) shifts = s.filter(x => x !== null);
         if (c && Array.isArray(c)) clients = c.filter(x => x !== null);
-      } catch(e) {
-        console.error("Local storage parsing failed:", e);
-      }
+      } catch(e) { console.error(e); }
 
-      if (!users.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) {
-        users.unshift(masterAdmin);
-      }
+      if (!users.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) users.unshift(masterAdmin);
 
       const savedSession = localStorage.getItem('enin_active_session');
       if (savedSession) {
@@ -952,12 +852,9 @@
           document.getElementById('authScreen').classList.add('hidden');
           document.getElementById('mainApp').classList.remove('hidden');
           setupAppForUser();
-        } catch(e) {
-          console.error("Session load failed:", e);
-        }
+        } catch(e) { console.error(e); }
       }
 
-      // Load test email if saved
       setTimeout(() => {
         if(document.getElementById('emailjsTestEmail')) document.getElementById('emailjsTestEmail').value = localStorage.getItem('enin_email_test_recipient') || '';
       }, 500);
@@ -967,21 +864,14 @@
     }
 
     function monitorSystemStatus() {
-      if (!fbDb) {
-        updateSystemDiagnosticsUI(false, "Firebase SDK Not Loaded");
-        return;
-      }
-      fbDb.ref('.info/connected').on('value', (snap) => {
-        const connected = snap.val() === true;
-        updateSystemDiagnosticsUI(connected);
-      });
+      if (!fbDb) { updateSystemDiagnosticsUI(false, "Firebase SDK Not Loaded"); return; }
+      fbDb.ref('.info/connected').on('value', (snap) => { updateSystemDiagnosticsUI(snap.val() === true); });
     }
 
     function updateSystemDiagnosticsUI(isOnline, errorMsg) {
       const banner = document.getElementById('sysDiagBanner');
       const badge = document.getElementById('sysDiagBadge');
       const statusVal = document.getElementById('fbStatusVal');
-
       if (!banner || !badge || !statusVal) return;
 
       if (isOnline) {
@@ -1003,7 +893,6 @@
         showToast("Syncing with live Firebase database...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
       }
 
-      // 1. Sync EmailJS API config globally across all devices
       fbDb.ref('config/emailjs').on('value', (snap) => {
         emailConfig = snap.val() || null;
         if (emailConfig && document.getElementById('emailjsKey')) {
@@ -1018,9 +907,7 @@
       fbDb.ref('users').on('value', (snap) => {
         if (snap.val()) {
           let cloudUsers = Object.values(snap.val()).filter(x => x !== null);
-          if (!cloudUsers.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) {
-            cloudUsers.unshift(masterAdmin);
-          }
+          if (!cloudUsers.some(u => u && u.email && u.email.toLowerCase() === "minute2131@gmail.com")) cloudUsers.unshift(masterAdmin);
           users = cloudUsers;
           localStorage.setItem('enin_live_users_v4', JSON.stringify(users));
           
@@ -1112,15 +999,8 @@
       }
 
       const targetUser = users.find(u => u && u.email && u.email.toLowerCase() === email);
-      if (!targetUser) {
-        showToast("No account found with this email. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
-
-      if (targetUser.password && targetUser.password !== pass) {
-        showToast("Incorrect password. Please try again.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
+      if (!targetUser) return showToast("No account found with this email. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
+      if (targetUser.password && targetUser.password !== pass) return showToast("Incorrect password. Please try again.", "bg-rose-50 text-rose-800 border-rose-200");
 
       currentUser = targetUser;
       loginSuccess();
@@ -1143,34 +1023,22 @@
         const requestedRole = document.getElementById('regRole').value;
         const pass = document.getElementById('regPassword').value;
 
-        if (users.some(u => u && u.email && u.email.toLowerCase() === email)) {
-          return showToast("⚠️ ERROR: An account with this exact email already exists. Try logging in.", "bg-rose-50 text-rose-800 border-rose-200 text-sm py-4");
-        }
+        if (users.some(u => u && u.email && u.email.toLowerCase() === email)) return showToast("⚠️ ERROR: An account with this exact email already exists. Try logging in.", "bg-rose-50 text-rose-800 border-rose-200 text-sm py-4");
 
         let titleVal = 'Domestic Staff';
         if (requestedRole === 'manager') titleVal = 'Operations Manager';
         if (requestedRole === 'consultant') titleVal = 'Consultant';
 
         const newUser = {
-          id: Date.now(),
-          name: name,
-          email: email,
-          phone: phone,
-          password: pass,
-          role: requestedRole,
-          title: titleVal,
-          status: "pending", 
-          hourlyRate: requestedRole === 'manager' || requestedRole === 'consultant' ? 22.00 : 15.00,
-          registeredAt: new Date().toLocaleDateString('en-GB')
+          id: Date.now(), name: name, email: email, phone: phone, password: pass, role: requestedRole, title: titleVal, status: "pending", 
+          hourlyRate: requestedRole === 'manager' || requestedRole === 'consultant' ? 22.00 : 15.00, registeredAt: new Date().toLocaleDateString('en-GB')
         };
 
         users.push(newUser);
         currentUser = newUser;
-        
         localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
         pushToCloud();
 
-        // Safe notification call
         notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
         notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
 
@@ -1178,19 +1046,14 @@
         document.getElementById('mainApp').classList.remove('hidden');
         setupAppForUser();
         showToast(`Sign up complete! Submitted for authorization.`, 'bg-amber-50 text-amber-800 border-amber-200');
-      
-      } catch (err) {
-        showToast("CRASH LOG: " + err.message, "bg-rose-500 text-white border-rose-700 py-4 text-sm z-50");
-        console.error("Signup Crash:", err);
-      }
+      } catch (err) { console.error(err); }
     }
 
     function setupAppForUser() {
       document.getElementById('userNameDisplay').textContent = currentUser.name;
       document.getElementById('userRoleDisplay').textContent = currentUser.title;
       
-      let badge = 'STAFF';
-      let sub = 'Staff Operations Portal';
+      let badge = 'STAFF', sub = 'Staff Operations Portal';
       if (currentUser.role === 'manager' || currentUser.role === 'consultant') { badge = currentUser.role.toUpperCase(); sub = 'Operations Hub'; }
       if (currentUser.role === 'it_admin') { badge = 'SUPER ADMIN'; sub = 'IT & Provisioning Control'; }
 
@@ -1198,10 +1061,11 @@
       document.getElementById('roleBadge').textContent = sub;
 
       const isPending = currentUser.status === 'pending' && currentUser.role !== 'it_admin';
-      const notice = document.getElementById('pendingStaffNotice');
-      const header = document.getElementById('approvedShiftsHeader');
       
+      const notice = document.getElementById('pendingStaffNotice');
       if (notice) notice.classList.toggle('hidden', !isPending);
+      
+      const header = document.getElementById('approvedShiftsHeader');
       if (header) header.classList.toggle('hidden', isPending);
 
       applyRolePermissions();
@@ -1234,47 +1098,20 @@
       const isSuperAdmin = currentUser && isApproved && currentUser.role === 'it_admin';
 
       document.getElementById('tab-roster').classList.toggle('hidden', !isApproved);
-
-      document.querySelectorAll('.manager-only').forEach(el => {
-        el.classList.toggle('hidden', !isManagerOrIT);
-      });
-
-      document.querySelectorAll('.invoice-access').forEach(el => {
-        el.classList.toggle('hidden', !isInvoiceAccess);
-      });
-
-      document.querySelectorAll('.admin-only').forEach(el => {
-        el.classList.toggle('hidden', !isAdminTabAccess);
-      });
-
-      document.querySelectorAll('.super-admin-only').forEach(el => {
-        el.classList.toggle('hidden', !isSuperAdmin);
-      });
+      document.querySelectorAll('.manager-only').forEach(el => el.classList.toggle('hidden', !isManagerOrIT));
+      document.querySelectorAll('.invoice-access').forEach(el => el.classList.toggle('hidden', !isInvoiceAccess));
+      document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdminTabAccess));
+      document.querySelectorAll('.super-admin-only').forEach(el => el.classList.toggle('hidden', !isSuperAdmin));
     }
 
     function navigateTab(tabName, skipSave = false) {
       const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
-      
-      if (!isApproved && tabName !== 'shifts') {
-        tabName = 'shifts';
-      }
+      if (!isApproved && tabName !== 'shifts') tabName = 'shifts';
 
-      if (tabName === 'it-admin' && (currentUser.role !== 'it_admin' && currentUser.role !== 'consultant')) {
-        showToast("Access Denied: Admin or Consultant privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
-      if (tabName === 'sys-diag' && currentUser.role !== 'it_admin') {
-        showToast("Access Denied: Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
-      if (tabName === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) {
-        showToast("Access Denied: Manager or IT Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
-      if (['manager'].includes(tabName) && (currentUser.role === 'staff' || !isApproved)) {
-        showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
-        return;
-      }
+      if (tabName === 'it-admin' && (currentUser.role !== 'it_admin' && currentUser.role !== 'consultant')) return showToast("Access Denied", "bg-rose-50 text-rose-800");
+      if (tabName === 'sys-diag' && currentUser.role !== 'it_admin') return showToast("Access Denied", "bg-rose-50 text-rose-800");
+      if (tabName === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) return showToast("Access Denied", "bg-rose-50 text-rose-800");
+      if (['manager'].includes(tabName) && (currentUser.role === 'staff' || !isApproved)) return showToast("Access Denied", "bg-rose-50 text-rose-800");
 
       document.querySelectorAll('.tab-view').forEach(e => e.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(e => {
@@ -1290,22 +1127,17 @@
       }
 
       if (!skipSave) localStorage.setItem('enin_active_tab', tabName);
-
       if (tabName === 'manager') updateManagerView();
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'roster') renderRosterGrid();
     }
 
     function testFirebaseConnection() {
-      if (!fbDb) return showToast("Firebase SDK not loaded. Check script imports.", "bg-rose-50 text-rose-800 border-rose-200");
-      
+      if (!fbDb) return showToast("Firebase SDK not loaded.", "bg-rose-50 text-rose-800");
       showToast("Pinging Firebase server...", "bg-snoo-blue/10 text-snoo-blue");
       fbDb.ref('.info/connected').once('value').then((snap) => {
-        if (snap.val() === true) {
-          showToast("✓ Firebase Connection Successful! Live socket is active.", "bg-emerald-50 text-emerald-800 border-emerald-200");
-        } else {
-          showToast("Firebase is currently disconnected. Reconnecting...", "bg-amber-50 text-amber-800 border-amber-200");
-        }
+        if (snap.val() === true) showToast("✓ Firebase Connection Successful!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+        else showToast("Firebase is currently disconnected.", "bg-amber-50 text-amber-800 border-amber-200");
       });
     }
 
@@ -1315,28 +1147,20 @@
       const sId = document.getElementById('emailjsService').value.trim();
       const tId = document.getElementById('emailjsTemplate').value.trim();
       
-      if (!testEmail || !pKey || !sId || !tId) return showToast("Please fill all 4 EmailJS fields to test and save", "bg-rose-50 text-rose-800 border-rose-200");
+      if (!testEmail || !pKey || !sId || !tId) return showToast("Please fill all 4 EmailJS fields", "bg-rose-50 text-rose-800");
       
-      // Save locally as a backup / for UI loading
       localStorage.setItem('enin_email_test_recipient', testEmail);
       localStorage.setItem('enin_email_key', pKey);
       localStorage.setItem('enin_email_service', sId);
       localStorage.setItem('enin_email_template', tId);
 
-      // SAVE TO LIVE FIREBASE CLOUD SO STAFF DEVICES CAN READ IT!
       if (fbDb) {
-        fbDb.ref('config/emailjs').set({
-          publicKey: pKey,
-          serviceId: sId,
-          templateId: tId
-        });
+        fbDb.ref('config/emailjs').set({ publicKey: pKey, serviceId: sId, templateId: tId });
         emailConfig = { publicKey: pKey, serviceId: sId, templateId: tId };
       }
 
       try {
-        if (typeof emailjs === 'undefined') {
-          return showToast("Error: EmailJS library blocked by your browser.", "bg-rose-50 text-rose-800 border-rose-200");
-        }
+        if (typeof emailjs === 'undefined') return showToast("Error: EmailJS library blocked.", "bg-rose-50 text-rose-800");
         showToast("Sending test notification via EmailJS...", "bg-snoo-blue/10 text-snoo-blue");
         emailjs.send(sId, tId, {
           to_name: currentUser ? currentUser.name : "Admin",
@@ -1344,13 +1168,9 @@
           subject: "Golden Tree HR API Test",
           message: "Test connection successful! Golden Tree HR notifications are active."
         }, pKey).then(() => {
-          showToast("✓ API Keys saved to Cloud! EmailJS Notification Sent Successfully.", "bg-emerald-50 text-emerald-800 border-emerald-200");
-        }).catch(err => {
-          showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800 border-rose-200");
-        });
-      } catch (e) {
-        showToast("EmailJS Crash: " + e.message, "bg-rose-50 text-rose-800 border-rose-200");
-      }
+          showToast("✓ API Keys saved to Cloud! Notification Sent.", "bg-emerald-50 text-emerald-800 border-emerald-200");
+        }).catch(err => showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800"));
+      } catch (e) { showToast("EmailJS Crash: " + e.message, "bg-rose-50 text-rose-800"); }
     }
 
     function notifyStaff(staffId, subject, details) {
@@ -1358,7 +1178,6 @@
       const s = users.find(u => u && u.id === staffId);
       if (!s || !s.email) return;
 
-      // FIRST pull from Cloud configuration so staff phones work, fallback to local storage
       const pKey = (emailConfig && emailConfig.publicKey) || localStorage.getItem('enin_email_key');
       const sId = (emailConfig && emailConfig.serviceId) || localStorage.getItem('enin_email_service');
       const tId = (emailConfig && emailConfig.templateId) || localStorage.getItem('enin_email_template');
@@ -1366,31 +1185,14 @@
       if (pKey && sId && tId) {
         try {
           if (typeof emailjs !== 'undefined') {
-            emailjs.send(sId, tId, {
-              to_name: s.name,
-              to_email: s.email,
-              subject: subject,
-              message: details
-            }, pKey).then(() => {
-              console.log("Automated email sent to " + s.email);
-            }).catch(err => {
-              console.error("EmailJS failed:", err);
-            });
-          } else {
-            console.warn("EmailJS library is blocked by browser. Email skipped.");
+            emailjs.send(sId, tId, { to_name: s.name, to_email: s.email, subject: subject, message: details }, pKey).catch(e => console.error(e));
           }
-        } catch (e) {
-          console.error("Error triggering EmailJS:", e);
-        }
-      } else {
-        console.warn("EmailJS credentials not configured globally. Email not sent.");
+        } catch (e) { console.error(e); }
       }
     }
 
     function notifyITAdmin(subject, details) {
-      users.filter(u => u && u.role === 'it_admin').forEach(admin => {
-        notifyStaff(admin.id, subject, details);
-      });
+      users.filter(u => u && u.role === 'it_admin').forEach(admin => notifyStaff(admin.id, subject, details));
     }
 
     function getMonday(d) {
@@ -1400,8 +1202,7 @@
     }
 
     function changeRosterWeek(offset) {
-      if (offset === 0) rosterWeekOffset = 0;
-      else rosterWeekOffset += offset;
+      if (offset === 0) rosterWeekOffset = 0; else rosterWeekOffset += offset;
       renderRosterGrid();
     }
 
@@ -1421,7 +1222,6 @@
 
       const baseMonday = getMonday(new Date());
       baseMonday.setDate(baseMonday.getDate() + (rosterWeekOffset * 7));
-
       const daysOfWeek = [];
       const shortDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
       
@@ -1429,11 +1229,7 @@
       for (let i = 0; i < 7; i++) {
         const curDate = new Date(baseMonday);
         curDate.setDate(curDate.getDate() + i);
-        daysOfWeek.push({
-          dateObj: curDate,
-          isoStr: curDate.toISOString().split('T')[0],
-          display: `${curDate.getDate()} ${shortDays[curDate.getDay()]}`
-        });
+        daysOfWeek.push({ dateObj: curDate, isoStr: curDate.toISOString().split('T')[0], display: `${curDate.getDate()} ${shortDays[curDate.getDay()]}` });
         const isToday = curDate.toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
         headerHTML += `<th class="p-3 text-center min-w-[130px] border-r border-slate-200 ${isToday ? 'bg-snoo-blue/10 text-snoo-blue' : ''}">${curDate.getDate()} ${shortDays[curDate.getDay()]}</th>`;
       }
@@ -1445,12 +1241,7 @@
       clients.forEach(client => {
         if (!client) return;
         let clientShifts = shifts.filter(s => s && s.clientId === client.id && daysOfWeek.some(d => s.date === d.isoStr || (s.datesList && s.datesList.includes(d.isoStr))));
-        
-        if (dispatcherFilter !== 'all') {
-           const filterId = parseInt(dispatcherFilter);
-           clientShifts = clientShifts.filter(s => s && s.postedBy === filterId);
-        }
-
+        if (dispatcherFilter !== 'all') clientShifts = clientShifts.filter(s => s && s.postedBy === parseInt(dispatcherFilter));
         if (dispatcherFilter !== 'all' && clientShifts.length === 0) return;
 
         const isExpanded = !expandedFacilities.has(client.id);
@@ -1460,8 +1251,7 @@
             <td colspan="8" class="p-3 font-bold text-snoo-navy flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-chevron-${isExpanded ? 'down' : 'right'} text-slate-400 w-3"></i>
-                ${client.name}
-                <span class="bg-snoo-blue/10 text-snoo-blue px-2 py-0.5 rounded text-[10px] shadow-xs">[ ${clientShifts.length} ]</span>
+                ${client.name} <span class="bg-snoo-blue/10 text-snoo-blue px-2 py-0.5 rounded text-[10px] shadow-xs">[ ${clientShifts.length} ]</span>
               </div>
             </td>
           </tr>
@@ -1472,7 +1262,6 @@
           daysOfWeek.forEach(day => {
             const dayShifts = clientShifts.filter(s => s && (s.date === day.isoStr || (s.datesList && s.datesList.includes(day.isoStr))));
             bodyHTML += `<td class="p-1.5 align-top border-r border-slate-200">`;
-            
             dayShifts.forEach((s, idx) => {
               const assignee = users.find(u => u && u.id === s.staffId);
               const pillHTML = s.staffId 
@@ -1493,8 +1282,7 @@
               bodyHTML += `
                 <div class="bg-[#0d9488] text-white rounded-xl shadow p-2 mb-1 border border-teal-500 relative">
                   <div class="flex justify-between items-center mb-0.5 border-b border-teal-500/50 pb-0.5">
-                    <span class="text-[9px] bg-teal-800/80 px-1 rounded font-black">#${idx+1}</span>
-                    ${actionMenu}
+                    <span class="text-[9px] bg-teal-800/80 px-1 rounded font-black">#${idx+1}</span>${actionMenu}
                   </div>
                   <div class="font-bold text-[11px] mb-0.5 tracking-tight">${s.time}</div>
                   <div class="text-[9px] mb-1 truncate text-teal-100">${s.jobTitle || s.title} <span class="italic text-[8px] opacity-75">by ${s.postedByName || 'Admin'}</span></div>
@@ -1513,11 +1301,9 @@
     function openAmendShift(id) {
       const s = shifts.find(x => x && x.id === id);
       if(!s) return;
-      
       const showFin = ['manager', 'it_admin'].includes(currentUser.role);
       const amFin = document.getElementById('amendFinancials');
       if (amFin) amFin.classList.toggle('hidden', !showFin);
-
       document.getElementById('amendShiftId').value = s.id;
       document.getElementById('amendShiftTime').value = s.time || "09:00 - 13:00";
       document.getElementById('amendShiftPay').value = s.pay;
@@ -1532,17 +1318,11 @@
         s.time = document.getElementById('amendShiftTime').value;
         s.pay = parseFloat(document.getElementById('amendShiftPay').value);
         s.chargeRate = parseFloat(document.getElementById('amendShiftCharge').value);
-        
         pushToCloud();
         document.getElementById('modal-amend-shift').classList.add('hidden');
-        renderRosterGrid();
-        renderShifts(); 
-        updateManagerView();
+        renderRosterGrid(); renderShifts(); updateManagerView();
         showToast("Shift amended successfully", "bg-emerald-50 text-emerald-800");
-
-        if (s.staffId) {
-          notifyStaff(s.staffId, "Shift Amended", `Your shift/block for ${s.date || s.dateRangeStr} has been amended by management. New time: ${s.time}. Log in to view changes.`);
-        }
+        if (s.staffId) notifyStaff(s.staffId, "Shift Amended", `Your shift/block for ${s.date || s.dateRangeStr} has been amended by management. New time: ${s.time}.`);
       }
     }
 
@@ -1567,27 +1347,15 @@
       if(s) {
         const val = document.getElementById('reassignSelectStaff').value;
         const oldStaffId = s.staffId;
-        
-        if(val === '__marketplace__') {
-          s.staffId = null;
-          s.status = 'open';
-        } else {
-          s.staffId = parseInt(val);
-          s.status = 'claimed';
-        }
+        if(val === '__marketplace__') { s.staffId = null; s.status = 'open'; } 
+        else { s.staffId = parseInt(val); s.status = 'claimed'; }
         
         pushToCloud();
         document.getElementById('modal-reassign-shift').classList.add('hidden');
-        renderRosterGrid();
-        renderShifts();
+        renderRosterGrid(); renderShifts();
         showToast("Shift reassigned successfully", "bg-emerald-50 text-emerald-800");
-
-        if(oldStaffId && oldStaffId !== s.staffId) {
-           notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned to another staff member.`);
-        }
-        if(s.staffId && s.staffId !== oldStaffId) {
-           notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
-        }
+        if(oldStaffId && oldStaffId !== s.staffId) notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned.`);
+        if(s.staffId && s.staffId !== oldStaffId) notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
       }
     }
 
@@ -1595,71 +1363,43 @@
       const s = shifts.find(x => x && x.id === id);
       if(!s) return;
       if(confirm("Are you sure you want to cancel this shift?")) {
-        const staffId = s.staffId;
-        const shiftDate = s.date || s.dateRangeStr;
-        
+        const staffId = s.staffId; const shiftDate = s.date || s.dateRangeStr;
         shifts = shifts.filter(x => x && x.id !== id);
-
-        // DIRECTLY DELETE FROM FIREBASE DATABASE
-        if (fbDb) {
-           fbDb.ref('shifts/' + id).remove();
-        }
-
+        if (fbDb) fbDb.ref('shifts/' + id).remove();
         pushToCloud();
-        renderRosterGrid();
-        renderShifts();
-        updateManagerView();
+        renderRosterGrid(); renderShifts(); updateManagerView();
         showToast("Shift cancelled", "bg-rose-50 text-rose-800 border-rose-200");
-
-        if (staffId) {
-          notifyStaff(staffId, "Shift Cancelled", `Your shift/block for ${shiftDate} has been cancelled by management.`);
-        }
+        if (staffId) notifyStaff(staffId, "Shift Cancelled", `Your shift/block for ${shiftDate} has been cancelled by management.`);
       }
     }
 
     function setClientMode(mode) {
       clientDispatchMode = mode;
-      const btnEx = document.getElementById('btnClientExisting');
-      const btnNew = document.getElementById('btnClientNew');
-      const secEx = document.getElementById('sectionClientExisting');
-      const secNew = document.getElementById('sectionClientNew');
-
+      const btnEx = document.getElementById('btnClientExisting'), btnNew = document.getElementById('btnClientNew');
+      const secEx = document.getElementById('sectionClientExisting'), secNew = document.getElementById('sectionClientNew');
       if (mode === 'existing') {
-        btnEx.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs";
-        btnNew.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
-        secEx.classList.remove('hidden');
-        secNew.classList.add('hidden');
+        btnEx.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs"; btnNew.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
+        secEx.classList.remove('hidden'); secNew.classList.add('hidden');
       } else {
-        btnNew.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs";
-        btnEx.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
-        secNew.classList.remove('hidden');
-        secEx.classList.add('hidden');
+        btnNew.className = "px-2 py-1 rounded-md bg-white text-snoo-navy shadow-xs"; btnEx.className = "px-2 py-1 rounded-md text-slate-500 hover:text-slate-900";
+        secNew.classList.remove('hidden'); secEx.classList.add('hidden');
       }
     }
 
     function setScheduleMode(mode) {
       scheduleMode = mode;
-      const btnS = document.getElementById('btnSchedSingle');
-      const btnR = document.getElementById('btnSchedRange');
-      const secS = document.getElementById('sectionSchedSingle');
-      const secR = document.getElementById('sectionSchedRange');
-
+      const btnS = document.getElementById('btnSchedSingle'), btnR = document.getElementById('btnSchedRange');
+      const secS = document.getElementById('sectionSchedSingle'), secR = document.getElementById('sectionSchedRange');
       if (mode === 'single') {
-        btnS.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs";
-        btnR.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
-        secS.classList.remove('hidden');
-        secR.classList.add('hidden');
+        btnS.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs"; btnR.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
+        secS.classList.remove('hidden'); secR.classList.add('hidden');
       } else {
-        btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs";
-        btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
-        secR.classList.remove('hidden');
-        secS.classList.add('hidden');
+        btnR.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs"; btnS.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900";
+        secR.classList.remove('hidden'); secS.classList.add('hidden');
       }
     }
 
-    function formatPostcode(input) {
-      input.value = input.value.toUpperCase();
-    }
+    function formatPostcode(input) { input.value = input.value.toUpperCase(); }
 
     function populateDropdowns() {
       const opts = clients.map(c => c ? `<option value="${c.id}">${c.name} (${c.address})</option>` : '').join('');
@@ -1667,9 +1407,7 @@
       if(document.getElementById('invoiceClientSelect')) document.getElementById('invoiceClientSelect').innerHTML = opts;
       
       const staffOpts = users.filter(u => u && u.status === 'active' && u.role !== 'it_admin').map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
-      if(document.getElementById('newShiftAssignee')) {
-        document.getElementById('newShiftAssignee').innerHTML = `<option value="">🌍 Post to Open Marketplace</option>` + staffOpts;
-      }
+      if(document.getElementById('newShiftAssignee')) document.getElementById('newShiftAssignee').innerHTML = `<option value="">🌍 Post to Open Marketplace</option>` + staffOpts;
       
       const today = new Date().toISOString().split('T')[0];
       const nextWeek = new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0];
@@ -1682,60 +1420,32 @@
         const currentVal = rosterFilter.value || 'all';
         let filterOpts = `<option value="all">🌍 All Dispatched Shifts</option>`;
         const uniqueDispatchers = new Map();
-        
-        users.filter(u => u && ['manager', 'consultant', 'it_admin'].includes(u.role) && u.status === 'active').forEach(u => {
-            uniqueDispatchers.set(u.id, `${u.name} (${u.role})`);
-        });
-        
-        shifts.forEach(s => {
-           if (s && s.postedBy && s.postedByName && !uniqueDispatchers.has(s.postedBy)) {
-              uniqueDispatchers.set(s.postedBy, s.postedByName + " (Legacy)");
-           }
-        });
-        
-        uniqueDispatchers.forEach((name, id) => {
-           filterOpts += `<option value="${id}">${name}</option>`;
-        });
-        
+        users.filter(u => u && ['manager', 'consultant', 'it_admin'].includes(u.role) && u.status === 'active').forEach(u => uniqueDispatchers.set(u.id, `${u.name} (${u.role})`));
+        shifts.forEach(s => { if (s && s.postedBy && s.postedByName && !uniqueDispatchers.has(s.postedBy)) uniqueDispatchers.set(s.postedBy, s.postedByName + " (Legacy)"); });
+        uniqueDispatchers.forEach((name, id) => filterOpts += `<option value="${id}">${name}</option>`);
         rosterFilter.innerHTML = filterOpts;
-        if (currentVal !== 'all' && !uniqueDispatchers.has(parseInt(currentVal))) {
-           rosterFilter.value = 'all';
-        } else {
-           rosterFilter.value = currentVal;
-        }
+        if (currentVal !== 'all' && !uniqueDispatchers.has(parseInt(currentVal))) rosterFilter.value = 'all'; else rosterFilter.value = currentVal;
       }
 
       const tsFilter = document.getElementById('tsFilterStaff');
       if(tsFilter) {
           const curVal = tsFilter.value || 'all';
           let html = '<option value="all">All Staff / Open</option>';
-          users.filter(u => u && u.role !== 'it_admin').forEach(u => {
-              html += `<option value="${u.id}">${u.name} (${u.role})</option>`;
-          });
-          tsFilter.innerHTML = html;
-          tsFilter.value = curVal;
+          users.filter(u => u && u.role !== 'it_admin').forEach(u => html += `<option value="${u.id}">${u.name} (${u.role})</option>`);
+          tsFilter.innerHTML = html; tsFilter.value = curVal;
       }
     }
 
     function onExistingClientChange(clientId) {
       const cl = clients.find(c => c && c.id === parseInt(clientId));
-      if (cl && cl.rate) {
-        document.getElementById('newShiftCharge').value = cl.rate.toFixed(2);
-      }
+      if (cl && cl.rate) document.getElementById('newShiftCharge').value = cl.rate.toFixed(2);
     }
 
     function renderShifts() {
       const c = document.getElementById('shiftsContainer');
       const isPending = currentUser && currentUser.status === 'pending' && currentUser.role !== 'it_admin';
-
       if (isPending) {
-        c.innerHTML = `
-          <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
-            <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
-            <p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p>
-            <p class="text-xs text-slate-400 mt-1">Once an administrator approves your registration, all available shifts will appear here.</p>
-          </div>
-        `;
+        c.innerHTML = `<div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400"><i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i><p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p></div>`;
         return;
       }
 
@@ -1743,55 +1453,27 @@
       if (earningsHub) {
         if (currentUser && currentUser.role !== 'it_admin') {
            const myCompleted = shifts.filter(s => s && s.staffId === currentUser.id && s.status === 'completed');
-           let totalEarned = 0;
-           myCompleted.forEach(s => totalEarned += (s.hours * s.pay));
+           let totalEarned = 0; myCompleted.forEach(s => totalEarned += (s.hours * s.pay));
            const totalLeave = totalEarned * 0.01;
-           
            earningsHub.innerHTML = `
-             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-               <div>
-                 <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">My Total Earnings</p>
-                 <p class="text-xl font-black text-snoo-navy mt-0.5">£${totalEarned.toFixed(2)}</p>
-               </div>
-               <div class="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-                 <i class="fa-solid fa-wallet"></i>
-               </div>
-             </div>
-             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-               <div>
-                 <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Gathered Annual Leave (1%)</p>
-                 <p class="text-xl font-black text-indigo-600 mt-0.5">£${totalLeave.toFixed(2)}</p>
-               </div>
-               <div class="h-10 w-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
-                 <i class="fa-solid fa-umbrella-beach"></i>
-               </div>
-             </div>
+             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between"><div><p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">My Total Earnings</p><p class="text-xl font-black text-snoo-navy mt-0.5">£${totalEarned.toFixed(2)}</p></div><div class="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-wallet"></i></div></div>
+             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between"><div><p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Gathered Annual Leave (1%)</p><p class="text-xl font-black text-indigo-600 mt-0.5">£${totalLeave.toFixed(2)}</p></div><div class="h-10 w-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg"><i class="fa-solid fa-umbrella-beach"></i></div></div>
            `;
            earningsHub.classList.remove('hidden');
-        } else {
-           earningsHub.classList.add('hidden');
-        }
+        } else earningsHub.classList.add('hidden');
       }
 
       if (shifts.length === 0) {
-        c.innerHTML = `
-          <div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400">
-            <i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-300"></i>
-            <p class="font-bold text-slate-600">No shifts published yet</p>
-            <p class="text-xs text-slate-400 mt-1">Managers can dispatch single shifts or multi-day block contracts from the Operations Hub.</p>
-          </div>
-        `;
+        c.innerHTML = `<div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400"><i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-300"></i><p class="font-bold text-slate-600">No shifts published yet</p></div>`;
         return;
       }
 
       shifts.sort((a, b) => new Date(a.date) - new Date(b.date));
-
       c.innerHTML = shifts.map(s => {
         if (!s) return '';
         const cl = clients.find(x => x && x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
         const isBlock = s.isBlock === true;
-        
         const totalEarningsNum = s.pay * s.hours;
         const totalEarnings = totalEarningsNum.toFixed(2);
         const leavePay = (totalEarningsNum * 0.01).toFixed(2);
@@ -1800,40 +1482,15 @@
           <div class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
             <div>
               <div class="flex justify-between items-center mb-2">
-                ${isBlock ? 
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` :
-                  `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20')}">${s.status.replace('_', ' ')}</span>`
-                }
+                ${isBlock ? `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-snoo-blue text-white shadow-xs flex items-center gap-1"><i class="fa-solid fa-cube"></i> Block Booking (${s.totalDays} Days)</span>` : `<span class="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full ${s.status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : (s.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20')}">${s.status.replace('_', ' ')}</span>`}
                 <span class="text-xs font-bold text-slate-500"><i class="fa-regular fa-clock"></i> ${s.hours} Total hrs</span>
               </div>
               <h3 class="font-extrabold text-snoo-navy text-base">${s.title}</h3>
               <p class="text-xs text-slate-500 font-bold mb-1"><i class="fa-solid fa-user-tag text-snoo-blue"></i> ${s.jobTitle || 'General Staff'}</p>
               <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
               <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address}</p>
-              
-              ${isBlock ? `
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs">
-                  <div class="flex justify-between font-bold text-indigo-950 text-[11px]">
-                    <span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span>
-                    <span class="text-emerald-700">${s.hoursPerDay}h / day</span>
-                  </div>
-                  <p class="text-[10px] text-slate-500">Includes all ${s.totalDays} recurring scheduled days</p>
-                </div>
-              ` : `
-                <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>
-              `}
-
-              <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 space-y-2">
-                <div class="flex justify-between items-center">
-                  <span>Rate: £${s.pay.toFixed(2)}/hr</span>
-                  <span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span>
-                </div>
-                <div class="flex justify-between items-center text-[10px] text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100">
-                  <span><i class="fa-solid fa-umbrella-beach"></i> Annual Leave (1%)</span>
-                  <span>+ £${leavePay}</span>
-                </div>
-              </div>
-              <p class="text-[10px] text-slate-400 italic mb-2 text-right">Dispatched by: ${s.postedByName || 'Admin'}</p>
+              ${isBlock ? `<div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs"><div class="flex justify-between font-bold text-indigo-950 text-[11px]"><span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span><span class="text-emerald-700">${s.hoursPerDay}h / day</span></div></div>` : `<p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>`}
+              <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 space-y-2"><div class="flex justify-between items-center"><span>Rate: £${s.pay.toFixed(2)}/hr</span><span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span></div><div class="flex justify-between items-center text-[10px] text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100"><span><i class="fa-solid fa-umbrella-beach"></i> Annual Leave (1%)</span><span>+ £${leavePay}</span></div></div>
             </div>
             <div>
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Shift'}</button>` : ''}
@@ -1847,91 +1504,42 @@
 
     function claimShift(id) {
       const s = shifts.find(x => x && x.id === id);
-      if (s) {
-        s.status = 'claimed';
-        s.staffId = currentUser.id;
-        pushToCloud();
-        renderShifts();
-        renderRosterGrid();
-        showToast(`✓ Contract claimed! Synced across all devices.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      }
+      if (s) { s.status = 'claimed'; s.staffId = currentUser.id; pushToCloud(); renderShifts(); renderRosterGrid(); showToast(`✓ Contract claimed!`, 'bg-emerald-50 text-emerald-800'); }
     }
 
     function completeShift(id) {
       const s = shifts.find(x => x && x.id === id);
       if (!s) return;
       if (confirm("Mark this shift as fully completed?")) {
-        s.status = 'completed';
-        const now = new Date();
+        s.status = 'completed'; const now = new Date();
         s.clockOutTime = `Today ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        pushToCloud();
-        renderShifts();
-        if (currentUser.role !== 'staff') updateManagerView();
-        showToast('✓ Shift marked as completed!', 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        pushToCloud(); renderShifts(); if (currentUser.role !== 'staff') updateManagerView();
+        showToast('✓ Shift marked as completed!', 'bg-emerald-50 text-emerald-800');
       }
     }
 
     function updateITDirectory() {
       if (!currentUser) return;
-
-      const isIT = currentUser.role === 'it_admin';
-      const isConsultant = currentUser.role === 'consultant';
-
-      const obSection = document.getElementById('itOnboardSection');
-      if (obSection) obSection.classList.toggle('hidden', !isIT);
+      const isIT = currentUser.role === 'it_admin', isConsultant = currentUser.role === 'consultant';
+      const obSection = document.getElementById('itOnboardSection'); if (obSection) obSection.classList.toggle('hidden', !isIT);
 
       let pendingUsers = users.filter(u => u && u.status === 'pending');
       let activeUsers = users.filter(u => u && u.status !== 'pending');
-
-      if (isConsultant) {
-        pendingUsers = pendingUsers.filter(u => u && u.role === 'staff');
-        activeUsers = activeUsers.filter(u => u && u.role === 'staff');
-      }
+      if (isConsultant) { pendingUsers = pendingUsers.filter(u => u && u.role === 'staff'); activeUsers = activeUsers.filter(u => u && u.role === 'staff'); }
 
       const pCount = pendingUsers.length;
-      const hb = document.getElementById('itPendingHeaderBadge');
-      if (hb) hb.textContent = `${pCount} Pending`;
-      const navBadge = document.getElementById('itPendingNavBadge');
-      if (navBadge) {
-        navBadge.textContent = pCount;
-        navBadge.classList.toggle('hidden', pCount === 0);
-      }
+      const hb = document.getElementById('itPendingHeaderBadge'); if (hb) hb.textContent = `${pCount} Pending`;
+      const navBadge = document.getElementById('itPendingNavBadge'); if (navBadge) { navBadge.textContent = pCount; navBadge.classList.toggle('hidden', pCount === 0); }
 
       const pTable = document.getElementById('itPendingTable');
       if (pTable) {
-        if (pendingUsers.length === 0) {
-          pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending staff right now.</td></tr>`;
-        } else {
+        if (pendingUsers.length === 0) pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending staff right now.</td></tr>`;
+        else {
           pTable.innerHTML = pendingUsers.map(u => {
             let actions = '';
-            
-            if (isIT) {
-              actions = `
-                <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Staff</button>
-                <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Manager</button>
-                <button onclick="approveUser(${u.id}, 'consultant')" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Consultant</button>
-              `;
-            } else if (isConsultant) {
-              actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Approve as Staff</button>`;
-            }
-
-            return `
-              <tr class="hover:bg-amber-50/50 text-xs">
-                <td class="p-3">
-                  <p class="font-bold text-snoo-navy">${u.name}</p>
-                  <p class="text-[11px] text-slate-500">${u.email}</p>
-                </td>
-                <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-                <td class="p-3">
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
-                    ${u.role}
-                  </span>
-                </td>
-                <td class="p-3 text-right space-x-1.5">
-                  ${actions}
-                </td>
-              </tr>
-            `;
+            if (isIT) { actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Staff</button> <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Manager</button> <button onclick="approveUser(${u.id}, 'consultant')" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Consultant</button>`; } 
+            else if (isConsultant) { actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Approve as Staff</button>`; }
+            return `<tr class="hover:bg-amber-50/50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${u.name}</p><p class="text-[11px] text-slate-500">${u.email}</p></td><td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">${u.role}</span></td><td class="p-3 text-right space-x-1.5">${actions}</td></tr>`;
           }).join('');
         }
       }
@@ -1940,56 +1548,15 @@
       if (dirTable) {
         dirTable.innerHTML = activeUsers.map(u => {
           let actions = '';
-          if (u.email === 'minute2131@gmail.com') {
-            actions = '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>';
-          } else if (isIT) {
-            actions = `
-              <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
-              <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
-            `;
-          } else if (isConsultant) {
-            actions = `
-              <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
-              <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
-            `;
-          }
-
-          return `
-            <tr class="hover:bg-slate-50 text-xs">
-              <td class="p-3">
-                <p class="font-bold text-snoo-navy">${u.name}</p>
-                <p class="text-[11px] text-slate-400">${u.email}</p>
-              </td>
-              <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-              <td class="p-3 font-semibold">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' || u.role === 'consultant' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
-                  ${u.role}
-                </span>
-              </td>
-              <td class="p-3 text-right">
-                ${actions}
-              </td>
-            </tr>
-          `;
+          if (u.email === 'minute2131@gmail.com') actions = '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>';
+          else if (isIT || isConsultant) actions = `<button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button> <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>`;
+          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${u.name}</p><p class="text-[11px] text-slate-400">${u.email}</p></td><td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td><td class="p-3 font-semibold"><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' || u.role === 'consultant' ? 'bg-indigo-50 text-indigo-800' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue' : 'bg-slate-100 text-slate-700')}">${u.role}</span></td><td class="p-3 text-right">${actions}</td></tr>`;
         }).join('');
       }
 
-      const clientSec = document.getElementById('itClientSection');
-      if (clientSec) clientSec.classList.toggle('hidden', !isIT);
-
+      const clientSec = document.getElementById('itClientSection'); if (clientSec) clientSec.classList.toggle('hidden', !isIT);
       const cTable = document.getElementById('itClientTable');
-      if (cTable && isIT) {
-        cTable.innerHTML = clients.map(c => c ? `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3 font-bold text-snoo-navy">${c.name}</td>
-            <td class="p-3 text-slate-600">${c.address}</td>
-            <td class="p-3 font-semibold text-emerald-700">£${c.rate.toFixed(2)}</td>
-            <td class="p-3 text-right">
-              <button onclick="deleteClient(${c.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded cursor-pointer">Delete</button>
-            </td>
-          </tr>
-        ` : '').join('');
-      }
+      if (cTable && isIT) cTable.innerHTML = clients.map(c => c ? `<tr class="hover:bg-slate-50 text-xs"><td class="p-3 font-bold text-snoo-navy">${c.name}</td><td class="p-3 text-slate-600">${c.address}</td><td class="p-3 font-semibold text-emerald-700">£${c.rate.toFixed(2)}</td><td class="p-3 text-right"><button onclick="deleteClient(${c.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded cursor-pointer">Delete</button></td></tr>` : '').join('');
     }
 
     function deleteClient(id) {
@@ -1997,88 +1564,43 @@
       if (!c) return;
       if (confirm(`Are you sure you want to permanently delete client: ${c.name}?`)) {
         clients = clients.filter(x => x && x.id !== id);
-        
-        // DIRECTLY DELETE FROM FIREBASE DATABASE
-        if (fbDb) {
-           fbDb.ref('clients/' + id).remove();
-        }
-
-        pushToCloud();
-        updateITDirectory();
-        populateDropdowns();
-        renderShifts();
-        renderRosterGrid();
-        updateManagerView();
-        showToast(`Deleted ${c.name} successfully`, 'bg-rose-50 text-rose-800 border-rose-200');
+        if (fbDb) fbDb.ref('clients/' + id).remove();
+        pushToCloud(); updateITDirectory(); populateDropdowns(); renderShifts(); renderRosterGrid(); updateManagerView();
+        showToast(`Deleted ${c.name} successfully`, 'bg-rose-50 text-rose-800');
       }
     }
 
     function approveUser(userId, roleToAssign) {
       const u = users.find(x => x && x.id === userId);
       if (u) {
-        u.status = 'active';
-        u.role = roleToAssign;
+        u.status = 'active'; u.role = roleToAssign;
         if (roleToAssign === 'manager') u.title = 'Operations Manager';
         else if (roleToAssign === 'consultant') u.title = 'Consultant';
         else u.title = 'Domestic Staff';
         pushToCloud();
-        
         notifyStaff(u.id, "Account Authorized", `Congratulations! Your Golden Tree HR account has been fully authorized as ${u.title}. You can now log in to the portal and access the roster matrix and shift board.`);
-
-        updateITDirectory();
-        populateDropdowns();
+        updateITDirectory(); populateDropdowns();
         showToast(`✓ Authorized ${u.name} as ${u.title}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
     function directOnboardUser() {
       try {
-        const name = document.getElementById('obName').value.trim();
-        const email = document.getElementById('obEmail').value.trim().toLowerCase();
-        const phone = document.getElementById('obPhone').value.trim();
-        const role = document.getElementById('obRole').value;
-        const pass = document.getElementById('obPassword').value.trim();
+        const name = document.getElementById('obName').value.trim(), email = document.getElementById('obEmail').value.trim().toLowerCase(), phone = document.getElementById('obPhone').value.trim(), role = document.getElementById('obRole').value, pass = document.getElementById('obPassword').value.trim();
+        if (!name || !email || !pass) return showToast("Name, Email, and Password are required", "bg-rose-50 text-rose-800");
+        if (users.some(u => u && u.email && u.email.toLowerCase() === email)) return showToast("⚠️ ERROR: An account with this email already exists.", "bg-rose-50 text-rose-800");
 
-        if (!name || !email || !pass) return showToast("Name, Email, and Password are required", "bg-rose-50 text-rose-800 border-rose-200");
-        if (users.some(u => u && u.email && u.email.toLowerCase() === email)) return showToast("⚠️ ERROR: An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
-
-        let titleVal = 'Domestic Staff';
-        if (role === 'manager') titleVal = 'Operations Manager';
-        if (role === 'consultant') titleVal = 'Consultant';
-
-        const newUser = {
-          id: Date.now(),
-          name: name,
-          email: email,
-          phone: phone,
-          password: pass,
-          role: role,
-          title: titleVal,
-          status: "active",
-          hourlyRate: role === 'manager' || role === 'consultant' ? 22.00 : 15.00,
-          registeredAt: new Date().toLocaleDateString('en-GB')
-        };
-
-        users.push(newUser);
-        pushToCloud();
-        updateITDirectory();
-        populateDropdowns(); 
-        showToast(`✓ Added ${name} directly as active ${titleVal}.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-        
-        document.getElementById('obName').value = '';
-        document.getElementById('obEmail').value = '';
-        document.getElementById('obPhone').value = '';
-        document.getElementById('obPassword').value = 'password123';
-      } catch (err) {
-        showToast("CRASH LOG: " + err.message, "bg-rose-500 text-white border-rose-700 py-4 text-sm z-50");
-        console.error("Onboard Crash:", err);
-      }
+        let titleVal = 'Domestic Staff'; if (role === 'manager') titleVal = 'Operations Manager'; if (role === 'consultant') titleVal = 'Consultant';
+        const newUser = { id: Date.now(), name: name, email: email, phone: phone, password: pass, role: role, title: titleVal, status: "active", hourlyRate: role === 'manager' || role === 'consultant' ? 22.00 : 15.00, registeredAt: new Date().toLocaleDateString('en-GB') };
+        users.push(newUser); pushToCloud(); updateITDirectory(); populateDropdowns(); 
+        showToast(`✓ Added ${name} directly as active ${titleVal}.`, 'bg-emerald-50 text-emerald-800');
+        document.getElementById('obName').value = ''; document.getElementById('obEmail').value = ''; document.getElementById('obPhone').value = ''; document.getElementById('obPassword').value = 'password123';
+      } catch (err) { console.error(err); }
     }
 
     function openEditUser(id) {
       const u = users.find(x => x && x.id === id);
       if (!u) return;
-
       document.getElementById('editUserId').value = u.id;
       document.getElementById('editUserName').value = u.name;
       document.getElementById('editUserEmail').value = u.email;
@@ -2086,20 +1608,12 @@
       
       const roleSel = document.getElementById('editUserRole');
       roleSel.value = u.role;
-      
       if (currentUser.role === 'consultant') {
-        Array.from(roleSel.options).forEach(opt => {
-          if (opt.value !== 'staff') {
-            opt.disabled = true;
-          } else {
-            opt.disabled = false;
-          }
-        });
+        Array.from(roleSel.options).forEach(opt => opt.disabled = opt.value !== 'staff');
         roleSel.value = 'staff';
       } else {
         Array.from(roleSel.options).forEach(opt => opt.disabled = false);
       }
-
       document.getElementById('modal-edit-user').classList.remove('hidden');
     }
 
@@ -2107,171 +1621,65 @@
       const id = parseInt(document.getElementById('editUserId').value);
       const u = users.find(x => x && x.id === id);
       if (u) {
-        u.name = document.getElementById('editUserName').value.trim();
-        u.email = document.getElementById('editUserEmail').value.trim().toLowerCase();
-        u.phone = document.getElementById('editUserPhone').value.trim();
-        
-        const newRole = document.getElementById('editUserRole').value;
-        u.role = newRole;
-        if (newRole === 'manager') u.title = 'Operations Manager';
-        else if (newRole === 'consultant') u.title = 'Consultant';
-        else if (newRole === 'it_admin') u.title = 'IT Admin';
-        else u.title = 'Domestic Staff';
-
-        pushToCloud();
-        updateITDirectory();
-        populateDropdowns();
-        document.getElementById('modal-edit-user').classList.add('hidden');
-        showToast(`✓ Updated details for ${u.name}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        u.name = document.getElementById('editUserName').value.trim(); u.email = document.getElementById('editUserEmail').value.trim().toLowerCase(); u.phone = document.getElementById('editUserPhone').value.trim();
+        const newRole = document.getElementById('editUserRole').value; u.role = newRole;
+        if (newRole === 'manager') u.title = 'Operations Manager'; else if (newRole === 'consultant') u.title = 'Consultant'; else if (newRole === 'it_admin') u.title = 'IT Admin'; else u.title = 'Domestic Staff';
+        pushToCloud(); updateITDirectory(); populateDropdowns(); document.getElementById('modal-edit-user').classList.add('hidden');
+        showToast(`✓ Updated details for ${u.name}`, 'bg-emerald-50 text-emerald-800');
       }
     }
 
     function deleteUser(id) {
       const u = users.find(x => x && x.id === id);
       if (!u) return;
-      if (u.email === 'minute2131@gmail.com') return showToast("Cannot delete Master Admin", "bg-rose-50 text-rose-800 border-rose-200");
-      if (currentUser && u.id === currentUser.id) return showToast("Cannot delete your own account while logged in", "bg-rose-50 text-rose-800 border-rose-200");
+      if (u.email === 'minute2131@gmail.com') return showToast("Cannot delete Master Admin", "bg-rose-50 text-rose-800");
+      if (currentUser && u.id === currentUser.id) return showToast("Cannot delete your own account while logged in", "bg-rose-50 text-rose-800");
 
       if (confirm(`Are you sure you want to permanently delete ${u.name}'s account?`)) {
         users = users.filter(x => x && x.id !== id);
-        
-        shifts.forEach(s => {
-          if (s && s.staffId === id) {
-            s.staffId = null;
-            s.status = 'open';
-          }
-        });
-
-        // DIRECTLY DELETE FROM FIREBASE DATABASE
-        if (fbDb) {
-           fbDb.ref('users/' + id).remove();
-        }
-
-        pushToCloud();
-        updateITDirectory();
-        populateDropdowns();
-        renderShifts();
-        renderRosterGrid();
-        showToast(`Deleted ${u.name} successfully`, 'bg-rose-50 text-rose-800 border-rose-200');
+        shifts.forEach(s => { if (s && s.staffId === id) { s.staffId = null; s.status = 'open'; } });
+        if (fbDb) fbDb.ref('users/' + id).remove();
+        pushToCloud(); updateITDirectory(); populateDropdowns(); renderShifts(); renderRosterGrid();
+        showToast(`Deleted ${u.name} successfully`, 'bg-rose-50 text-rose-800');
       }
     }
 
     function createShift() {
-      let finalClientId = null;
-      const ch = parseFloat(document.getElementById('newShiftCharge').value);
-
-      if (clientDispatchMode === 'existing') {
-        finalClientId = parseInt(document.getElementById('newShiftClient').value);
-      } else {
-        const customName = document.getElementById('customClientName').value.trim() || 'Private Client';
-        const customAddr = document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK';
-        
-        const newClient = {
-          id: Date.now(),
-          name: customName,
-          address: customAddr,
-          rate: ch
-        };
-
-        clients.push(newClient);
-        finalClientId = newClient.id;
-        populateDropdowns();
-        
-        if(currentUser.role === 'it_admin') updateITDirectory();
+      let finalClientId = null; const ch = parseFloat(document.getElementById('newShiftCharge').value);
+      if (clientDispatchMode === 'existing') { finalClientId = parseInt(document.getElementById('newShiftClient').value); } 
+      else {
+        const newClient = { id: Date.now(), name: document.getElementById('customClientName').value.trim() || 'Private Client', address: document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK', rate: ch };
+        clients.push(newClient); finalClientId = newClient.id; populateDropdowns(); if(currentUser.role === 'it_admin') updateITDirectory();
       }
 
-      const t = document.getElementById('newShiftTitle').value;
-      const jTitle = document.getElementById('newShiftJobTitle').value; 
-      const p = parseFloat(document.getElementById('newShiftPay').value);
-      
-      const assigneeId = document.getElementById('newShiftAssignee').value;
-      const parsedAssigneeId = assigneeId ? parseInt(assigneeId) : null;
+      const t = document.getElementById('newShiftTitle').value, jTitle = document.getElementById('newShiftJobTitle').value, p = parseFloat(document.getElementById('newShiftPay').value);
+      const assigneeId = document.getElementById('newShiftAssignee').value; const parsedAssigneeId = assigneeId ? parseInt(assigneeId) : null;
       const shiftStatus = parsedAssigneeId ? "claimed" : "open";
 
       if (scheduleMode === 'single') {
-        const d = document.getElementById('newShiftDate').value;
-        const h = parseFloat(document.getElementById('newShiftHours').value);
-
-        shifts.push({ 
-          id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", 
-          hours: h, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId,
-          clockOutTime: null,
-          postedBy: currentUser.id,
-          postedByName: currentUser.name
-        });
-        
-        if (parsedAssigneeId) {
-          notifyStaff(parsedAssigneeId, "New Shift Assigned", `You have been directly assigned a new shift on ${d}. Log into the portal to check details.`);
-        }
-        showToast(`✓ Single shift published & dispatched!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        const d = document.getElementById('newShiftDate').value, h = parseFloat(document.getElementById('newShiftHours').value);
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", hours: h, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        if (parsedAssigneeId) notifyStaff(parsedAssigneeId, "New Shift Assigned", `You have been directly assigned a new shift on ${d}. Log into the portal to check details.`);
+        showToast(`✓ Single shift published & dispatched!`, 'bg-emerald-50 text-emerald-800');
       } else {
-        const startStr = document.getElementById('newShiftStartDate').value;
-        const endStr = document.getElementById('newShiftEndDate').value;
-        const pattern = document.getElementById('newShiftRepeatPattern').value;
-        const hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value);
+        const startStr = document.getElementById('newShiftStartDate').value, endStr = document.getElementById('newShiftEndDate').value, pattern = document.getElementById('newShiftRepeatPattern').value, hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value);
+        if (!startStr || !endStr) return showToast('Please choose both start and end dates', 'bg-rose-50 text-rose-800');
 
-        if (!startStr || !endStr) return showToast('Please choose both start and end dates', 'bg-rose-50 text-rose-800 border-rose-200');
-
-        let cur = new Date(startStr);
-        const end = new Date(endStr);
-        const startDayOfWeek = cur.getDay();
-        let validDays = 0;
-        let datesList = [];
-
+        let cur = new Date(startStr); const end = new Date(endStr); const startDayOfWeek = cur.getDay(); let validDays = 0, datesList = [];
         while (cur <= end) {
-          const dayOfWeek = cur.getDay();
-          let shouldInclude = false;
-
-          if (pattern === 'daily') shouldInclude = true;
-          else if (pattern === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) shouldInclude = true;
-          else if (pattern === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6)) shouldInclude = true;
-          else if (pattern === 'weekly' && dayOfWeek === startDayOfWeek) shouldInclude = true;
-
-          if (shouldInclude) {
-            validDays++;
-            datesList.push(cur.toISOString().split('T')[0]);
-          }
+          const dayOfWeek = cur.getDay(); let shouldInclude = false;
+          if (pattern === 'daily') shouldInclude = true; else if (pattern === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) shouldInclude = true; else if (pattern === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6)) shouldInclude = true; else if (pattern === 'weekly' && dayOfWeek === startDayOfWeek) shouldInclude = true;
+          if (shouldInclude) { validDays++; datesList.push(cur.toISOString().split('T')[0]); }
           cur.setDate(cur.getDate() + 1);
         }
 
-        if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800 border-rose-200');
-
-        const totalBlockHours = validDays * hoursPerDay;
-        const rangeSummary = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
-
-        shifts.push({
-          id: Date.now(),
-          clientId: finalClientId,
-          title: t,
-          jobTitle: jTitle, 
-          isBlock: true,
-          totalDays: validDays,
-          dateRangeStr: rangeSummary,
-          date: startStr,
-          datesList: datesList,
-          time: "09:00 - 13:00",
-          hoursPerDay: hoursPerDay,
-          hours: totalBlockHours,
-          pay: p,
-          chargeRate: ch,
-          status: shiftStatus,
-          staffId: parsedAssigneeId,
-          clockOutTime: null,
-          postedBy: currentUser.id,
-          postedByName: currentUser.name
-        });
-        
-        if (parsedAssigneeId) {
-          notifyStaff(parsedAssigneeId, "New Contract Assigned", `You have been directly assigned a multi-day block contract starting on ${startStr}. Log into the portal to check details.`);
-        }
-        showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days, ${totalBlockHours}h total)!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800');
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr: `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`, date: startStr, datesList: datesList, time: "09:00 - 13:00", hoursPerDay: hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        if (parsedAssigneeId) notifyStaff(parsedAssigneeId, "New Contract Assigned", `You have been directly assigned a multi-day block contract starting on ${startStr}.`);
+        showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days)!`, 'bg-emerald-50 text-emerald-800');
       }
       
-      pushToCloud();
-      renderShifts();
-      updateManagerView();
-      renderRosterGrid();
-      populateDropdowns(); 
+      pushToCloud(); renderShifts(); updateManagerView(); renderRosterGrid(); populateDropdowns(); 
     }
 
     function clearTimesheetFilters() {
@@ -2283,12 +1691,79 @@
 
     function updateManagerView() {
       if (!currentUser) return;
-
       const showFin = ['manager', 'it_admin'].includes(currentUser.role);
-      const kpi = document.getElementById('kpiFinancials');
-      const disp = document.getElementById('dispatchFinancials');
-      
-      if (kpi) kpi.classList.toggle('hidden', !showFin);
-      if (disp) disp.classList.toggle('hidden', !showFin);
+      const kpi = document.getElementById('kpiFinancials'), disp = document.getElementById('dispatchFinancials');
+      if (kpi) kpi.classList.toggle('hidden', !showFin); if (disp) disp.classList.toggle('hidden', !showFin);
 
-      let
+      let filteredShifts = [...shifts].filter(x => x !== null);
+      const tsStart = document.getElementById('tsFilterStart')?.value, tsEnd = document.getElementById('tsFilterEnd')?.value, tsStaff = document.getElementById('tsFilterStaff')?.value;
+      if (tsStart) filteredShifts = filteredShifts.filter(s => s.date >= tsStart);
+      if (tsEnd) filteredShifts = filteredShifts.filter(s => s.date <= tsEnd);
+      if (tsStaff && tsStaff !== 'all') filteredShifts = filteredShifts.filter(s => s.staffId == tsStaff);
+
+      filteredShifts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      let rev = 0, wages = 0;
+      filteredShifts.forEach(s => { if (s.status === 'completed') { rev += (s.hours * s.chargeRate); wages += (s.hours * s.pay); } });
+
+      if (document.getElementById('sumRevenue')) document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
+      if (document.getElementById('sumWages')) document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
+      if (document.getElementById('sumProfit')) document.getElementById('sumProfit').textContent = `£${(rev - wages).toFixed(2)}`;
+
+      const header = document.getElementById('managerTableHeader');
+      if (header) header.innerHTML = `<tr><th class="p-3">Staff & Client</th><th class="p-3">Status</th>${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th><th class="p-3 text-right text-emerald-700">Gross Margin</th>` : ''}</tr>`;
+
+      const table = document.getElementById('managerTable');
+      if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
+          const cl = clients.find(x => x && x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
+          const st = users.find(u => u && u.id === s.staffId);
+          const shiftGross = s.hours * s.chargeRate, staffEarned = s.hours * s.pay, profit = shiftGross - staffEarned;
+
+          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
+        }).join('');
+    }
+
+    function generateInvoice() {
+      const cid = parseInt(document.getElementById('invoiceClientSelect').value);
+      const cl = clients.find(x => x && x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
+      const start = document.getElementById('invoiceFilterStart').value, end = document.getElementById('invoiceFilterEnd').value;
+      
+      let sList = shifts.filter(s => s && s.clientId === cid);
+      if (start) sList = sList.filter(s => s.date >= start);
+      if (end) sList = sList.filter(s => s.date <= end);
+      
+      let sub = 0;
+      document.getElementById('invClient').textContent = `${cl.name} (${cl.address})`;
+      const dr = document.getElementById('invDateRange');
+      if (start && end) dr.textContent = `Period: ${start} to ${end}`; else if (start) dr.textContent = `Period: From ${start}`; else if (end) dr.textContent = `Period: Up to ${end}`; else dr.textContent = `Period: All Time`;
+
+      if (sList.length === 0) document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No shifts found for this period</td></tr>`;
+      else {
+        document.getElementById('invoiceRows').innerHTML = sList.map(s => {
+          const rate = s.chargeRate || cl.rate; const tot = s.hours * rate; sub += tot;
+          const st = users.find(u => u && u.id === s.staffId);
+          return `<tr><td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td><td class="py-2.5 px-2 text-right">${s.hours}</td><td class="py-2.5 px-2 text-right">£${rate.toFixed(2)}</td><td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td></tr>`;
+        }).join('');
+      }
+      
+      const vat = sub * 0.20;
+      document.getElementById('invSub').textContent = `£${sub.toFixed(2)}`;
+      document.getElementById('invVat').textContent = `£${vat.toFixed(2)}`;
+      document.getElementById('invTot').textContent = `£${(sub + vat).toFixed(2)}`;
+      document.getElementById('invNum').textContent = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      showToast('Client invoice compiled!', 'bg-emerald-50 text-emerald-800');
+    }
+
+    function showToast(m, cls) {
+      const t = document.getElementById('toast');
+      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative ${cls}`;
+      document.getElementById('toast-msg').textContent = m;
+      t.classList.remove('hidden');
+      setTimeout(hideToast, 6000);
+    }
+    function hideToast() { document.getElementById('toast').classList.add('hidden'); }
+
+    initApp();
+  </script>
+</body>
+</html>
