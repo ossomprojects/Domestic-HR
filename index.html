@@ -289,15 +289,15 @@
         <!-- KPIs (Hidden from Consultants) -->
         <div id="kpiFinancials" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Client Revenue</span>
+            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Filtered Client Revenue</span>
             <p id="sumRevenue" class="text-2xl font-black text-snoo-navy mt-1">£0.00</p>
           </div>
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Staff Wages Paid</span>
+            <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Filtered Staff Wages</span>
             <p id="sumWages" class="text-2xl font-black text-amber-600 mt-1">£0.00</p>
           </div>
           <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm">
-            <span class="text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">Company Operating Margin</span>
+            <span class="text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered Operating Margin</span>
             <p id="sumProfit" class="text-2xl font-black text-emerald-950 mt-1">£0.00</p>
           </div>
         </div>
@@ -305,7 +305,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <!-- Dispatch Form -->
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4">
+          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-xs space-y-4 h-fit">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-1.5">
                 <i class="fa-solid fa-plus-circle text-snoo-blue"></i> Dispatch New Shift
@@ -444,6 +444,30 @@
             <h3 class="text-sm font-bold text-snoo-navy mb-4 flex items-center gap-2">
               <i class="fa-solid fa-clock-rotate-left text-snoo-blue"></i> Live Timesheets & Attendance Audit
             </h3>
+            
+            <!-- TIMESHEET FILTERS -->
+            <div class="mb-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700">From Date:</label>
+                  <input type="date" id="tsFilterStart" onchange="updateManagerView()" class="w-full border border-slate-200 rounded-xl p-2 bg-white">
+                </div>
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700">To Date:</label>
+                  <input type="date" id="tsFilterEnd" onchange="updateManagerView()" class="w-full border border-slate-200 rounded-xl p-2 bg-white">
+                </div>
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700">Filter by Staff:</label>
+                  <select id="tsFilterStaff" onchange="updateManagerView()" class="w-full border border-slate-200 rounded-xl p-2 bg-white">
+                    <option value="all">All Staff</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-3 flex justify-end">
+                 <button onclick="clearTimesheetFilters()" class="text-xs text-snoo-blue hover:text-snoo-navy font-bold underline cursor-pointer">Clear Filters</button>
+              </div>
+            </div>
+
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]" id="managerTableHeader">
@@ -1622,6 +1646,18 @@
            rosterFilter.value = currentVal;
         }
       }
+
+      // Timesheet Staff Filter
+      const tsFilter = document.getElementById('tsFilterStaff');
+      if(tsFilter) {
+          const curVal = tsFilter.value || 'all';
+          let html = '<option value="all">All Staff / Open</option>';
+          users.filter(u => u.role !== 'it_admin').forEach(u => {
+              html += `<option value="${u.id}">${u.name} (${u.role})</option>`;
+          });
+          tsFilter.innerHTML = html;
+          tsFilter.value = curVal;
+      }
     }
 
     function onExistingClientChange(clientId) {
@@ -2136,6 +2172,13 @@
       populateDropdowns(); // Re-render dropdown to include self if this is their first shift posted
     }
 
+    function clearTimesheetFilters() {
+      if(document.getElementById('tsFilterStart')) document.getElementById('tsFilterStart').value = '';
+      if(document.getElementById('tsFilterEnd')) document.getElementById('tsFilterEnd').value = '';
+      if(document.getElementById('tsFilterStaff')) document.getElementById('tsFilterStaff').value = 'all';
+      updateManagerView();
+    }
+
     function updateManagerView() {
       if (!currentUser) return;
 
@@ -2147,9 +2190,28 @@
       if (kpi) kpi.classList.toggle('hidden', !showFin);
       if (disp) disp.classList.toggle('hidden', !showFin);
 
+      // TIMESHEET FILTERING
+      let filteredShifts = [...shifts];
+      const tsStart = document.getElementById('tsFilterStart')?.value;
+      const tsEnd = document.getElementById('tsFilterEnd')?.value;
+      const tsStaff = document.getElementById('tsFilterStaff')?.value;
+
+      if (tsStart) {
+          filteredShifts = filteredShifts.filter(s => s.date >= tsStart);
+      }
+      if (tsEnd) {
+          filteredShifts = filteredShifts.filter(s => s.date <= tsEnd);
+      }
+      if (tsStaff && tsStaff !== 'all') {
+          filteredShifts = filteredShifts.filter(s => s.staffId == tsStaff);
+      }
+
+      // Sort by date (newest first) to build a historical DB
+      filteredShifts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
       let rev = 0, wages = 0;
       
-      shifts.forEach(s => {
+      filteredShifts.forEach(s => {
         if (s.status === 'completed') {
           const shiftGross = s.hours * s.chargeRate;
           const shiftWage = s.hours * s.pay;
@@ -2174,7 +2236,9 @@
       `;
 
       // Render Dynamic Table Body
-      document.getElementById('managerTable').innerHTML = shifts.map(s => {
+      document.getElementById('managerTable').innerHTML = filteredShifts.length === 0 
+        ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>`
+        : filteredShifts.map(s => {
         const cl = clients.find(x => x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
         const st = users.find(u => u.id === s.staffId);
         const shiftGross = s.hours * s.chargeRate;
