@@ -101,16 +101,9 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">UK NI Number:</label>
-            <input type="text" id="regNI" placeholder="QQ 12 34 56 A" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold uppercase tracking-wider text-indigo-900">
-          </div>
-          <div>
             <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Phone Number:</label>
             <input type="tel" id="regPhone" placeholder="07700900888" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
           </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Requested Role:</label>
             <select id="regRole" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-bold text-snoo-navy">
@@ -119,10 +112,11 @@
               <option value="consultant">Consultant</option>
             </select>
           </div>
-          <div>
-            <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Create Password:</label>
-            <input type="password" id="regPassword" placeholder="Create password" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
-          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Create Password:</label>
+          <input type="password" id="regPassword" placeholder="Create password" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium">
         </div>
 
         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2 cursor-pointer mt-2">
@@ -189,9 +183,9 @@
           <i class="fa-solid fa-calculator text-amber-600"></i> HMRC Taxes & PAYE
         </button>
 
-        <!-- IT MANAGER ONLY TAB -->
-        <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn it-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-indigo-600"></i> IT Approvals & Roles
+        <!-- IT MANAGER & CONSULTANT TAB -->
+        <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn admin-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-indigo-600"></i> Directory & Approvals
           <span id="itPendingNavBadge" class="hidden bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">0</span>
         </button>
       </div>
@@ -246,9 +240,9 @@
               <i class="fa-solid fa-hourglass-half animate-pulse"></i>
             </div>
             <div>
-              <h3 class="font-extrabold text-base text-amber-950">Account Pending IT Authorization</h3>
+              <h3 class="font-extrabold text-base text-amber-950">Account Pending Admin Authorization</h3>
               <p class="text-xs text-amber-800 mt-1 leading-relaxed">
-                Your sign-up has been transmitted to <strong>minute2131@gmail.com</strong>. Once approved on the IT console, the shift marketplace will automatically unlock for you.
+                Your sign-up has been transmitted. Once approved on the Directory console, the shift marketplace will automatically unlock for you.
               </p>
               <button onclick="pullFromCloud(true)" class="mt-3 bg-amber-700 hover:bg-amber-800 text-white font-bold py-1.5 px-3.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs">
                 <i class="fa-solid fa-rotate text-[11px]"></i> Check Status Now
@@ -438,57 +432,57 @@
 
       </section>
 
-      <!-- ================= TAB 4: IT SUPERIOR ADMIN & APPROVALS ================= -->
+      <!-- ================= TAB 4: DIRECTORY & APPROVALS (IT & CONSULTANT) ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
           <div>
             <div class="flex items-center gap-2 mb-1">
-              <span class="bg-snoo-blue/10 text-snoo-blue text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-snoo-blue/20">Super Admin Access</span>
-              <span class="text-xs text-indigo-700 font-bold">IT Management & Security Console</span>
+              <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-indigo-200">Management Console</span>
             </div>
-            <h2 class="text-xl font-extrabold text-snoo-navy">Golden Tree IT Infrastructure</h2>
-            <p class="text-xs text-slate-500 mt-1">Logged in as minute2131@gmail.com. Review and approve incoming staff sign-ups to unlock shift access.</p>
+            <h2 class="text-xl font-extrabold text-snoo-navy">Directory & Staff Approvals</h2>
+            <p class="text-xs text-slate-500 mt-1">Review and approve incoming staff sign-ups, and manage active personnel.</p>
           </div>
         </div>
 
-        <!-- FIREBASE & EMAIL JS DIAGNOSTICS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 flex flex-col justify-between">
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-fire text-amber-500"></i> Firebase Database</h3>
-                <span id="itFbStatus" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold border border-emerald-200">LIVE / CONNECTED</span>
-              </div>
-              <p class="text-[11px] text-slate-500 font-mono mb-1 truncate">ennins-domestic-hr-default-rtdb.europe-west1</p>
-              <p class="text-[10px] text-slate-400">Project ID: ennins-domestic-hr</p>
-            </div>
+        <!-- SECTION: DIRECT ONBOARDING (IT ONLY) -->
+        <div id="itOnboardSection" class="bg-white p-6 rounded-3xl shadow-sm border border-indigo-200 hidden">
+          <div class="mb-4">
+            <h3 class="text-sm font-extrabold text-indigo-950 flex items-center gap-2">
+              <i class="fa-solid fa-user-plus text-indigo-600"></i> Direct User Onboarding (IT Access)
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Instantly create and authorize accounts for new staff, managers, or consultants.</p>
           </div>
           
-          <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-envelope text-snoo-blue"></i> EmailJS Service</h3>
-              <button onclick="testEmailJS()" class="px-3 py-1 bg-snoo-blue/10 text-snoo-blue rounded-lg text-[10px] font-bold hover:bg-snoo-blue/20 transition cursor-pointer">
-                Test Connection
-              </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs items-end">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Full Name</label>
+              <input type="text" id="obName" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="Jane Doe">
             </div>
-            <div class="space-y-2 text-[11px]">
-              <div>
-                <label class="block text-slate-500 mb-1 font-bold">EmailJS Public Key:</label>
-                <input type="text" id="emailjsKey" placeholder="e.g. YOUR_PUBLIC_KEY" class="border border-slate-200 rounded-lg px-2.5 py-1.5 w-full font-mono bg-slate-50">
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-slate-500 mb-1 font-bold">Service ID:</label>
-                  <input type="text" id="emailjsService" placeholder="service_..." class="border border-slate-200 rounded-lg px-2.5 py-1.5 w-full font-mono bg-slate-50">
-                </div>
-                <div>
-                  <label class="block text-slate-500 mb-1 font-bold">Template ID:</label>
-                  <input type="text" id="emailjsTemplate" placeholder="template_..." class="border border-slate-200 rounded-lg px-2.5 py-1.5 w-full font-mono bg-slate-50">
-                </div>
-              </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Email</label>
+              <input type="email" id="obEmail" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="jane@example.com">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Phone</label>
+              <input type="tel" id="obPhone" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="07700...">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Role</label>
+              <select id="obRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold">
+                <option value="staff">Staff</option>
+                <option value="manager">Manager</option>
+                <option value="consultant">Consultant</option>
+              </select>
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1">Initial Password</label>
+              <input type="text" id="obPassword" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" value="password123">
             </div>
           </div>
+          <button onclick="directOnboardUser()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition text-xs cursor-pointer shadow-md">
+            <i class="fa-solid fa-check-circle"></i> Create & Authorize Account
+          </button>
         </div>
 
         <!-- SECTION A: PENDING APPROVALS QUEUE -->
@@ -496,7 +490,7 @@
           <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-sm font-extrabold text-amber-950 flex items-center gap-2">
-                <i class="fa-solid fa-bell text-amber-600"></i> Pending Staff Sign-Ups (Action Required)
+                <i class="fa-solid fa-bell text-amber-600"></i> Pending Sign-Ups (Action Required)
               </h3>
               <p class="text-xs text-slate-500">Approve new registrations to grant them access to the shift board.</p>
             </div>
@@ -508,7 +502,6 @@
               <thead class="bg-amber-50/50 border-y text-slate-500 font-bold uppercase text-[10px]">
                 <tr>
                   <th class="p-3">Staff Details</th>
-                  <th class="p-3">UK NI Number</th>
                   <th class="p-3">Phone</th>
                   <th class="p-3">Requested</th>
                   <th class="p-3 text-right">Approve Action</th>
@@ -524,7 +517,7 @@
           <div class="flex justify-between items-center mb-4">
             <div>
               <h3 class="text-sm font-bold text-snoo-navy">Authorized Accounts Directory</h3>
-              <p class="text-xs text-slate-500">Manage approved staff and operations managers.</p>
+              <p class="text-xs text-slate-500">Manage approved staff and operations personnel.</p>
             </div>
           </div>
 
@@ -533,12 +526,12 @@
               <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
                 <tr>
                   <th class="p-3">Name & Email</th>
-                  <th class="p-3">UK NI Number</th>
+                  <th class="p-3">Phone</th>
                   <th class="p-3">Role</th>
-                  <th class="p-3 text-right">Switch Role Action</th>
+                  <th class="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody id="itDirectoryTable" class="divide-y"></tbody>
+              <tbody id="itDirectoryTable" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
@@ -668,6 +661,43 @@
     </main>
   </div>
 
+  <!-- MODAL FOR EDIT USER -->
+  <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b">
+        <h3 class="font-bold text-snoo-navy text-sm">Edit User Details</h3>
+        <button onclick="document.getElementById('modal-edit-user').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-lg">&times;</button>
+      </div>
+      <input type="hidden" id="editUserId">
+      <div class="space-y-3">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Full Name</label>
+          <input type="text" id="editUserName" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Email</label>
+          <input type="email" id="editUserEmail" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Phone</label>
+          <input type="tel" id="editUserPhone" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Role</label>
+          <select id="editUserRole" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold">
+            <option value="staff">Staff</option>
+            <option value="manager">Manager</option>
+            <option value="consultant">Consultant</option>
+            <option value="it_admin">IT Admin</option>
+          </select>
+        </div>
+        <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL FOR AMEND SHIFT (ROSTER SCHEDULER) -->
   <div id="modal-amend-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
@@ -727,8 +757,7 @@
       email: "minute2131@gmail.com", 
       password: "cookies", 
       role: "it_admin", 
-      title: "Super Admin (Owner)", 
-      ni: "GB 99 99 99 Z", 
+      title: "Super Admin (Owner)",
       status: "active", 
       hourlyRate: 40.00 
     };
@@ -805,17 +834,6 @@
         if (spin) spin.classList.add('fa-spin');
         showToast("Syncing with live Firebase database...", "bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20");
       }
-
-      fbDb.ref('.info/connected').on('value', (snap) => {
-        const isConnected = snap.val();
-        const fbStatusUI = document.getElementById('itFbStatus');
-        if (fbStatusUI) {
-          fbStatusUI.textContent = isConnected ? "LIVE / CONNECTED" : "OFFLINE";
-          fbStatusUI.className = isConnected 
-            ? "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold border border-emerald-200" 
-            : "px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-[10px] font-extrabold border border-rose-200";
-        }
-      });
 
       fbDb.ref('users').on('value', (snap) => {
         if (snap.val()) {
@@ -934,7 +952,6 @@
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const ni = document.getElementById('regNI').value.trim().toUpperCase();
       const phone = document.getElementById('regPhone').value.trim();
       const requestedRole = document.getElementById('regRole').value;
       const pass = document.getElementById('regPassword').value;
@@ -955,7 +972,6 @@
         password: pass,
         role: requestedRole,
         title: titleVal,
-        ni: ni,
         status: "pending", 
         hourlyRate: requestedRole === 'manager' || requestedRole === 'consultant' ? 22.00 : 15.00,
         registeredAt: new Date().toLocaleDateString('en-GB')
@@ -970,7 +986,7 @@
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
-      showToast(`Sign up complete! Submitted for IT approval.`, 'bg-amber-50 text-amber-800 border-amber-200');
+      showToast(`Sign up complete! Submitted for authorization.`, 'bg-amber-50 text-amber-800 border-amber-200');
     }
 
     function setupAppForUser() {
@@ -1013,20 +1029,20 @@
     function applyRolePermissions() {
       const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
       const isManagerOrIT = currentUser && isApproved && (currentUser.role === 'manager' || currentUser.role === 'it_admin' || currentUser.role === 'consultant');
-      const isIT = currentUser && currentUser.role === 'it_admin';
+      const isAdminTabAccess = currentUser && isApproved && (currentUser.role === 'it_admin' || currentUser.role === 'consultant');
 
       document.querySelectorAll('.manager-only').forEach(el => {
         el.classList.toggle('hidden', !isManagerOrIT);
       });
 
-      document.querySelectorAll('.it-only').forEach(el => {
-        el.classList.toggle('hidden', !isIT);
+      document.querySelectorAll('.admin-only').forEach(el => {
+        el.classList.toggle('hidden', !isAdminTabAccess);
       });
     }
 
     function navigateTab(tabName) {
-      if (tabName === 'it-admin' && currentUser.role !== 'it_admin') {
-        showToast("Access Denied: IT Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
+      if (tabName === 'it-admin' && (currentUser.role !== 'it_admin' && currentUser.role !== 'consultant')) {
+        showToast("Access Denied: Admin or Consultant privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
       if (['manager', 'invoices', 'hmrc'].includes(tabName) && (currentUser.role === 'staff' || currentUser.status === 'pending')) {
@@ -1097,11 +1113,6 @@
         headerHTML += `<th class="p-3 text-center min-w-[130px] border-r border-slate-200 ${isToday ? 'bg-snoo-blue/10 text-snoo-blue' : ''}">${curDate.getDate()} ${shortDays[curDate.getDay()]}</th>`;
       }
       rosterTableHeaders.innerHTML = headerHTML;
-
-      const firstDate = daysOfWeek[0].dateObj;
-      const lastDate = daysOfWeek[6].dateObj;
-      const rwl = document.getElementById("rosterWeekLabel");
-      if (rwl) rwl.textContent = `${firstDate.getDate()} ${shortDays[firstDate.getDay()]} - ${lastDate.getDate()} ${shortDays[lastDate.getDay()]}`;
 
       let bodyHTML = "";
       const isManagerOrAdmin = ['manager', 'it_admin', 'consultant'].includes(currentUser?.role);
@@ -1235,26 +1246,6 @@
       }
     }
 
-    // EMAILJS TESTER
-    function testEmailJS() {
-      const pKey = document.getElementById('emailjsKey').value.trim();
-      const sId = document.getElementById('emailjsService').value.trim();
-      const tId = document.getElementById('emailjsTemplate').value.trim();
-      
-      if (!pKey || !sId || !tId) return showToast("Please fill all EmailJS fields to test", "bg-rose-50 text-rose-800 border-rose-200");
-      
-      showToast("Sending test notification via EmailJS...", "bg-snoo-blue/10 text-snoo-blue");
-      emailjs.init(pKey);
-      emailjs.send(sId, tId, {
-        to_name: currentUser ? currentUser.name : "Admin",
-        message: "Test connection successful for Golden Tree HR."
-      }).then(() => {
-        showToast("✓ EmailJS Notification Sent Successfully!", "bg-emerald-50 text-emerald-800");
-      }).catch(err => {
-        showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800 border-rose-200");
-      });
-    }
-
     /* ---------------------------------------------------------
        OPERATIONS MANAGER LOGIC
        --------------------------------------------------------- */
@@ -1330,7 +1321,7 @@
           <div class="col-span-full bg-white p-12 rounded-3xl border border-amber-200 text-center text-slate-400">
             <i class="fa-solid fa-lock text-4xl mb-3 text-amber-500"></i>
             <p class="font-extrabold text-slate-700">Shifts Locked Pending Approval</p>
-            <p class="text-xs text-slate-400 mt-1">Once minute2131@gmail.com approves your registration, all available shifts will appear here.</p>
+            <p class="text-xs text-slate-400 mt-1">Once an administrator approves your registration, all available shifts will appear here.</p>
           </div>
         `;
         return;
@@ -1423,7 +1414,19 @@
       }
     }
 
+    /* ---------------------------------------------------------
+       DIRECTORY & APPROVALS (IT & CONSULTANT LOGIC)
+       --------------------------------------------------------- */
     function updateITDirectory() {
+      if (!currentUser) return;
+
+      const isIT = currentUser.role === 'it_admin';
+      const isConsultant = currentUser.role === 'consultant';
+
+      // IT Onboarding Visibility
+      const obSection = document.getElementById('itOnboardSection');
+      if (obSection) obSection.classList.toggle('hidden', !isIT);
+
       const pendingUsers = users.filter(u => u.status === 'pending');
       const activeUsers = users.filter(u => u.status !== 'pending');
 
@@ -1439,62 +1442,86 @@
       const pTable = document.getElementById('itPendingTable');
       if (pTable) {
         if (pendingUsers.length === 0) {
-          pTable.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now. All staff are authorized.</td></tr>`;
+          pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now. All staff are authorized.</td></tr>`;
         } else {
-          pTable.innerHTML = pendingUsers.map(u => `
-            <tr class="hover:bg-amber-50/50 text-xs">
-              <td class="p-3">
-                <p class="font-bold text-snoo-navy">${u.name}</p>
-                <p class="text-[11px] text-slate-500">${u.email}</p>
-              </td>
-              <td class="p-3 font-mono font-bold text-indigo-950">${u.ni || 'N/A'}</td>
-              <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
-              <td class="p-3">
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
-                  ${u.role}
-                </span>
-              </td>
-              <td class="p-3 text-right space-x-1.5">
-                <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                  <i class="fa-solid fa-check"></i> Approve as Staff
-                </button>
-                <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                  Manager
-                </button>
-                <button onclick="approveUser(${u.id}, 'consultant')" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">
-                  Consultant
-                </button>
-              </td>
-            </tr>
-          `).join('');
+          pTable.innerHTML = pendingUsers.map(u => {
+            let actions = '';
+            
+            if (isIT) {
+              actions = `
+                <button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Staff</button>
+                <button onclick="approveUser(${u.id}, 'manager')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Manager</button>
+                <button onclick="approveUser(${u.id}, 'consultant')" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Consultant</button>
+              `;
+            } else if (isConsultant) {
+              if (u.role === 'staff') {
+                actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Approve as Staff</button>`;
+              } else {
+                actions = `<span class="text-[10px] text-slate-400 font-bold bg-slate-50 px-2 py-1 rounded">IT Approval Req.</span>`;
+              }
+            }
+
+            return `
+              <tr class="hover:bg-amber-50/50 text-xs">
+                <td class="p-3">
+                  <p class="font-bold text-snoo-navy">${u.name}</p>
+                  <p class="text-[11px] text-slate-500">${u.email}</p>
+                </td>
+                <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
+                <td class="p-3">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
+                    ${u.role}
+                  </span>
+                </td>
+                <td class="p-3 text-right space-x-1.5">
+                  ${actions}
+                </td>
+              </tr>
+            `;
+          }).join('');
         }
       }
 
       const dirTable = document.getElementById('itDirectoryTable');
       if (dirTable) {
-        dirTable.innerHTML = activeUsers.map(u => `
-          <tr class="hover:bg-slate-50 text-xs">
-            <td class="p-3">
-              <p class="font-bold text-snoo-navy">${u.name}</p>
-              <p class="text-[11px] text-slate-400">${u.email}</p>
-            </td>
-            <td class="p-3 font-mono font-bold text-indigo-900">${u.ni || 'N/A'}</td>
-            <td class="p-3 font-semibold">
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' || u.role === 'consultant' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
-                ${u.role}
-              </span>
-            </td>
-            <td class="p-3 text-right">
-              ${u.email === 'minute2131@gmail.com' ? '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>' : `
-                <select onchange="updateUserRole(${u.id}, this.value)" class="text-[10px] border border-slate-200 p-1 rounded font-bold cursor-pointer bg-white">
-                  <option value="staff" ${u.role === 'staff' ? 'selected' : ''}>Staff</option>
-                  <option value="manager" ${u.role === 'manager' ? 'selected' : ''}>Manager</option>
-                  <option value="consultant" ${u.role === 'consultant' ? 'selected' : ''}>Consultant</option>
-                </select>
-              `}
-            </td>
-          </tr>
-        `).join('');
+        dirTable.innerHTML = activeUsers.map(u => {
+          let actions = '';
+          if (u.email === 'minute2131@gmail.com') {
+            actions = '<span class="text-slate-400 font-bold text-[11px]">Primary IT Admin</span>';
+          } else if (isIT) {
+            actions = `
+              <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
+              <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
+            `;
+          } else if (isConsultant) {
+            if (u.role === 'staff') {
+              actions = `
+                <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
+                <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
+              `;
+            } else {
+              actions = '<span class="text-slate-400 font-bold text-[11px]">Restricted</span>';
+            }
+          }
+
+          return `
+            <tr class="hover:bg-slate-50 text-xs">
+              <td class="p-3">
+                <p class="font-bold text-snoo-navy">${u.name}</p>
+                <p class="text-[11px] text-slate-400">${u.email}</p>
+              </td>
+              <td class="p-3 font-medium text-slate-700">${u.phone || 'N/A'}</td>
+              <td class="p-3 font-semibold">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${u.role === 'manager' || u.role === 'consultant' ? 'bg-indigo-50 text-indigo-800 border border-indigo-200' : (u.role === 'it_admin' ? 'bg-snoo-blue/10 text-snoo-blue border border-snoo-blue/20' : 'bg-slate-100 text-slate-700')}">
+                  ${u.role}
+                </span>
+              </td>
+              <td class="p-3 text-right">
+                ${actions}
+              </td>
+            </tr>
+          `;
+        }).join('');
       }
     }
 
@@ -1508,23 +1535,128 @@
         else u.title = 'Domestic Staff';
         pushToCloud();
         updateITDirectory();
-        showToast(`✓ Authorized ${u.name} as ${u.title}! Shifts unlocked for their device.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        showToast(`✓ Authorized ${u.name} as ${u.title}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
-    function updateUserRole(userId, newRole) {
-      const u = users.find(x => x.id === userId);
+    function directOnboardUser() {
+      const name = document.getElementById('obName').value.trim();
+      const email = document.getElementById('obEmail').value.trim().toLowerCase();
+      const phone = document.getElementById('obPhone').value.trim();
+      const role = document.getElementById('obRole').value;
+      const pass = document.getElementById('obPassword').value.trim();
+
+      if (!name || !email || !pass) return showToast("Name, Email, and Password are required", "bg-rose-50 text-rose-800 border-rose-200");
+      if (users.some(u => u.email.toLowerCase() === email)) return showToast("An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
+
+      let titleVal = 'Domestic Staff';
+      if (role === 'manager') titleVal = 'Operations Manager';
+      if (role === 'consultant') titleVal = 'Consultant';
+
+      const newUser = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        phone: phone,
+        password: pass,
+        role: role,
+        title: titleVal,
+        status: "active", // Directly active
+        hourlyRate: role === 'manager' || role === 'consultant' ? 22.00 : 15.00,
+        registeredAt: new Date().toLocaleDateString('en-GB')
+      };
+
+      users.push(newUser);
+      pushToCloud();
+      updateITDirectory();
+      showToast(`✓ Added ${name} directly as active ${titleVal}.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+      
+      // Clear fields
+      document.getElementById('obName').value = '';
+      document.getElementById('obEmail').value = '';
+      document.getElementById('obPhone').value = '';
+      document.getElementById('obPassword').value = 'password123';
+    }
+
+    function openEditUser(id) {
+      const u = users.find(x => x.id === id);
+      if (!u) return;
+
+      document.getElementById('editUserId').value = u.id;
+      document.getElementById('editUserName').value = u.name;
+      document.getElementById('editUserEmail').value = u.email;
+      document.getElementById('editUserPhone').value = u.phone || '';
+      
+      const roleSel = document.getElementById('editUserRole');
+      roleSel.value = u.role;
+      
+      // Consultants can't make people managers or IT admins
+      if (currentUser.role === 'consultant') {
+        Array.from(roleSel.options).forEach(opt => {
+          if (opt.value !== 'staff') {
+            opt.disabled = true;
+          } else {
+            opt.disabled = false;
+          }
+        });
+        roleSel.value = 'staff';
+      } else {
+        Array.from(roleSel.options).forEach(opt => opt.disabled = false);
+      }
+
+      document.getElementById('modal-edit-user').classList.remove('hidden');
+    }
+
+    function saveEditUser() {
+      const id = parseInt(document.getElementById('editUserId').value);
+      const u = users.find(x => x.id === id);
       if (u) {
+        u.name = document.getElementById('editUserName').value.trim();
+        u.email = document.getElementById('editUserEmail').value.trim().toLowerCase();
+        u.phone = document.getElementById('editUserPhone').value.trim();
+        
+        const newRole = document.getElementById('editUserRole').value;
         u.role = newRole;
         if (newRole === 'manager') u.title = 'Operations Manager';
         else if (newRole === 'consultant') u.title = 'Consultant';
+        else if (newRole === 'it_admin') u.title = 'IT Admin';
         else u.title = 'Domestic Staff';
+
         pushToCloud();
         updateITDirectory();
-        showToast(`Role updated for ${u.name} to ${u.role.toUpperCase()}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        document.getElementById('modal-edit-user').classList.add('hidden');
+        showToast(`✓ Updated details for ${u.name}`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
       }
     }
 
+    function deleteUser(id) {
+      const u = users.find(x => x.id === id);
+      if (!u) return;
+      if (u.email === 'minute2131@gmail.com') return showToast("Cannot delete Master Admin", "bg-rose-50 text-rose-800 border-rose-200");
+      if (u.id === currentUser.id) return showToast("Cannot delete your own account while logged in", "bg-rose-50 text-rose-800 border-rose-200");
+
+      if (confirm(`Are you sure you want to permanently delete ${u.name}'s account?`)) {
+        users = users.filter(x => x.id !== id);
+        
+        // Also unassign their shifts
+        shifts.forEach(s => {
+          if (s.staffId === id) {
+            s.staffId = null;
+            s.status = 'open';
+          }
+        });
+
+        pushToCloud();
+        updateITDirectory();
+        renderShifts();
+        renderRosterGrid();
+        showToast(`Deleted ${u.name} successfully`, 'bg-rose-50 text-rose-800 border-rose-200');
+      }
+    }
+
+    /* ---------------------------------------------------------
+       MANAGER SHIFT CREATION & INVOICE / HMRC
+       --------------------------------------------------------- */
     function createShift() {
       let finalClientId = null;
       const ch = parseFloat(document.getElementById('newShiftCharge').value);
@@ -1548,7 +1680,7 @@
       }
 
       const t = document.getElementById('newShiftTitle').value;
-      const jTitle = document.getElementById('newShiftJobTitle').value; // Added Job Title
+      const jTitle = document.getElementById('newShiftJobTitle').value; 
       const p = parseFloat(document.getElementById('newShiftPay').value);
 
       if (scheduleMode === 'single') {
@@ -1600,7 +1732,7 @@
           id: Date.now(),
           clientId: finalClientId,
           title: t,
-          jobTitle: jTitle, // Added Job Title
+          jobTitle: jTitle, 
           isBlock: true,
           totalDays: validDays,
           dateRangeStr: rangeSummary,
