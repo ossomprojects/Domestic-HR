@@ -209,15 +209,27 @@
 
       <!-- ================= ROSTER SCHEDULER TAB ================= -->
       <section id="view-roster" class="tab-view hidden space-y-6">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
           <div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Weekly Roster Matrix</h2>
             <p class="text-xs text-slate-500 font-medium">Track who is where and manage allocations live.</p>
           </div>
-          <div class="flex items-center space-x-1 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
-            <button onclick="changeRosterWeek(-1)" class="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 transition cursor-pointer"><i class="fa-solid fa-chevron-left"></i> Prev</button>
-            <button onclick="changeRosterWeek(0)" class="px-3 py-2 rounded-lg bg-slate-100 text-snoo-navy transition cursor-pointer">This Week</button>
-            <button onclick="changeRosterWeek(1)" class="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 transition cursor-pointer">Next <i class="fa-solid fa-chevron-right"></i></button>
+          
+          <div class="flex items-center space-x-3 flex-wrap justify-end gap-y-2">
+            <!-- Filter Dropdown (Consultants/Managers) -->
+            <div class="flex items-center space-x-2 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
+              <span class="pl-2 text-slate-400"><i class="fa-solid fa-filter"></i></span>
+              <select id="rosterDispatcherFilter" onchange="renderRosterGrid()" class="bg-transparent border-none text-slate-700 outline-none font-bold py-1 pr-2 cursor-pointer max-w-[200px] truncate">
+                <option value="all">🌍 All Dispatched Shifts</option>
+              </select>
+            </div>
+            
+            <!-- Week Nav -->
+            <div class="flex items-center space-x-1 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
+              <button onclick="changeRosterWeek(-1)" class="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 transition cursor-pointer"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+              <button onclick="changeRosterWeek(0)" class="px-3 py-2 rounded-lg bg-slate-100 text-snoo-navy transition cursor-pointer">This Week</button>
+              <button onclick="changeRosterWeek(1)" class="px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 transition cursor-pointer">Next <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
           </div>
         </div>
         
@@ -946,6 +958,7 @@
             renderShifts();
             updateManagerView();
             renderRosterGrid();
+            populateDropdowns(); // Update dispatcher filter dropdown
           }
         }
       });
@@ -1256,7 +1269,6 @@
       }
     }
 
-    // Helper to blast all IT admins a notification
     function notifyITAdmin(subject, details) {
       users.filter(u => u.role === 'it_admin').forEach(admin => {
         notifyStaff(admin.id, subject, details);
@@ -1290,6 +1302,10 @@
       const rosterBody = document.getElementById("rosterBody");
       if (!rosterTableHeaders || !rosterBody) return;
 
+      // Extract Dispatcher Filter state
+      const filterSelect = document.getElementById('rosterDispatcherFilter');
+      const dispatcherFilter = filterSelect ? filterSelect.value : 'all';
+
       const baseMonday = getMonday(new Date());
       baseMonday.setDate(baseMonday.getDate() + (rosterWeekOffset * 7));
 
@@ -1315,7 +1331,17 @@
       const isManagerOrAdmin = ['manager', 'it_admin', 'consultant'].includes(currentUser?.role);
 
       clients.forEach(client => {
-        const clientShifts = shifts.filter(s => s.clientId === client.id && daysOfWeek.some(d => s.date === d.isoStr || (s.datesList && s.datesList.includes(d.isoStr))));
+        let clientShifts = shifts.filter(s => s.clientId === client.id && daysOfWeek.some(d => s.date === d.isoStr || (s.datesList && s.datesList.includes(d.isoStr))));
+        
+        // APPLY DISPATCHER FILTER
+        if (dispatcherFilter !== 'all') {
+           const filterId = parseInt(dispatcherFilter);
+           clientShifts = clientShifts.filter(s => s.postedBy === filterId);
+        }
+
+        // HIDE ENTIRE FACILITY ROW IF FILTER IS ACTIVE AND NO SHIFTS MATCH
+        if (dispatcherFilter !== 'all' && clientShifts.length === 0) return;
+
         const isExpanded = !expandedFacilities.has(client.id);
 
         bodyHTML += `
@@ -1537,6 +1563,39 @@
       if(document.getElementById('newShiftDate')) document.getElementById('newShiftDate').value = today;
       if(document.getElementById('newShiftStartDate')) document.getElementById('newShiftStartDate').value = today;
       if(document.getElementById('newShiftEndDate')) document.getElementById('newShiftEndDate').value = nextWeek;
+
+      // Dispatcher Filter Dropdown for Roster
+      const rosterFilter = document.getElementById('rosterDispatcherFilter');
+      if (rosterFilter) {
+        const currentVal = rosterFilter.value || 'all';
+        let filterOpts = `<option value="all">🌍 All Dispatched Shifts</option>`;
+        const uniqueDispatchers = new Map();
+        
+        // Include all managers, consultants, admins currently active
+        users.filter(u => ['manager', 'consultant', 'it_admin'].includes(u.role) && u.status === 'active').forEach(u => {
+            uniqueDispatchers.set(u.id, `${u.name} (${u.role})`);
+        });
+        
+        // Include anyone else who has shifts on the board (e.g. legacy/deleted users)
+        shifts.forEach(s => {
+           if (s.postedBy && s.postedByName && !uniqueDispatchers.has(s.postedBy)) {
+              uniqueDispatchers.set(s.postedBy, s.postedByName + " (Legacy)");
+           }
+        });
+        
+        uniqueDispatchers.forEach((name, id) => {
+           filterOpts += `<option value="${id}">${name}</option>`;
+        });
+        
+        rosterFilter.innerHTML = filterOpts;
+        
+        // Restore previous selection if it still exists
+        if (currentVal !== 'all' && !uniqueDispatchers.has(parseInt(currentVal))) {
+           rosterFilter.value = 'all';
+        } else {
+           rosterFilter.value = currentVal;
+        }
+      }
     }
 
     function onExistingClientChange(clientId) {
@@ -2012,6 +2071,7 @@
       renderShifts();
       updateManagerView();
       renderRosterGrid();
+      populateDropdowns(); // Re-render dropdown to include self if this is their first shift posted
     }
 
     function updateManagerView() {
