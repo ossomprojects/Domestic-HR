@@ -614,10 +614,10 @@
       <!-- ================= TAB 6: SYSTEM DIAGNOSTICS (STRICT IT ADMIN ONLY) ================= -->
       <section id="view-sys-diag" class="tab-view hidden space-y-6">
         
-        <div class="p-6 bg-rose-50 text-rose-900 rounded-3xl border border-rose-200 shadow-sm flex justify-between items-center">
+        <div id="sysDiagBanner" class="p-6 bg-rose-50 text-rose-900 rounded-3xl border border-rose-200 shadow-sm flex justify-between items-center transition-colors duration-500">
           <div>
             <div class="flex items-center gap-2 mb-1">
-              <span class="bg-rose-200 text-rose-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">Super Admin Access Level</span>
+              <span id="sysDiagBadge" class="bg-rose-200 text-rose-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase transition-colors duration-500">Super Admin Access Level</span>
             </div>
             <h2 class="text-xl font-extrabold">System Diagnostics & API Status</h2>
             <p class="text-xs mt-1 font-medium">Independently manage and test connections for the backend architecture.</p>
@@ -649,7 +649,7 @@
               </div>
               <div class="flex justify-between pt-1">
                 <span class="font-bold">Current Status:</span>
-                <span id="fbStatusVal" class="text-slate-400 italic">Awaiting manual ping...</span>
+                <span id="fbStatusVal" class="text-slate-400 italic">Connecting to live socket...</span>
               </div>
             </div>
           </div>
@@ -869,6 +869,38 @@
       }, 500);
 
       pullFromCloud(false);
+      monitorSystemStatus();
+    }
+
+    function monitorSystemStatus() {
+      if (!fbDb) {
+        updateSystemDiagnosticsUI(false, "Firebase SDK Not Loaded");
+        return;
+      }
+
+      // Listen to Firebase's special presence path
+      fbDb.ref('.info/connected').on('value', (snap) => {
+        const connected = snap.val() === true;
+        updateSystemDiagnosticsUI(connected);
+      });
+    }
+
+    function updateSystemDiagnosticsUI(isOnline, errorMsg) {
+      const banner = document.getElementById('sysDiagBanner');
+      const badge = document.getElementById('sysDiagBadge');
+      const statusVal = document.getElementById('fbStatusVal');
+
+      if (!banner || !badge || !statusVal) return;
+
+      if (isOnline) {
+        banner.className = "p-6 bg-emerald-50 text-emerald-900 rounded-3xl border border-emerald-200 shadow-sm flex justify-between items-center transition-colors duration-500";
+        badge.className = "bg-emerald-200 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase transition-colors duration-500";
+        statusVal.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-wifi"></i> Online & Synchronizing</span>';
+      } else {
+        banner.className = "p-6 bg-rose-50 text-rose-900 rounded-3xl border border-rose-200 shadow-sm flex justify-between items-center transition-colors duration-500";
+        badge.className = "bg-rose-200 text-rose-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase transition-colors duration-500";
+        statusVal.innerHTML = `<span class="text-rose-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> ${errorMsg || 'Disconnected / Reconnecting...'}</span>`;
+      }
     }
 
     function pullFromCloud(isManual = false) {
@@ -1125,31 +1157,16 @@
        SYSTEM DIAGNOSTICS LOGIC (IT ADMIN)
        ===================================================================== */
     function testFirebaseConnection() {
-      if (!fbDb) {
-        document.getElementById('fbStatusVal').innerHTML = '<span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> Initialization Failed (Check API Keys)</span>';
-        return showToast("Firebase SDK not loaded. Check script imports.", "bg-rose-50 text-rose-800 border-rose-200");
-      }
+      if (!fbDb) return showToast("Firebase SDK not loaded. Check script imports.", "bg-rose-50 text-rose-800 border-rose-200");
       
-      showToast("Pinging Firebase...", "bg-snoo-blue/10 text-snoo-blue");
-      document.getElementById('fbStatusVal').innerHTML = '<span class="text-amber-500"><i class="fa-solid fa-spinner fa-spin"></i> Testing read/write connection...</span>';
-      
-      // Attempt a small test write to check connection
+      showToast("Pinging Firebase server...", "bg-snoo-blue/10 text-snoo-blue");
       fbDb.ref('.info/connected').once('value').then((snap) => {
         if (snap.val() === true) {
-          document.getElementById('fbStatusVal').innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-wifi"></i> Online & Synchronizing</span>';
-          showToast("✓ Firebase Connection Successful!", "bg-emerald-50 text-emerald-800 border-emerald-200");
+          showToast("✓ Firebase Connection Successful! Live socket is active.", "bg-emerald-50 text-emerald-800 border-emerald-200");
         } else {
-          // If the simple ping fails, let's try a fallback read
-          fbDb.ref('ping').set({ time: Date.now() }).then(() => {
-             document.getElementById('fbStatusVal').innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-wifi"></i> Online & Synchronizing</span>';
-             showToast("✓ Firebase Connection Successful!", "bg-emerald-50 text-emerald-800 border-emerald-200");
-          }).catch(err => {
-             throw err;
-          });
+          // If offline, the listener will handle the UI, but we can notify via Toast
+          showToast("Firebase is currently disconnected. Reconnecting...", "bg-amber-50 text-amber-800 border-amber-200");
         }
-      }).catch(err => {
-        document.getElementById('fbStatusVal').innerHTML = '<span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> Connection Failed</span>';
-        showToast("Firebase Error: " + err.message, "bg-rose-50 text-rose-800 border-rose-200");
       });
     }
 
