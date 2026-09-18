@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.5
+    v4.1.6
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -1075,7 +1075,7 @@
       updateITDirectory();
 
       let savedTab = localStorage.getItem('enin_active_tab') || 'shifts';
-      if (isPending) savedTab = 'shifts';
+      if (isPending || (currentUser.role === 'staff' && savedTab === 'roster')) savedTab = 'shifts';
       navigateTab(savedTab, true);
     }
 
@@ -1097,7 +1097,7 @@
       const isAdminTabAccess = currentUser && isApproved && (currentUser.role === 'it_admin' || currentUser.role === 'consultant');
       const isSuperAdmin = currentUser && isApproved && currentUser.role === 'it_admin';
 
-      document.getElementById('tab-roster').classList.toggle('hidden', !isApproved);
+      document.getElementById('tab-roster').classList.toggle('hidden', !isManagerOrIT);
       document.querySelectorAll('.manager-only').forEach(el => el.classList.toggle('hidden', !isManagerOrIT));
       document.querySelectorAll('.invoice-access').forEach(el => el.classList.toggle('hidden', !isInvoiceAccess));
       document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdminTabAccess));
@@ -1108,6 +1108,7 @@
       const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
       if (!isApproved && tabName !== 'shifts') tabName = 'shifts';
 
+      if (tabName === 'roster' && !['manager', 'it_admin', 'consultant'].includes(currentUser.role)) return showToast("Access Denied", "bg-rose-50 text-rose-800");
       if (tabName === 'it-admin' && (currentUser.role !== 'it_admin' && currentUser.role !== 'consultant')) return showToast("Access Denied", "bg-rose-50 text-rose-800");
       if (tabName === 'sys-diag' && currentUser.role !== 'it_admin') return showToast("Access Denied", "bg-rose-50 text-rose-800");
       if (tabName === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) return showToast("Access Denied", "bg-rose-50 text-rose-800");
@@ -1451,7 +1452,7 @@
 
       const earningsHub = document.getElementById('staffEarningsHub');
       if (earningsHub) {
-        if (currentUser && currentUser.role !== 'it_admin') {
+        if (currentUser && currentUser.role === 'staff') {
            const myCompleted = shifts.filter(s => s && s.staffId === currentUser.id && s.status === 'completed');
            let totalEarned = 0; myCompleted.forEach(s => totalEarned += (s.hours * s.pay));
            const totalLeave = totalEarned * 0.01;
@@ -1463,13 +1464,18 @@
         } else earningsHub.classList.add('hidden');
       }
 
-      if (shifts.length === 0) {
+      let displayShifts = shifts.filter(x => x !== null);
+      if (currentUser && currentUser.role === 'staff') {
+        displayShifts = displayShifts.filter(s => s.status === 'open' || s.staffId === currentUser.id);
+      }
+
+      if (displayShifts.length === 0) {
         c.innerHTML = `<div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400"><i class="fa-regular fa-calendar-xmark text-4xl mb-3 text-slate-300"></i><p class="font-bold text-slate-600">No shifts published yet</p></div>`;
         return;
       }
 
-      shifts.sort((a, b) => new Date(a.date) - new Date(b.date));
-      c.innerHTML = shifts.map(s => {
+      displayShifts.sort((a, b) => new Date(a.date) - new Date(b.date));
+      c.innerHTML = displayShifts.map(s => {
         if (!s) return '';
         const cl = clients.find(x => x && x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
