@@ -8,160 +8,132 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'sans-serif']
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              900: '#1e1b4b'
-            },
-            consultant: {
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857'
-            }
-          }
-        }
-      }
-    }
-  </script>
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
       font-size: 15px;
-      line-height: 1.6;
-      background-color: #0b1120;
-      color: #f1f5f9;
+      color: #1e293b;
+      background-color: #f8fafc;
     }
     input, select, textarea, button {
       font-size: 14px;
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: #475569;
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #invoice-printable, #invoice-printable * {
+        visibility: visible;
+      }
+      #invoice-printable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+        border: none;
+      }
     }
   </style>
 </head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
 
-<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
-
-  <!-- ================= AUTH CONTAINER (LOGIN / SIGNUP) ================= -->
-  <div id="auth-container" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md px-4 py-8 overflow-y-auto">
-    <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 my-auto relative">
+  <!-- ================= AUTHENTICATION MODAL (SIGN IN / REGISTER) ================= -->
+  <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative my-auto">
       
-      <!-- Brand Header -->
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 text-white shadow-lg shadow-indigo-500/20 mb-3">
-          <i class="fa-solid fa-hospital-user text-3xl"></i>
+      <!-- Brand Logo -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-600 text-white shadow-md mb-3">
+          <i class="fa-solid fa-hospital-user text-2xl"></i>
         </div>
-        <h1 class="text-2xl font-bold font-display tracking-tight text-white">GTC Healthcare Ltd</h1>
-        <p class="text-sm text-slate-400 mt-1">Staff, Consultant &amp; Operations Portal</p>
+        <h1 class="text-2xl font-bold text-slate-900">GTC Healthcare Ltd</h1>
+        <p class="text-sm text-slate-500 mt-0.5">Staff, Consultant &amp; Operations Portal</p>
       </div>
 
-      <!-- Auth Error Alert -->
-      <div id="auth-error-box" class="hidden mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-2.5">
-        <i class="fa-solid fa-triangle-exclamation mt-0.5 text-rose-400"></i>
-        <span id="auth-error-msg">Invalid credentials</span>
+      <!-- Error Alert -->
+      <div id="auth-error-box" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="auth-error-msg">Invalid login credentials</span>
       </div>
 
       <!-- Sign In Form -->
-      <form id="formSignIn" class="space-y-4" onsubmit="handleSignIn(event)">
+      <form id="formSignIn" onsubmit="handleSignIn(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Work Email Address</label>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Work Email Address</label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
               <i class="fa-solid fa-envelope"></i>
             </span>
             <input type="email" id="loginEmail" required placeholder="admin@gtchr.co.uk"
-              class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+              class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Password</label>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
           <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
               <i class="fa-solid fa-lock"></i>
             </span>
             <input type="password" id="loginPassword" required placeholder="••••••••"
-              class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+              class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
-          <span>Sign In to Portal</span>
-          <i class="fa-solid fa-arrow-right text-sm"></i>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow transition">
+          Sign In
         </button>
 
         <div class="text-center pt-2">
-          <button type="button" onclick="toggleAuthView('signup')" class="text-sm text-indigo-400 hover:text-indigo-300 underline font-medium">
-            New Staff / Consultant? Register Account
+          <button type="button" onclick="toggleAuthMode('signup')" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            Register new Staff or Consultant account
           </button>
         </div>
       </form>
 
-      <!-- Sign Up Form -->
-      <form id="formSignup" class="space-y-4 hidden" onsubmit="handleSignUp(event)">
+      <!-- Registration Form -->
+      <form id="formSignUp" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Full Name</label>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Name</label>
           <input type="text" id="regName" required placeholder="Jane Doe"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500" />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Work Email</label>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email Address</label>
           <input type="email" id="regEmail" required placeholder="jane@gtchr.co.uk"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500" />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Password</label>
-          <input type="password" id="regPassword" required placeholder="Minimum 6 characters"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
+          <input type="password" id="regPassword" required placeholder="At least 6 characters"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500" />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Role Tier</label>
-            <select id="regRole" class="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="staff">Care / Domestic Staff</option>
-              <option value="consultant" selected>Consultant (Placement)</option>
-              <option value="manager">Operations Manager</option>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Role</label>
+            <select id="regRole" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500">
+              <option value="staff">Staff</option>
+              <option value="consultant" selected>Consultant</option>
+              <option value="manager">Manager</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">Default Job Title</label>
-            <select id="regJobTitle" class="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="Recruitment & Care Consultant">Recruitment Consultant</option>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Job Title</label>
+            <select id="regJobTitle" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500">
+              <option value="Placement Consultant">Placement Consultant</option>
               <option value="Support worker">Support worker</option>
               <option value="House keeper">House keeper</option>
               <option value="General Cleaner">General Cleaner</option>
@@ -172,91 +144,90 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
-          <span>Complete Registration</span>
-          <i class="fa-solid fa-check text-sm"></i>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow transition">
+          Create Account
         </button>
 
         <div class="text-center pt-2">
-          <button type="button" onclick="toggleAuthView('signin')" class="text-sm text-slate-400 hover:text-slate-300 underline">
+          <button type="button" onclick="toggleAuthMode('signin')" class="text-sm text-slate-500 hover:text-slate-700">
             Already have an account? Sign In
           </button>
         </div>
       </form>
 
-      <!-- Quick Fill Helper for Testing -->
-      <div class="mt-6 pt-5 border-t border-slate-800 text-xs text-slate-400">
-        <div class="font-semibold text-slate-300 mb-1.5">Quick Login Presets:</div>
+      <!-- Quick Test Logins -->
+      <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+        <div class="font-semibold text-slate-600 mb-1.5">Quick Login Presets:</div>
         <div class="flex flex-wrap gap-1.5">
-          <button onclick="fillLogin('admin@gtchr.co.uk', 'cookies')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700">Admin</button>
-          <button onclick="fillLogin('manager@gtchr.co.uk', 'cookies')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700">Manager</button>
-          <button onclick="fillLogin('consultant@gtchr.co.uk', 'cookies')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700">Consultant 1</button>
-          <button onclick="fillLogin('consultant2@gtchr.co.uk', 'cookies')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700">Consultant 2</button>
-          <button onclick="fillLogin('staff@gtchr.co.uk', 'cookies')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700">Staff</button>
+          <button type="button" onclick="quickFill('admin@gtchr.co.uk')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Admin</button>
+          <button type="button" onclick="quickFill('manager@gtchr.co.uk')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Manager</button>
+          <button type="button" onclick="quickFill('consultant@gtchr.co.uk')" class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded border border-teal-200">Consultant 1</button>
+          <button type="button" onclick="quickFill('consultant2@gtchr.co.uk')" class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded border border-teal-200">Consultant 2</button>
+          <button type="button" onclick="quickFill('staff@gtchr.co.uk')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-200">Staff</button>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ================= APP HEADER & NAVIGATION ================= -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+  <!-- ================= TOP APPLICATION HEADER ================= -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
-        <!-- Brand Logo -->
+        <!-- Brand / Logo -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
+          <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow">
             <i class="fa-solid fa-hospital-user text-xl"></i>
           </div>
           <div>
-            <div class="font-bold font-display text-white tracking-tight flex items-center gap-2">
-              <span>GTC HEALTHCARE</span>
-              <span id="header-user-badge" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">PORTAL</span>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 text-base">GTC HEALTHCARE</span>
+              <span id="role-badge" class="px-2 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-700">PORTAL</span>
             </div>
-            <div class="text-xs text-slate-400" id="header-user-sub">Operations &amp; Shift Management</div>
+            <div class="text-xs text-slate-500">Staff &amp; Operations Management</div>
           </div>
         </div>
 
         <!-- Navigation Tabs -->
-        <nav class="hidden md:flex items-center gap-1.5" id="main-nav-tabs">
-          <button onclick="navigateTab('shifts')" id="tab-shifts" class="nav-tab px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
-            <i class="fa-solid fa-store text-indigo-400"></i>
+        <nav class="hidden md:flex items-center space-x-1" id="nav-tabs-container">
+          <button onclick="switchTab('shifts')" id="tab-shifts" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-store text-slate-400"></i>
             <span>Shift Marketplace</span>
           </button>
 
           <!-- Accessible to Consultant, Manager, IT Admin -->
-          <button onclick="navigateTab('roster')" id="tab-roster" class="nav-tab px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
-            <i class="fa-solid fa-calendar-week text-emerald-400"></i>
+          <button onclick="switchTab('roster')" id="tab-roster" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-calendar-week text-teal-600"></i>
             <span>Roster Scheduler</span>
           </button>
 
           <!-- Accessible to Consultant, Manager, IT Admin -->
-          <button onclick="navigateTab('manager')" id="tab-manager" class="nav-tab px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
-            <i class="fa-solid fa-briefcase text-purple-400"></i>
+          <button onclick="switchTab('manager')" id="tab-manager" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-briefcase text-slate-400"></i>
             <span id="tab-manager-label">Operations &amp; Dispatch</span>
           </button>
 
-          <!-- Restricted: Manager & IT Admin Only -->
-          <button onclick="navigateTab('invoices')" id="tab-invoices" class="nav-tab manager-only px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
-            <i class="fa-solid fa-file-invoice-dollar text-amber-400"></i>
+          <!-- Restricted to Manager & IT Admin -->
+          <button onclick="switchTab('invoices')" id="tab-invoices" class="tab-btn manager-only px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice-dollar text-slate-400"></i>
             <span>Client Invoices</span>
           </button>
 
-          <!-- Restricted: IT Admin Only -->
-          <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="nav-tab it-only px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved text-rose-400"></i>
+          <!-- Restricted to IT Admin -->
+          <button onclick="switchTab('it-admin')" id="tab-it-admin" class="tab-btn it-only px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-slate-400"></i>
             <span>IT Admin</span>
           </button>
         </nav>
 
-        <!-- User Profile & Log Out -->
+        <!-- User Info & Sign Out -->
         <div class="flex items-center gap-3">
           <div class="text-right hidden sm:block">
-            <div id="nav-user-name" class="font-medium text-sm text-slate-200">User Name</div>
-            <div id="nav-user-role" class="text-xs text-slate-400">Staff</div>
+            <div id="header-user-name" class="font-semibold text-sm text-slate-800">User</div>
+            <div id="header-user-role" class="text-xs text-slate-500">Staff</div>
           </div>
-          <button onclick="handleSignOut()" title="Sign Out" class="p-2.5 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 transition">
+          <button onclick="signOut()" title="Sign Out" class="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
@@ -265,30 +236,31 @@
     </div>
   </header>
 
-  <!-- ================= MAIN CONTENT VIEWS ================= -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- VIEW 1: SHIFT MARKETPLACE -->
-    <section id="view-shifts" class="view-panel space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+    <!-- TAB 1: SHIFT MARKETPLACE -->
+    <div id="view-shifts" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h2 class="text-2xl font-bold font-display text-white">Shifts Marketplace</h2>
-          <p class="text-sm text-slate-400 mt-1">Browse and claim available healthcare &amp; domestic shifts across all accredited facilities.</p>
+          <h2 class="text-xl font-bold text-slate-900">Shift Marketplace</h2>
+          <p class="text-sm text-slate-500 mt-1">Browse available healthcare and domestic shifts across partner care homes and facilities.</p>
         </div>
         <div class="flex items-center gap-3">
-          <span id="marketplace-count-badge" class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold">0 Open Shifts</span>
-          <button id="btn-quick-dispatch" onclick="navigateTab('manager')" class="consultant-access hidden px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
-            <i class="fa-solid fa-plus-circle"></i>
-            <span>Post New Shift</span>
+          <span id="marketplace-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+            0 Open Shifts
+          </span>
+          <button onclick="switchTab('manager')" id="btn-quick-dispatch" class="consultant-access hidden px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Post Shift
           </button>
         </div>
       </div>
 
-      <!-- Marketplace Filters -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+      <!-- Filters -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Filter by Job Title</label>
-          <select id="filterShiftRole" onchange="renderMarketplace()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Filter by Job Title</label>
+          <select id="filterShiftRole" onchange="renderMarketplace()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="all">All Job Titles</option>
             <option value="Support worker">Support worker</option>
             <option value="House keeper">House keeper</option>
@@ -299,312 +271,296 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Filter by Client</label>
-          <select id="filterShiftClient" onchange="renderMarketplace()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Filter by Client</label>
+          <select id="filterShiftClient" onchange="renderMarketplace()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
             <option value="all">All Clients</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Sort By</label>
-          <select id="filterShiftSort" onchange="renderMarketplace()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500">
-            <option value="soonest">Date (Soonest First)</option>
-            <option value="rate-high">Hourly Rate (Highest First)</option>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Sort By</label>
+          <select id="filterShiftSort" onchange="renderMarketplace()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
+            <option value="date">Date (Soonest First)</option>
+            <option value="rate">Hourly Pay (Highest First)</option>
           </select>
         </div>
       </div>
 
-      <!-- Shift Cards Container -->
-      <div id="shifts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Shifts Grid -->
+      <div id="shifts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <!-- Injected via JavaScript -->
       </div>
-    </section>
+    </div>
 
-    <!-- VIEW 2: ROSTER SCHEDULER (Consultant, Manager, IT Admin) -->
-    <section id="view-roster" class="view-panel hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+    <!-- TAB 2: ROSTER SCHEDULER (Consultant, Manager, IT Admin) -->
+    <div id="view-roster" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <div class="flex items-center gap-2">
-            <h2 class="text-2xl font-bold font-display text-white">Roster &amp; Shift Schedule</h2>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Consultants &amp; Ops</span>
+            <h2 class="text-xl font-bold text-slate-900">Roster &amp; Shift Schedule</h2>
+            <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-teal-100 text-teal-800">Consultant &amp; Ops</span>
           </div>
-          <p class="text-sm text-slate-400 mt-1">Manage shift rosters, review staff assignments, and see each other's posted shifts.</p>
+          <p class="text-sm text-slate-500 mt-1">Manage shift rosters, review assignments, and view each other's posted schedules.</p>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="navigateTab('manager')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition flex items-center gap-2 shadow-md">
-            <i class="fa-solid fa-paper-plane"></i>
-            <span>Dispatch New Shift</span>
+        <div>
+          <button onclick="switchTab('manager')" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Dispatch Shift
           </button>
         </div>
       </div>
 
-      <!-- Roster Controls: Consultant Filter & Poster Filter -->
-      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 space-y-4">
+      <!-- Roster Filters Bar -->
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <!-- Poster Filter (Crucial for Consultants viewing each other's posts) -->
+          
+          <!-- Poster Filter (Lets consultants see each other's posts) -->
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-              <i class="fa-solid fa-users text-indigo-400"></i>
-              <span>Posted By (Consultant/Manager)</span>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+              <i class="fa-solid fa-user-tie text-teal-600 mr-1"></i> Posted By (Consultant/Manager)
             </label>
-            <select id="rosterPosterFilter" onchange="renderRosterScheduler()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+            <select id="rosterPosterFilter" onchange="renderRoster()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
               <option value="all">All Consultant &amp; Manager Posts</option>
               <option value="mine">My Posted Shifts Only</option>
-              <!-- Populated dynamically with active consultants -->
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-              <i class="fa-solid fa-filter text-indigo-400"></i>
-              <span>Status</span>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+              <i class="fa-solid fa-filter text-slate-400 mr-1"></i> Shift Status
             </label>
-            <select id="rosterStatusFilter" onchange="renderRosterScheduler()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
-              <option value="all">All Shifts (Claimed &amp; Unclaimed)</option>
+            <select id="rosterStatusFilter" onchange="renderRoster()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
+              <option value="all">All Shifts</option>
               <option value="open">Marketplace (Unclaimed)</option>
               <option value="claimed">Claimed / Assigned</option>
-              <option value="completed">Completed</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-              <i class="fa-solid fa-building text-indigo-400"></i>
-              <span>Client Name</span>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+              <i class="fa-solid fa-building text-slate-400 mr-1"></i> Client Name
             </label>
-            <select id="rosterClientFilter" onchange="renderRosterScheduler()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+            <select id="rosterClientFilter" onchange="renderRoster()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
               <option value="all">All Clients</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-              <i class="fa-solid fa-magnifying-glass text-indigo-400"></i>
-              <span>Search Keywords</span>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+              <i class="fa-solid fa-search text-slate-400 mr-1"></i> Search
             </label>
-            <input type="text" id="rosterSearchInput" oninput="renderRosterScheduler()" placeholder="Staff, client, job title..."
-              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" />
+            <input type="text" id="rosterSearch" oninput="renderRoster()" placeholder="Search staff, client..."
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
 
-        <!-- Roster Summary Bar -->
-        <div id="roster-stats-bar" class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-800 gap-4">
-          <div class="flex items-center gap-4">
-            <span>Total Shown: <strong id="roster-stat-total" class="text-white">0</strong></span>
-            <span>Unclaimed: <strong id="roster-stat-open" class="text-amber-400">0</strong></span>
-            <span>Claimed: <strong id="roster-stat-claimed" class="text-emerald-400">0</strong></span>
+        <div class="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100">
+          <div>
+            Total Filtered: <strong id="roster-count-total" class="text-slate-800">0</strong> |
+            Unclaimed: <strong id="roster-count-open" class="text-amber-600">0</strong> |
+            Claimed: <strong id="roster-count-claimed" class="text-emerald-600">0</strong>
           </div>
-          <div class="text-slate-500 italic">
-            <i class="fa-solid fa-circle-info mr-1"></i> Consultants can view all posted shifts and manage assignments.
+          <div class="italic">
+            <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> All consultants can view and coordinate each other's posted rosters.
           </div>
         </div>
       </div>
 
-      <!-- Roster Shift List Table -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <!-- Roster Table -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-800/80 text-xs uppercase font-semibold text-slate-300 border-b border-slate-700">
+            <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-600 border-b border-slate-200">
               <tr>
-                <th class="px-5 py-3.5">Client &amp; Job Title</th>
-                <th class="px-5 py-3.5">Date &amp; Schedule</th>
-                <th class="px-5 py-3.5">Assigned Staff</th>
-                <th class="px-5 py-3.5">Posted By</th>
-                <th class="px-5 py-3.5">Rate / Pay</th>
-                <th class="px-5 py-3.5">Status</th>
-                <th class="px-5 py-3.5 text-right">Actions</th>
+                <th class="px-5 py-3">Client &amp; Job Title</th>
+                <th class="px-5 py-3">Date &amp; Schedule</th>
+                <th class="px-5 py-3">Assigned Staff</th>
+                <th class="px-5 py-3">Posted By</th>
+                <th class="px-5 py-3">Staff Pay</th>
+                <th class="px-5 py-3">Status</th>
+                <th class="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="roster-table-body" class="divide-y divide-slate-800 text-slate-300">
-              <!-- Rendered via renderRosterScheduler() -->
+            <tbody id="roster-table-body" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- VIEW 3: OPERATIONS & DISPATCH (Consultant, Manager, IT Admin) -->
-    <section id="view-manager" class="view-panel hidden space-y-8">
+    <!-- TAB 3: OPERATIONS & DISPATCH (Consultant, Manager, IT Admin) -->
+    <div id="view-manager" class="tab-content hidden space-y-6">
       
-      <!-- Hub Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+      <!-- Operations Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h2 id="manager-view-title" class="text-2xl font-bold font-display text-white">Operations &amp; Shift Dispatch Hub</h2>
-          <p id="manager-view-subtitle" class="text-sm text-slate-400 mt-1">Dispatch new shifts to the marketplace or assign directly to accredited healthcare staff.</p>
+          <h2 id="manager-hub-title" class="text-xl font-bold text-slate-900">Operations &amp; Shift Dispatch Hub</h2>
+          <p id="manager-hub-sub" class="text-sm text-slate-500 mt-1">Dispatch shifts to the open marketplace or assign directly to specific staff.</p>
         </div>
-        <div class="flex items-center gap-2">
-          <span id="role-view-indicator" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            Consultant Access
+        <div>
+          <span id="hub-role-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">
+            Consultant Dispatch Access
           </span>
         </div>
       </div>
 
-      <!-- Financial Metrics Grid: HIDDEN FROM CONSULTANTS (Manager & Admin only) -->
-      <div id="manager-finances" class="manager-only-finances grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-md">
-          <div class="text-xs font-semibold uppercase text-slate-400">Total Shift Turnover</div>
-          <div class="text-2xl font-bold text-white mt-2" id="metric-turnover">£0.00</div>
-          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1">
-            <i class="fa-solid fa-arrow-trend-up"></i>
-            <span>Active client billing</span>
-          </div>
+      <!-- Manager Financial Cards (Hidden from Consultants) -->
+      <div id="manager-finances" class="manager-only grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold uppercase text-slate-500">Gross Turnover</div>
+          <div class="text-2xl font-bold text-slate-900 mt-1.5" id="metric-turnover">£0.00</div>
+          <div class="text-xs text-slate-500 mt-1">Total client billing</div>
         </div>
 
-        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-md">
-          <div class="text-xs font-semibold uppercase text-slate-400">Gross Margin (Co.)</div>
-          <div class="text-2xl font-bold text-indigo-400 mt-2" id="metric-margin">£0.00</div>
-          <div class="text-xs text-slate-400 mt-1">Platform operations spread</div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold uppercase text-slate-500">Gross Margin</div>
+          <div class="text-2xl font-bold text-blue-600 mt-1.5" id="metric-margin">£0.00</div>
+          <div class="text-xs text-slate-500 mt-1">Agency gross margin</div>
         </div>
 
-        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-md">
-          <div class="text-xs font-semibold uppercase text-slate-400">Staff Payroll Accrual</div>
-          <div class="text-2xl font-bold text-emerald-400 mt-2" id="metric-payroll">£0.00</div>
-          <div class="text-xs text-slate-400 mt-1">Completed &amp; claimed hours</div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold uppercase text-slate-500">Staff Payroll Due</div>
+          <div class="text-2xl font-bold text-emerald-600 mt-1.5" id="metric-payroll">£0.00</div>
+          <div class="text-xs text-slate-500 mt-1">Active claimed hours</div>
         </div>
 
-        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-md">
-          <div class="text-xs font-semibold uppercase text-slate-400">Active Shift Volume</div>
-          <div class="text-2xl font-bold text-amber-400 mt-2" id="metric-shifts-count">0</div>
-          <div class="text-xs text-slate-400 mt-1">Broadcasted &amp; rostered</div>
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-xs font-semibold uppercase text-slate-500">Total Shift Volume</div>
+          <div class="text-2xl font-bold text-slate-800 mt-1.5" id="metric-shifts-count">0</div>
+          <div class="text-xs text-slate-500 mt-1">Posted across platform</div>
         </div>
       </div>
 
-      <!-- Main Dispatch Form (Full access for Consultants, Managers, Admins) -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-7 shadow-xl">
-        <div class="flex items-center justify-between pb-5 mb-6 border-b border-slate-800">
+      <!-- Dispatch New Shift Form -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
           <div>
-            <h3 class="text-lg font-bold font-display text-white flex items-center gap-2">
-              <i class="fa-solid fa-paper-plane text-emerald-400"></i>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane text-blue-600"></i>
               <span>Dispatch New Shift</span>
             </h3>
-            <p class="text-sm text-slate-400 mt-0.5">Post an open shift to the Marketplace or allocate directly to an individual staff member.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Post an open shift to the marketplace or assign directly to a staff member.</p>
           </div>
-          <div class="text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-            Posting as: <strong id="dispatch-poster-name" class="text-white">Current User</strong> (<span id="dispatch-poster-role" class="text-emerald-400">Consultant</span>)
+          <div class="text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg">
+            Dispatching as: <strong id="dispatch-author-name" class="text-slate-800">Current User</strong> (<span id="dispatch-author-role" class="text-teal-700">Consultant</span>)
           </div>
         </div>
 
-        <form id="formDispatchShift" class="space-y-6" onsubmit="handleDispatchShift(event)">
+        <form id="formDispatch" onsubmit="handleDispatch(event)" class="space-y-5">
           
-          <!-- Dispatch Mode: Marketplace Broadcast vs Direct Assignment -->
-          <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700 space-y-3">
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Dispatch Routing Method</label>
+          <!-- Dispatch Routing: Marketplace vs Direct Staff -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <label class="block text-xs font-bold uppercase text-slate-700">Dispatch Routing Method</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-700 bg-slate-800 cursor-pointer hover:border-indigo-500 transition">
-                <input type="radio" name="dispatchMode" value="marketplace" checked onchange="toggleDispatchMode()" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-300 bg-white cursor-pointer hover:border-blue-500 transition">
+                <input type="radio" name="dispatchRoute" value="marketplace" checked onchange="toggleRouteMode()" class="text-blue-600 focus:ring-blue-500">
                 <div>
-                  <div class="text-sm font-semibold text-white">Post to Marketplace</div>
-                  <div class="text-xs text-slate-400">Broadcast to all eligible staff to claim</div>
+                  <div class="text-sm font-semibold text-slate-800">Post to Marketplace</div>
+                  <div class="text-xs text-slate-500">Available to all eligible staff to claim</div>
                 </div>
               </label>
-              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-700 bg-slate-800 cursor-pointer hover:border-emerald-500 transition">
-                <input type="radio" name="dispatchMode" value="direct" onchange="toggleDispatchMode()" class="text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+              <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-300 bg-white cursor-pointer hover:border-blue-500 transition">
+                <input type="radio" name="dispatchRoute" value="direct" onchange="toggleRouteMode()" class="text-blue-600 focus:ring-blue-500">
                 <div>
-                  <div class="text-sm font-semibold text-white">Direct Staff Assignment</div>
-                  <div class="text-xs text-slate-400">Directly assign to a specific worker (bypasses market)</div>
+                  <div class="text-sm font-semibold text-slate-800">Direct Staff Assignment</div>
+                  <div class="text-xs text-slate-500">Assign to specific staff member (bypasses market)</div>
                 </div>
               </label>
             </div>
 
-            <!-- Direct Staff Select (Shown only when Direct is chosen) -->
-            <div id="directStaffSelectContainer" class="hidden pt-2">
-              <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Select Assigned Staff Member</label>
-              <select id="directAssignStaffId" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-emerald-500">
-                <!-- Populated with staff list -->
+            <div id="directStaffBox" class="hidden pt-2">
+              <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Specific Staff Member</label>
+              <select id="directStaffSelect" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
+                <!-- Populated via script -->
               </select>
             </div>
           </div>
 
           <!-- Shift Core Details -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- Job Title Dropdown (Exact 6 Titles Required) -->
+            <!-- Client Identification by Name -->
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Job Title <span class="text-rose-400">*</span>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                Client Name <span class="text-rose-500">*</span>
               </label>
-              <select id="shiftJobTitle" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500">
-                <option value="Support worker">1. Support worker</option>
-                <option value="House keeper">2. House keeper</option>
-                <option value="General Cleaner">3. General Cleaner</option>
-                <option value="Domestic Assistant">4. Domestic Assistant</option>
-                <option value="Maintenance person">5. Maintenance person</option>
-                <option value="Kitchen Porter">6. Kitchen Porter</option>
-                <option value="Healthcare Assistant">Other: Healthcare Assistant</option>
-              </select>
+              <input type="text" id="shiftClientName" required placeholder="e.g. St. Jude Care Centre" list="clientListSuggestions"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
+              <datalist id="clientListSuggestions"></datalist>
             </div>
 
-            <!-- Client Name Identification (Identified by name, NOT postcode) -->
+            <!-- Location -->
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Client Name <span class="text-rose-400">*</span>
-              </label>
-              <input type="text" id="shiftClientName" required placeholder="e.g. St. Jude Care Centre, Oak Manor"
-                list="clientNameSuggestions"
-                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" />
-              <datalist id="clientNameSuggestions">
-                <!-- Injected from existing clients -->
-              </datalist>
-            </div>
-
-            <!-- Location / Address -->
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Location / Facility Address</label>
-              <input type="text" id="shiftLocation" required placeholder="e.g. 14 High Street, Manchester, M1 4BT"
-                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500" />
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Facility Address / Postcode</label>
+              <input type="text" id="shiftAddress" required placeholder="e.g. 14 High Street, Manchester, M1 4BT"
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Shift Date -->
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Shift Date</label>
+              <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Shift Date</label>
               <input type="date" id="shiftDate" required
-                class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Shift Times -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Start Time</label>
+                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Start Time</label>
                 <input type="time" id="shiftStartTime" value="08:00" required
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+                  class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">End Time</label>
+                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">End Time</label>
                 <input type="time" id="shiftEndTime" value="16:00" required
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+                  class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
 
-            <!-- Pay Rate & Charge Rate -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Staff Rate & Client Rate -->
+            <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Staff Pay (£/hr)</label>
+                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Staff Pay (£/hr)</label>
                 <input type="number" id="shiftStaffRate" step="0.5" value="14.50" required
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+                  class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Client Charge (£/hr)</label>
+                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Client Charge (£/hr)</label>
                 <input type="number" id="shiftClientRate" step="0.5" value="21.00" required
-                  class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+                  class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
 
+          </div>
+
+          <!-- Job Titles Dropdown (Exactly Above Service Description) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+              Job Title <span class="text-rose-500">*</span>
+            </label>
+            <select id="shiftJobTitle" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="Support worker">1. Support worker</option>
+              <option value="House keeper">2. House keeper</option>
+              <option value="General Cleaner">3. General Cleaner</option>
+              <option value="Domestic Assistant">4. Domestic Assistant</option>
+              <option value="Maintenance person">5. Maintenance person</option>
+              <option value="Kitchen Porter">6. Kitchen Porter</option>
+            </select>
           </div>
 
           <!-- Service Description -->
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Service Description / Shift Notes</label>
-            <textarea id="shiftDescription" rows="3" placeholder="Specify key responsibilities, uniform codes, resident care notes, or access instructions..."
-              class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"></textarea>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Service Description / Notes</label>
+            <textarea id="shiftDesc" rows="3" placeholder="Specify key responsibilities, care requirements, or uniform guidelines..."
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
 
           <!-- Submit Button -->
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-            <button type="reset" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition">
-              Clear Form
+          <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="reset" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition">
+              Clear
             </button>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
-              <i class="fa-solid fa-paper-plane"></i>
-              <span>Dispatch Shift Now</span>
+            <button type="submit" class="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Dispatch Shift
             </button>
           </div>
 
@@ -612,97 +568,94 @@
       </div>
 
       <!-- Clients Directory -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl">
+      <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-bold font-display text-white">Registered Clients</h3>
-            <p class="text-xs text-slate-400">Clients identified uniquely by name to prevent postcode conflicts.</p>
+            <h3 class="text-base font-bold text-slate-900">Registered Care Clients</h3>
+            <p class="text-xs text-slate-500">Clients identified uniquely by name to prevent postcode conflicts.</p>
           </div>
-          <button onclick="promptAddClient()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5">
-            <i class="fa-solid fa-plus"></i> Add New Client
+          <button onclick="addClientPrompt()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-plus"></i> Add Client
           </button>
         </div>
-        <div id="clients-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Populated dynamically -->
+        <div id="clients-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Rendered dynamically -->
         </div>
       </div>
 
-    </section>
+    </div>
 
-    <!-- VIEW 4: CLIENT INVOICES (Restricted to Manager & IT Admin) -->
-    <section id="view-invoices" class="view-panel hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+    <!-- TAB 4: CLIENT INVOICES (Restricted to Manager & IT Admin) -->
+    <div id="view-invoices" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h2 class="text-2xl font-bold font-display text-white">Client Billing &amp; Invoices</h2>
-          <p class="text-sm text-slate-400 mt-1">Generate and review client billing statements for fulfilled healthcare shifts.</p>
+          <h2 class="text-xl font-bold text-slate-900">Client Billing &amp; Invoices</h2>
+          <p class="text-sm text-slate-500 mt-1">Generate and print client billing statements for fulfilled healthcare shifts.</p>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="printCurrentInvoice()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
-            <i class="fa-solid fa-print"></i>
-            <span>Print / PDF Invoice</span>
-          </button>
-        </div>
+        <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-print"></i> Print / PDF Invoice
+        </button>
       </div>
 
-      <!-- Invoice Selector: Preserves current selection -->
-      <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <!-- Invoice Client Selection (Preserves selected client across generation) -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="w-full sm:w-80">
-          <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Select Client for Invoice</label>
-          <select id="invoiceClientSelect" onchange="renderInvoiceView()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-indigo-500">
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Select Client for Statement</label>
+          <select id="invoiceClientSelect" onchange="renderInvoice()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
             <!-- Client Options -->
           </select>
         </div>
-        <div class="text-xs text-slate-400">
-          <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Selection is preserved across generations.
+        <div class="text-xs text-slate-500">
+          <i class="fa-solid fa-check text-emerald-600 mr-1"></i> Active statement stays selected automatically.
         </div>
       </div>
 
       <!-- Printable Invoice Document -->
-      <div id="invoice-printable" class="bg-white text-slate-900 rounded-2xl p-8 shadow-2xl border border-slate-200">
+      <div id="invoice-printable" class="bg-white rounded-xl border border-slate-200 p-8 shadow-sm text-slate-800">
         
-        <!-- Header -->
+        <!-- Invoice Header -->
         <div class="flex justify-between items-start border-b border-slate-200 pb-6 mb-6">
           <div>
-            <div class="flex items-center gap-2 text-indigo-700 font-bold text-2xl font-display">
+            <div class="text-2xl font-bold text-blue-700 flex items-center gap-2">
               <i class="fa-solid fa-hospital-user"></i>
               <span>GTC Healthcare Ltd</span>
             </div>
-            <p class="text-xs text-slate-500 mt-1">Specialist Healthcare &amp; Domestic Placement Services</p>
-            <p class="text-xs text-slate-600 mt-2">
+            <div class="text-xs text-slate-500 mt-1">Healthcare &amp; Domestic Placement Services</div>
+            <div class="text-xs text-slate-600 mt-2 leading-relaxed">
               71-75 Shelton Street, Covent Garden<br>
               London, WC2H 9JQ, United Kingdom<br>
-              Company Reg: 14829104 | VAT Reg: GB 459 1823 44
-            </p>
+              Company No: 14829104 | VAT Reg: GB 459 1823 44
+            </div>
           </div>
           <div class="text-right">
-            <div class="text-xl font-bold text-slate-800 uppercase tracking-wide">INVOICE</div>
-            <div class="text-sm font-semibold text-indigo-600 mt-1" id="inv-number">INV-2026-001</div>
-            <div class="text-xs text-slate-500 mt-1">Issue Date: <span id="inv-date"></span></div>
-            <div class="text-xs text-slate-500">Due Date: <span id="inv-due"></span></div>
+            <div class="text-xl font-bold text-slate-800">INVOICE</div>
+            <div class="text-sm font-semibold text-blue-600 mt-1" id="inv-num">INV-2026-001</div>
+            <div class="text-xs text-slate-500 mt-1">Date: <span id="inv-date"></span></div>
+            <div class="text-xs text-slate-500">Payment Due: 14 Days</div>
           </div>
         </div>
 
         <!-- Bill To -->
         <div class="mb-6">
-          <div class="text-xs font-bold uppercase text-slate-400">INVOICE TO:</div>
-          <div class="text-base font-bold text-slate-800" id="inv-client-name">St. Jude Care Centre</div>
-          <div class="text-xs text-slate-600" id="inv-client-address">14 High Street, Manchester, M1 4BT</div>
+          <div class="text-xs font-semibold text-slate-500 uppercase">BILLED TO:</div>
+          <div class="text-base font-bold text-slate-900" id="inv-client-name">Client Name</div>
+          <div class="text-xs text-slate-600" id="inv-client-addr">Address</div>
         </div>
 
-        <!-- Line Items Table -->
+        <!-- Table -->
         <div class="overflow-x-auto mb-6">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-100 text-xs font-bold text-slate-700 uppercase">
+            <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-700 border-b border-slate-200">
               <tr>
-                <th class="py-3 px-4">Shift Date</th>
-                <th class="py-3 px-4">Staff Member</th>
-                <th class="py-3 px-4">Job Role</th>
-                <th class="py-3 px-4 text-center">Hours</th>
-                <th class="py-3 px-4 text-right">Rate</th>
-                <th class="py-3 px-4 text-right">Total</th>
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-3">Staff Member</th>
+                <th class="py-2.5 px-3">Job Role</th>
+                <th class="py-2.5 px-3 text-center">Hours</th>
+                <th class="py-2.5 px-3 text-right">Hourly Rate</th>
+                <th class="py-2.5 px-3 text-right">Amount</th>
               </tr>
             </thead>
-            <tbody id="inv-table-body" class="divide-y divide-slate-200">
+            <tbody id="inv-items-body" class="divide-y divide-slate-100">
               <!-- Rendered items -->
             </tbody>
           </table>
@@ -710,7 +663,7 @@
 
         <!-- Totals -->
         <div class="flex justify-end pt-4 border-t border-slate-200">
-          <div class="w-64 space-y-2 text-sm">
+          <div class="w-60 space-y-1.5 text-sm">
             <div class="flex justify-between text-slate-600">
               <span>Subtotal:</span>
               <span id="inv-subtotal" class="font-semibold">£0.00</span>
@@ -719,87 +672,80 @@
               <span>VAT (20%):</span>
               <span id="inv-vat" class="font-semibold">£0.00</span>
             </div>
-            <div class="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-300">
+            <div class="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
               <span>Total Due:</span>
-              <span id="inv-total" class="text-indigo-600">£0.00</span>
+              <span id="inv-total" class="text-blue-600">£0.00</span>
             </div>
           </div>
         </div>
 
         <!-- Official Footer -->
-        <div class="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
-          Thank you for choosing GTC Healthcare Ltd. Please remit payments within 14 days of invoice date.<br>
-          GTC Healthcare Ltd, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ | Email: accounts@gtchr.co.uk
+        <div class="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500 leading-relaxed">
+          GTC Healthcare Ltd &bull; 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ &bull; VAT Reg: GB 459 1823 44<br>
+          For billing queries please contact accounts@gtchr.co.uk &bull; Login &amp; Shifts: <a href="https://gtchr.co.uk" class="text-blue-600 underline">gtchr.co.uk</a>
         </div>
-      </div>
-    </section>
 
-    <!-- VIEW 5: IT ADMIN DIRECTORY (Restricted to IT Admin) -->
-    <section id="view-it-admin" class="view-panel hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
+      </div>
+    </div>
+
+    <!-- TAB 5: IT ADMIN DIRECTORY (Restricted to IT Admin) -->
+    <div id="view-it-admin" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h2 class="text-2xl font-bold font-display text-white">IT Administration &amp; Directory</h2>
-          <p class="text-sm text-slate-400 mt-1">Manage user roles, provision consultants, and monitor platform logs.</p>
+          <h2 class="text-xl font-bold text-slate-900">IT Administration &amp; Directory</h2>
+          <p class="text-sm text-slate-500 mt-1">Manage platform users, promote consultants, and audit access permissions.</p>
         </div>
-        <div>
-          <button onclick="showModalAddUser()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white text-sm font-semibold shadow-md transition flex items-center gap-2">
-            <i class="fa-solid fa-user-plus"></i>
-            <span>Add Staff / Consultant</span>
-          </button>
-        </div>
+        <button onclick="openAddUserModal()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-user-plus"></i> Add New User
+        </button>
       </div>
 
-      <!-- Users Table -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-800/80 text-xs uppercase font-semibold text-slate-300 border-b border-slate-700">
+            <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-600 border-b border-slate-200">
               <tr>
-                <th class="px-5 py-3.5">User</th>
-                <th class="px-5 py-3.5">Role</th>
-                <th class="px-5 py-3.5">Job Title</th>
-                <th class="px-5 py-3.5">Hourly Rate</th>
-                <th class="px-5 py-3.5">Status</th>
-                <th class="px-5 py-3.5 text-right">Actions</th>
+                <th class="px-5 py-3">Name &amp; Email</th>
+                <th class="px-5 py-3">Role</th>
+                <th class="px-5 py-3">Job Title</th>
+                <th class="px-5 py-3">Base Pay</th>
+                <th class="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="it-users-table-body" class="divide-y divide-slate-800 text-slate-300">
+            <tbody id="it-directory-body" class="divide-y divide-slate-100 text-slate-700">
               <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
       </div>
-    </section>
+    </div>
 
   </main>
 
   <!-- ================= MODAL: ADD USER (IT ADMIN) ================= -->
-  <div id="modal-add-user" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-        <h4 class="font-bold text-white text-lg">Direct User Provisioning</h4>
-        <button onclick="closeModalAddUser()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <div id="modal-add-user" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 max-w-md w-full shadow-xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h4 class="font-bold text-slate-900 text-base">Provision New User</h4>
+        <button onclick="closeAddUserModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <form id="formItAddUser" class="space-y-4" onsubmit="handleItAddUser(event)">
+      <form id="formItUser" onsubmit="handleItAddUser(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Full Name</label>
-          <input type="text" id="itAddName" required placeholder="Dr. Sarah Jenkins"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Name</label>
+          <input type="text" id="itName" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Email Address</label>
-          <input type="email" id="itAddEmail" required placeholder="s.jenkins@gtchr.co.uk"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email Address</label>
+          <input type="email" id="itEmail" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Password</label>
-          <input type="text" id="itAddPassword" required value="cookies"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
+          <input type="text" id="itPass" required value="cookies" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Role Tier</label>
-            <select id="itAddRole" class="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500">
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Role</label>
+            <select id="itRole" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
               <option value="staff">Staff</option>
               <option value="consultant" selected>Consultant</option>
               <option value="manager">Manager</option>
@@ -807,44 +753,43 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Base Rate (£/hr)</label>
-            <input type="number" id="itAddRate" step="0.5" value="18.50"
-              class="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500" />
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Base Rate (£/hr)</label>
+            <input type="number" id="itRate" step="0.5" value="18.50" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-          <button type="button" onclick="closeModalAddUser()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium">Save User</button>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeAddUserModal()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save User</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ================= NOTIFICATION TOAST ================= -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
-  <!-- ================= SCRIPT LOGIC ================= -->
+  <!-- ================= APPLICATION LOGIC ================= -->
   <script>
-    // --- Initial Seed Users (Pre-configured Credentials) ---
-    const INITIAL_USERS = [
-      { id: 'usr-admin', name: 'IT Admin Master', email: 'admin@gtchr.co.uk', role: 'it_admin', jobTitle: 'IT Systems Director', rate: 35.00 },
-      { id: 'usr-mgr', name: 'Claire Sterling', email: 'manager@gtchr.co.uk', role: 'manager', jobTitle: 'Operations Director', rate: 28.00 },
+    // --- Initial Seed Users ---
+    const SEED_USERS = [
+      { id: 'usr-admin', name: 'IT Admin Master', email: 'admin@gtchr.co.uk', role: 'it_admin', jobTitle: 'IT Director', rate: 35.00 },
+      { id: 'usr-mgr', name: 'Claire Sterling', email: 'manager@gtchr.co.uk', role: 'manager', jobTitle: 'Operations Manager', rate: 28.00 },
       { id: 'usr-cons1', name: 'David Ross', email: 'consultant@gtchr.co.uk', role: 'consultant', jobTitle: 'Placement Consultant', rate: 20.00 },
-      { id: 'usr-cons2', name: 'Elena Vance', email: 'consultant2@gtchr.co.uk', role: 'consultant', jobTitle: 'Healthcare Consultant', rate: 20.00 },
+      { id: 'usr-cons2', name: 'Elena Vance', email: 'consultant2@gtchr.co.uk', role: 'consultant', jobTitle: 'Placement Consultant', rate: 20.00 },
       { id: 'usr-stf1', name: 'Marcus Holloway', email: 'staff@gtchr.co.uk', role: 'staff', jobTitle: 'Support worker', rate: 15.00 },
       { id: 'usr-stf2', name: 'Rachel Green', email: 'rachel@gtchr.co.uk', role: 'staff', jobTitle: 'House keeper', rate: 14.50 },
       { id: 'usr-stf3', name: 'James Wilson', email: 'james@gtchr.co.uk', role: 'staff', jobTitle: 'General Cleaner', rate: 14.00 }
     ];
 
     // --- Initial Seed Clients (Identified by Name) ---
-    const INITIAL_CLIENTS = [
+    const SEED_CLIENTS = [
       { id: 'cli-1', name: 'St. Jude Care Centre', address: '14 High Street, Manchester, M1 4BT', contact: '0161 555 0192' },
       { id: 'cli-2', name: 'Oak Manor Residential Home', address: '88 Oak Avenue, Birmingham, B2 5HG', contact: '0121 444 8831' },
       { id: 'cli-3', name: 'The Priory Domestic Suites', address: '32 Park Lane, Leeds, LS1 2TW', contact: '0113 777 9922' }
     ];
 
     // --- Initial Seed Shifts ---
-    const INITIAL_SHIFTS = [
+    const SEED_SHIFTS = [
       {
         id: 'sh-101',
         jobTitle: 'Support worker',
@@ -855,8 +800,8 @@
         endTime: '16:00',
         staffRate: 15.50,
         clientRate: 22.00,
-        description: 'Morning assisted living care, medication administration support.',
-        status: 'open', // open, claimed, completed
+        description: 'Morning assisted living care and support.',
+        status: 'open',
         claimedBy: null,
         claimedById: null,
         createdBy: 'David Ross',
@@ -873,7 +818,7 @@
         endTime: '17:00',
         staffRate: 14.50,
         clientRate: 20.00,
-        description: 'Deep room sanitisation and communal lounge refresh.',
+        description: 'Deep room cleaning and refresh.',
         status: 'claimed',
         claimedBy: 'Rachel Green',
         claimedById: 'usr-stf2',
@@ -891,7 +836,7 @@
         endTime: '15:30',
         staffRate: 16.00,
         clientRate: 23.50,
-        description: 'Electrical test support and door hinge repairs in west wing.',
+        description: 'General repairs in west wing.',
         status: 'open',
         claimedBy: null,
         claimedById: null,
@@ -901,13 +846,13 @@
       }
     ];
 
-    // --- State Management ---
+    // --- State Storage ---
     let currentUser = null;
-    let users = JSON.parse(localStorage.getItem('gtc_users')) || INITIAL_USERS;
-    let clients = JSON.parse(localStorage.getItem('gtc_clients')) || INITIAL_CLIENTS;
-    let shifts = JSON.parse(localStorage.getItem('gtc_shifts')) || INITIAL_SHIFTS;
-    let activeTab = localStorage.getItem('gtc_active_tab') || 'shifts';
-    let selectedInvoiceClient = localStorage.getItem('gtc_inv_client') || (clients[0] ? clients[0].name : '');
+    let users = JSON.parse(localStorage.getItem('gtc_users')) || SEED_USERS;
+    let clients = JSON.parse(localStorage.getItem('gtc_clients')) || SEED_CLIENTS;
+    let shifts = JSON.parse(localStorage.getItem('gtc_shifts')) || SEED_SHIFTS;
+    let currentTab = localStorage.getItem('gtc_active_tab') || 'shifts';
+    let currentInvoiceClient = localStorage.getItem('gtc_inv_client') || (clients[0] ? clients[0].name : '');
 
     function saveState() {
       localStorage.setItem('gtc_users', JSON.stringify(users));
@@ -916,37 +861,34 @@
     }
 
     // --- Toast Notifications ---
-    function showToast(message, type = 'success') {
+    function showToast(msg, type = 'success') {
       const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      const bg = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-indigo-600');
-      toast.className = `${bg} text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
-      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${message}</span>`;
-      container.appendChild(toast);
-      setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+      const t = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-blue-600');
+      t.className = `${bg} text-white px-4 py-2.5 rounded-lg shadow text-sm font-medium flex items-center gap-2 pointer-events-auto transition duration-300`;
+      t.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> <span>${msg}</span>`;
+      container.appendChild(t);
       setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+        t.style.opacity = '0';
+        setTimeout(() => t.remove(), 300);
+      }, 3000);
     }
 
-    // --- Auth Management ---
-    function toggleAuthView(view) {
-      const signInForm = document.getElementById('formSignIn');
-      const signUpForm = document.getElementById('formSignup');
+    // --- Auth Handlers ---
+    function toggleAuthMode(mode) {
       document.getElementById('auth-error-box').classList.add('hidden');
-      if (view === 'signup') {
-        signInForm.classList.add('hidden');
-        signUpForm.classList.remove('hidden');
+      if (mode === 'signup') {
+        document.getElementById('formSignIn').classList.add('hidden');
+        document.getElementById('formSignUp').classList.remove('hidden');
       } else {
-        signUpForm.classList.add('hidden');
-        signInForm.classList.remove('hidden');
+        document.getElementById('formSignUp').classList.add('hidden');
+        document.getElementById('formSignIn').classList.remove('hidden');
       }
     }
 
-    function fillLogin(email, pass) {
+    function quickFill(email) {
       document.getElementById('loginEmail').value = email;
-      document.getElementById('loginPassword').value = pass;
+      document.getElementById('loginPassword').value = 'cookies';
     }
 
     function handleSignIn(e) {
@@ -954,11 +896,10 @@
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const pass = document.getElementById('loginPassword').value.trim();
 
-      // Case-insensitive authentication & auto-migration for admin
       let user = users.find(u => u.email.toLowerCase() === email);
 
       if (!user && email === 'admin@gtchr.co.uk' && pass === 'cookies') {
-        user = INITIAL_USERS[0];
+        user = SEED_USERS[0];
         users.push(user);
         saveState();
       }
@@ -966,13 +907,12 @@
       if (user && (pass === 'cookies' || pass.length >= 4)) {
         currentUser = user;
         localStorage.setItem('gtc_current_user', JSON.stringify(currentUser));
-        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('auth-modal').classList.add('hidden');
         initApp();
-        showToast(`Welcome back, ${currentUser.name}!`);
+        showToast(`Signed in as ${user.name}`);
       } else {
-        const errorBox = document.getElementById('auth-error-box');
-        errorBox.classList.remove('hidden');
-        document.getElementById('auth-error-msg').innerText = 'Invalid credentials. Use cookies or register.';
+        document.getElementById('auth-error-box').classList.remove('hidden');
+        document.getElementById('auth-error-msg').innerText = 'Invalid credentials. Password is "cookies".';
       }
     }
 
@@ -1002,83 +942,83 @@
       saveState();
       currentUser = newUser;
       localStorage.setItem('gtc_current_user', JSON.stringify(currentUser));
-      document.getElementById('auth-container').classList.add('hidden');
+      document.getElementById('auth-modal').classList.add('hidden');
       initApp();
-      showToast(`Account registered as ${role.toUpperCase()}!`);
+      showToast(`Registered successfully as ${role.toUpperCase()}`);
     }
 
-    function handleSignOut() {
+    function signOut() {
       currentUser = null;
       localStorage.removeItem('gtc_current_user');
-      document.getElementById('auth-container').classList.remove('hidden');
+      document.getElementById('auth-modal').classList.remove('hidden');
     }
 
-    // --- Navigation & Role Permissions Guard ---
-    function navigateTab(tabName) {
-      // Permission check
-      if (tabName === 'it-admin' && currentUser.role !== 'it_admin') {
-        showToast('IT Administrator access required', 'error');
+    // --- Tab Navigation & Role Permissions ---
+    function switchTab(tab) {
+      // Permission checks
+      if (tab === 'it-admin' && currentUser.role !== 'it_admin') {
+        showToast('Requires IT Admin permissions', 'error');
         return;
       }
-      if (tabName === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) {
-        showToast('Management authorization required for Client Invoices', 'error');
+      if (tab === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) {
+        showToast('Requires Management permissions', 'error');
         return;
       }
-      if (tabName === 'roster' && currentUser.role === 'staff') {
-        showToast('Roster management is reserved for Consultants & Managers', 'error');
+      if (tab === 'roster' && currentUser.role === 'staff') {
+        showToast('Roster is reserved for Consultants & Operations', 'error');
         return;
       }
 
-      activeTab = tabName;
-      localStorage.setItem('gtc_active_tab', tabName);
+      currentTab = tab;
+      localStorage.setItem('gtc_active_tab', tab);
 
-      // Update Nav Buttons
-      document.querySelectorAll('.nav-tab').forEach(btn => {
-        btn.classList.remove('bg-slate-800', 'text-white', 'shadow-inner');
-        btn.classList.add('text-slate-300');
+      // Tab button highlights
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-blue-50', 'text-blue-700', 'font-semibold');
+        b.classList.add('text-slate-600');
       });
-      const activeBtn = document.getElementById(`tab-${tabName}`);
+      const activeBtn = document.getElementById(`tab-${tab}`);
       if (activeBtn) {
-        activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-inner');
-        activeBtn.classList.remove('text-slate-300');
+        activeBtn.classList.add('bg-blue-50', 'text-blue-700', 'font-semibold');
+        activeBtn.classList.remove('text-slate-600');
       }
 
-      // Hide all panels
-      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.add('hidden'));
-      const activePanel = document.getElementById(`view-${tabName}`);
-      if (activePanel) activePanel.classList.remove('hidden');
+      // Show panel
+      document.querySelectorAll('.tab-content').forEach(p => p.classList.add('hidden'));
+      const activeView = document.getElementById(`view-${tab}`);
+      if (activeView) activeView.classList.remove('hidden');
 
-      // Refresh view-specific renders
-      if (tabName === 'shifts') renderMarketplace();
-      if (tabName === 'roster') renderRosterScheduler();
-      if (tabName === 'manager') renderManagerHub();
-      if (tabName === 'invoices') renderInvoiceView();
-      if (tabName === 'it-admin') renderItDirectory();
+      // Refresh specific tab view
+      if (tab === 'shifts') renderMarketplace();
+      if (tab === 'roster') renderRoster();
+      if (tab === 'manager') renderManagerHub();
+      if (tab === 'invoices') renderInvoice();
+      if (tab === 'it-admin') renderItDirectory();
     }
 
     function applyRolePermissions() {
       const role = currentUser.role;
 
-      // Update Header Info
-      document.getElementById('nav-user-name').innerText = currentUser.name;
-      document.getElementById('nav-user-role').innerText = `${currentUser.jobTitle || 'Team Member'} (${role.toUpperCase()})`;
+      // Update header
+      document.getElementById('header-user-name').innerText = currentUser.name;
+      document.getElementById('header-user-role').innerText = `${currentUser.jobTitle || 'Team Member'} (${role.toUpperCase()})`;
 
-      const headerBadge = document.getElementById('header-user-badge');
+      const badge = document.getElementById('role-badge');
       if (role === 'it_admin') {
-        headerBadge.className = 'px-2 py-0.5 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30';
-        headerBadge.innerText = 'IT ADMIN';
+        badge.className = 'px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800';
+        badge.innerText = 'IT ADMIN';
       } else if (role === 'manager') {
-        headerBadge.className = 'px-2 py-0.5 text-xs font-bold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30';
-        headerBadge.innerText = 'OPERATIONS MANAGER';
+        badge.className = 'px-2 py-0.5 text-xs font-semibold rounded bg-purple-100 text-purple-800';
+        badge.innerText = 'MANAGER';
       } else if (role === 'consultant') {
-        headerBadge.className = 'px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-        headerBadge.innerText = 'CONSULTANT';
+        badge.className = 'px-2 py-0.5 text-xs font-semibold rounded bg-teal-100 text-teal-800';
+        badge.innerText = 'CONSULTANT';
       } else {
-        headerBadge.className = 'px-2 py-0.5 text-xs font-bold rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30';
-        headerBadge.innerText = 'CARE / DOMESTIC STAFF';
+        badge.className = 'px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 text-slate-800';
+        badge.innerText = 'STAFF';
       }
 
-      // Hide / Show Elements based on Role
+      // Hide / show role gated items
       document.querySelectorAll('.it-only').forEach(el => {
         el.style.display = (role === 'it_admin') ? '' : 'none';
       });
@@ -1087,7 +1027,6 @@
         el.style.display = (['manager', 'it_admin'].includes(role)) ? '' : 'none';
       });
 
-      // Consultant Access: Consultants can access Roster and Operations Dispatch Hub
       const isConsultantOrAbove = ['consultant', 'manager', 'it_admin'].includes(role);
       document.getElementById('tab-roster').style.display = isConsultantOrAbove ? '' : 'none';
       document.getElementById('tab-manager').style.display = isConsultantOrAbove ? '' : 'none';
@@ -1095,45 +1034,39 @@
         el.style.display = isConsultantOrAbove ? '' : 'none';
       });
 
-      // Operations Dispatch Tab Label & Financial View Guard
-      const tabManagerLabel = document.getElementById('tab-manager-label');
-      const managerTitle = document.getElementById('manager-view-title');
-      const roleViewIndicator = document.getElementById('role-view-indicator');
-      const managerFinances = document.getElementById('manager-finances');
+      // Manager Hub adjustments for Consultant
+      const hubTitle = document.getElementById('manager-hub-title');
+      const hubSub = document.getElementById('manager-hub-sub');
+      const hubBadge = document.getElementById('hub-role-badge');
+      const finCards = document.getElementById('manager-finances');
 
       if (role === 'consultant') {
-        tabManagerLabel.innerText = 'Shift Dispatch';
-        managerTitle.innerText = 'Consultant Dispatch Hub';
-        roleViewIndicator.innerText = 'Consultant Dispatch Access';
-        roleViewIndicator.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-        // Hide company finances from consultants
-        if (managerFinances) managerFinances.style.display = 'none';
+        hubTitle.innerText = 'Consultant Dispatch Hub';
+        hubSub.innerText = 'Post shifts to marketplace or allocate directly to staff.';
+        hubBadge.innerText = 'Consultant Dispatch Access';
+        hubBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800';
+        if (finCards) finCards.style.display = 'none';
       } else {
-        tabManagerLabel.innerText = 'Operations & Dispatch';
-        managerTitle.innerText = 'Operations & Dispatch Hub';
-        roleViewIndicator.innerText = (role === 'it_admin') ? 'IT Admin Superuser' : 'Operations Management';
-        roleViewIndicator.className = (role === 'it_admin') ? 'px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30';
-        if (managerFinances) managerFinances.style.display = '';
+        hubTitle.innerText = 'Operations & Shift Dispatch Hub';
+        hubSub.innerText = 'Dispatch shifts to the open marketplace or assign directly to specific staff.';
+        hubBadge.innerText = (role === 'it_admin') ? 'IT Admin Superuser' : 'Operations Management';
+        hubBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800';
+        if (finCards) finCards.style.display = '';
       }
 
-      // Set poster banner on Dispatch form
-      const posterNameEl = document.getElementById('dispatch-poster-name');
-      const posterRoleEl = document.getElementById('dispatch-poster-role');
-      if (posterNameEl) posterNameEl.innerText = currentUser.name;
-      if (posterRoleEl) {
-        posterRoleEl.innerText = role.toUpperCase();
-        posterRoleEl.className = (role === 'consultant') ? 'text-emerald-400' : 'text-indigo-400';
-      }
+      // Dispatch form author tag
+      document.getElementById('dispatch-author-name').innerText = currentUser.name;
+      document.getElementById('dispatch-author-role').innerText = role.toUpperCase();
     }
 
-    // --- VIEW 1: SHIFT MARKETPLACE ---
+    // --- TAB 1: MARKETPLACE ---
     function renderMarketplace() {
       const grid = document.getElementById('shifts-grid');
       const roleFilter = document.getElementById('filterShiftRole').value;
       const clientFilter = document.getElementById('filterShiftClient').value;
       const sortVal = document.getElementById('filterShiftSort').value;
 
-      // Populate Client Filter Dropdown if needed
+      // Populate client filter if needed
       const clientSelect = document.getElementById('filterShiftClient');
       if (clientSelect.options.length <= 1) {
         clients.forEach(c => {
@@ -1151,20 +1084,20 @@
         return true;
       });
 
-      if (sortVal === 'rate-high') {
+      if (sortVal === 'rate') {
         filtered.sort((a, b) => b.staffRate - a.staffRate);
       } else {
         filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
       }
 
-      document.getElementById('marketplace-count-badge').innerText = `${filtered.length} Available Shifts`;
+      document.getElementById('marketplace-badge').innerText = `${filtered.length} Open Shifts`;
 
       if (filtered.length === 0) {
         grid.innerHTML = `
-          <div class="col-span-full py-12 text-center bg-slate-900/40 rounded-2xl border border-slate-800 p-8">
-            <i class="fa-solid fa-calendar-check text-4xl text-slate-600 mb-3"></i>
-            <h3 class="text-lg font-bold text-white">No Open Shifts Currently Matching</h3>
-            <p class="text-sm text-slate-400 mt-1">All shifts have either been allocated or none match your filter criteria.</p>
+          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-slate-200 p-8">
+            <i class="fa-solid fa-calendar-check text-4xl text-slate-300 mb-3"></i>
+            <h3 class="text-base font-bold text-slate-800">No Open Shifts Currently Matching</h3>
+            <p class="text-xs text-slate-500 mt-1">All shifts have either been allocated or none match the selected filter.</p>
           </div>
         `;
         return;
@@ -1173,50 +1106,50 @@
       grid.innerHTML = filtered.map(shift => {
         const canClaim = currentUser.role === 'staff';
         return `
-          <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col justify-between hover:border-slate-700 transition shadow-lg">
+          <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between hover:border-slate-300 transition">
             <div>
-              <div class="flex items-start justify-between gap-3 mb-3">
-                <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="px-2.5 py-0.5 rounded text-xs font-bold uppercase bg-blue-50 text-blue-700">
                   ${shift.jobTitle}
                 </span>
-                <div class="text-right">
-                  <div class="text-lg font-bold text-emerald-400">£${Number(shift.staffRate).toFixed(2)}<span class="text-xs text-slate-400 font-normal">/hr</span></div>
+                <div class="text-right font-bold text-emerald-600 text-base">
+                  £${Number(shift.staffRate).toFixed(2)}<span class="text-xs font-normal text-slate-500">/hr</span>
                 </div>
               </div>
 
-              <h3 class="text-base font-bold text-white mb-1">${shift.clientName}</h3>
-              <p class="text-xs text-slate-400 mb-4 flex items-center gap-1.5">
-                <i class="fa-solid fa-location-dot text-indigo-400"></i>
+              <h3 class="font-bold text-slate-900 text-base mb-1">${shift.clientName}</h3>
+              <p class="text-xs text-slate-500 mb-3 flex items-center gap-1">
+                <i class="fa-solid fa-location-dot text-slate-400"></i>
                 <span>${shift.location}</span>
               </p>
 
-              <div class="bg-slate-800/60 rounded-xl p-3 text-xs space-y-1.5 mb-4 text-slate-300 border border-slate-700/50">
-                <div class="flex items-center justify-between">
-                  <span class="text-slate-400"><i class="fa-solid fa-calendar mr-1.5"></i> Date:</span>
-                  <span class="font-medium text-white">${shift.date}</span>
+              <div class="bg-slate-50 rounded-lg p-3 text-xs space-y-1 text-slate-600 mb-3 border border-slate-100">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Date:</span>
+                  <span class="font-medium text-slate-800">${shift.date}</span>
                 </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-slate-400"><i class="fa-solid fa-clock mr-1.5"></i> Hours:</span>
-                  <span class="font-medium text-white">${shift.startTime} - ${shift.endTime}</span>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Hours:</span>
+                  <span class="font-medium text-slate-800">${shift.startTime} - ${shift.endTime}</span>
                 </div>
-                <div class="flex items-center justify-between pt-1 border-t border-slate-700/60">
-                  <span class="text-slate-400"><i class="fa-solid fa-user-tie mr-1.5"></i> Posted By:</span>
-                  <span class="font-medium text-indigo-300">${shift.createdBy || 'Operations'}</span>
+                <div class="flex justify-between pt-1 border-t border-slate-200/60">
+                  <span class="text-slate-400">Posted By:</span>
+                  <span class="font-medium text-teal-700">${shift.createdBy || 'Operations'}</span>
                 </div>
               </div>
 
-              ${shift.description ? `<p class="text-xs text-slate-400 line-clamp-2 mb-4 italic">"${shift.description}"</p>` : ''}
+              ${shift.description ? `<p class="text-xs text-slate-500 italic mb-4 line-clamp-2">"${shift.description}"</p>` : ''}
             </div>
 
             <div>
               ${canClaim ? `
-                <button onclick="claimShift('${shift.id}')" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm shadow-md transition flex items-center justify-center gap-2">
+                <button onclick="claimShift('${shift.id}')" class="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow transition flex items-center justify-center gap-1.5">
                   <i class="fa-solid fa-hand-holding-hand"></i>
-                  <span>Claim Shift Now</span>
+                  <span>Claim Shift</span>
                 </button>
               ` : `
-                <div class="w-full py-2 px-3 rounded-xl bg-slate-800 text-slate-400 text-xs text-center border border-slate-700">
-                  <i class="fa-solid fa-eye mr-1 text-slate-500"></i> Staff can claim from their account
+                <div class="text-center py-1.5 px-3 bg-slate-100 text-slate-500 text-xs rounded-lg">
+                  Visible on staff portal to claim
                 </div>
               `}
             </div>
@@ -1227,36 +1160,28 @@
 
     function claimShift(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
-      if (!shift || shift.status !== 'open') {
-        showToast('Shift is no longer available.', 'error');
-        return;
-      }
+      if (!shift || shift.status !== 'open') return;
 
       shift.status = 'claimed';
       shift.claimedBy = currentUser.name;
       shift.claimedById = currentUser.id;
       saveState();
 
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.7 }
-      });
-
-      showToast(`Success! You have claimed the shift for ${shift.clientName}.`);
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+      showToast(`You have claimed the shift for ${shift.clientName}`);
       renderMarketplace();
-      renderRosterScheduler();
+      renderRoster();
     }
 
-    // --- VIEW 2: ROSTER SCHEDULER (Consultants & Managers) ---
-    function renderRosterScheduler() {
-      const tableBody = document.getElementById('roster-table-body');
+    // --- TAB 2: ROSTER SCHEDULER ---
+    function renderRoster() {
+      const tbody = document.getElementById('roster-table-body');
       const posterFilter = document.getElementById('rosterPosterFilter').value;
       const statusFilter = document.getElementById('rosterStatusFilter').value;
       const clientFilter = document.getElementById('rosterClientFilter').value;
-      const search = (document.getElementById('rosterSearchInput').value || '').toLowerCase();
+      const search = (document.getElementById('rosterSearch').value || '').toLowerCase();
 
-      // Dynamic Poster Dropdown Population
+      // Populate poster options dynamically
       const posterSelect = document.getElementById('rosterPosterFilter');
       if (posterSelect.options.length <= 2) {
         const uniquePosters = [...new Set(shifts.map(s => s.createdBy).filter(Boolean))];
@@ -1268,7 +1193,7 @@
         });
       }
 
-      // Dynamic Client Dropdown
+      // Populate clients
       const clientSelect = document.getElementById('rosterClientFilter');
       if (clientSelect.options.length <= 1) {
         clients.forEach(c => {
@@ -1279,21 +1204,15 @@
         });
       }
 
-      // Filter shifts
       let filtered = shifts.filter(s => {
-        // Poster filter
         if (posterFilter === 'mine' && s.creatorEmail !== currentUser.email && s.createdBy !== currentUser.name) return false;
         if (posterFilter !== 'all' && posterFilter !== 'mine' && s.createdBy !== posterFilter) return false;
 
-        // Status filter
         if (statusFilter === 'open' && s.status !== 'open') return false;
         if (statusFilter === 'claimed' && s.status !== 'claimed') return false;
-        if (statusFilter === 'completed' && s.status !== 'completed') return false;
 
-        // Client filter
         if (clientFilter !== 'all' && s.clientName !== clientFilter) return false;
 
-        // Keyword Search
         if (search) {
           const match = (s.clientName && s.clientName.toLowerCase().includes(search)) ||
                         (s.jobTitle && s.jobTitle.toLowerCase().includes(search)) ||
@@ -1305,81 +1224,68 @@
         return true;
       });
 
-      // Update Roster Counts
-      document.getElementById('roster-stat-total').innerText = filtered.length;
-      document.getElementById('roster-stat-open').innerText = filtered.filter(s => s.status === 'open').length;
-      document.getElementById('roster-stat-claimed').innerText = filtered.filter(s => s.status === 'claimed').length;
+      document.getElementById('roster-count-total').innerText = filtered.length;
+      document.getElementById('roster-count-open').innerText = filtered.filter(s => s.status === 'open').length;
+      document.getElementById('roster-count-claimed').innerText = filtered.filter(s => s.status === 'claimed').length;
 
       if (filtered.length === 0) {
-        tableBody.innerHTML = `
+        tbody.innerHTML = `
           <tr>
             <td colspan="7" class="text-center py-8 text-slate-400">
-              <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-600 block"></i>
-              No shifts match the selected roster filters.
+              No shifts found matching your roster filters.
             </td>
           </tr>
         `;
         return;
       }
 
-      tableBody.innerHTML = filtered.map(shift => {
-        const isMyPost = (shift.creatorEmail === currentUser.email || shift.createdBy === currentUser.name);
-        const statusBadge = shift.status === 'open' 
-          ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">Marketplace (Open)</span>`
-          : (shift.status === 'claimed'
-              ? `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Assigned / Claimed</span>`
-              : `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-700 text-slate-300">Completed</span>`);
+      tbody.innerHTML = filtered.map(shift => {
+        const statusBadge = shift.status === 'open'
+          ? `<span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Marketplace (Open)</span>`
+          : `<span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Claimed / Assigned</span>`;
 
-        const creatorBadge = shift.creatorRole === 'consultant'
-          ? `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Consultant</span>`
-          : `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">Manager</span>`;
+        const isConsultantPoster = shift.creatorRole === 'consultant';
+        const posterTag = isConsultantPoster
+          ? `<span class="text-xs px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 font-semibold border border-teal-200">Consultant</span>`
+          : `<span class="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">Manager</span>`;
 
         return `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="px-5 py-4">
-              <div class="font-bold text-white">${shift.clientName}</div>
-              <div class="text-xs text-indigo-300">${shift.jobTitle}</div>
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-5 py-3">
+              <div class="font-bold text-slate-900">${shift.clientName}</div>
+              <div class="text-xs text-blue-600 font-medium">${shift.jobTitle}</div>
             </td>
-            <td class="px-5 py-4">
-              <div class="text-white">${shift.date}</div>
-              <div class="text-xs text-slate-400">${shift.startTime} - ${shift.endTime}</div>
+            <td class="px-5 py-3">
+              <div class="text-slate-900 font-medium">${shift.date}</div>
+              <div class="text-xs text-slate-500">${shift.startTime} - ${shift.endTime}</div>
             </td>
-            <td class="px-5 py-4">
+            <td class="px-5 py-3">
               ${shift.claimedBy ? `
-                <div class="font-medium text-white flex items-center gap-1.5">
-                  <i class="fa-solid fa-user-check text-emerald-400 text-xs"></i>
+                <div class="font-medium text-slate-900 flex items-center gap-1">
+                  <i class="fa-solid fa-user-check text-emerald-600 text-xs"></i>
                   <span>${shift.claimedBy}</span>
                 </div>
-              ` : `
-                <span class="text-xs text-slate-500 italic">Unclaimed</span>
-              `}
+              ` : `<span class="text-xs text-slate-400 italic">Unclaimed</span>`}
             </td>
-            <td class="px-5 py-4">
-              <div class="font-medium text-slate-200 flex items-center gap-1.5">
-                <span>${shift.createdBy || 'Ops'}</span>
-                ${creatorBadge}
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-1.5">
+                <span class="font-medium text-slate-800">${shift.createdBy || 'Ops'}</span>
+                ${posterTag}
               </div>
-              ${isMyPost ? `<span class="text-[10px] text-emerald-400 font-semibold">(You)</span>` : ''}
             </td>
-            <td class="px-5 py-4">
-              <div class="text-emerald-400 font-semibold">£${Number(shift.staffRate).toFixed(2)}/hr</div>
-              <div class="text-xs text-slate-400">Chg: £${Number(shift.clientRate).toFixed(2)}/hr</div>
+            <td class="px-5 py-3">
+              <div class="font-semibold text-emerald-700">£${Number(shift.staffRate).toFixed(2)}/hr</div>
+              <div class="text-xs text-slate-500">Chg: £${Number(shift.clientRate).toFixed(2)}</div>
             </td>
-            <td class="px-5 py-4">
-              ${statusBadge}
-            </td>
-            <td class="px-5 py-4 text-right">
+            <td class="px-5 py-3">${statusBadge}</td>
+            <td class="px-5 py-3 text-right">
               <div class="flex items-center justify-end gap-1.5">
                 ${shift.status === 'open' ? `
-                  <button onclick="quickAssignModal('${shift.id}')" title="Assign directly to staff" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-600 text-xs text-emerald-300 hover:text-white border border-slate-700 transition">
-                    Assign
-                  </button>
+                  <button onclick="rosterAssignPrompt('${shift.id}')" title="Assign to specific staff" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-medium">Assign</button>
                 ` : `
-                  <button onclick="unassignShift('${shift.id}')" title="Revert to open marketplace" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-amber-600 text-xs text-amber-300 hover:text-white border border-slate-700 transition">
-                    Reopen
-                  </button>
+                  <button onclick="rosterReopen('${shift.id}')" title="Reopen to market" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-xs text-slate-700 font-medium">Reopen</button>
                 `}
-                <button onclick="deleteShift('${shift.id}')" title="Cancel shift" class="p-1 rounded text-slate-500 hover:text-rose-400 transition">
+                <button onclick="deleteShift('${shift.id}')" title="Delete shift" class="p-1 text-slate-400 hover:text-rose-600">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
@@ -1389,39 +1295,38 @@
       }).join('');
     }
 
-    function quickAssignModal(shiftId) {
+    function rosterAssignPrompt(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
       if (!shift) return;
-      const staffMembers = users.filter(u => u.role === 'staff');
-      const staffOptions = staffMembers.map(s => `${s.name} (${s.email})`).join('\n');
-      const chosenName = prompt(`Assign shift for ${shift.clientName} to which staff member?\n\nAvailable Staff:\n${staffOptions}`, staffMembers[0] ? staffMembers[0].name : '');
-      
-      if (chosenName) {
-        const staff = staffMembers.find(s => s.name.toLowerCase() === chosenName.trim().toLowerCase());
-        if (staff) {
+      const staffList = users.filter(u => u.role === 'staff');
+      const listStr = staffList.map(s => `${s.name}`).join(', ');
+      const name = prompt(`Assign shift for ${shift.clientName} to which staff member?\n\nAvailable:\n${listStr}`, staffList[0] ? staffList[0].name : '');
+      if (name) {
+        const found = staffList.find(s => s.name.toLowerCase() === name.trim().toLowerCase());
+        if (found) {
           shift.status = 'claimed';
-          shift.claimedBy = staff.name;
-          shift.claimedById = staff.id;
+          shift.claimedBy = found.name;
+          shift.claimedById = found.id;
           saveState();
-          showToast(`Shift assigned directly to ${staff.name}!`);
-          renderRosterScheduler();
+          showToast(`Shift assigned directly to ${found.name}`);
+          renderRoster();
           renderMarketplace();
         } else {
-          showToast('Staff name not recognized.', 'error');
+          showToast('Staff name not found.', 'error');
         }
       }
     }
 
-    function unassignShift(shiftId) {
+    function rosterReopen(shiftId) {
       const shift = shifts.find(s => s.id === shiftId);
       if (!shift) return;
-      if (confirm(`Return shift for ${shift.clientName} back to open marketplace?`)) {
+      if (confirm(`Reopen shift for ${shift.clientName} back to open marketplace?`)) {
         shift.status = 'open';
         shift.claimedBy = null;
         shift.claimedById = null;
         saveState();
-        showToast('Shift reopened to marketplace.');
-        renderRosterScheduler();
+        showToast('Shift reopened to marketplace');
+        renderRoster();
         renderMarketplace();
       }
     }
@@ -1430,57 +1335,56 @@
       if (confirm('Are you sure you want to cancel and delete this shift?')) {
         shifts = shifts.filter(s => s.id !== shiftId);
         saveState();
-        showToast('Shift removed from roster.');
-        renderRosterScheduler();
+        showToast('Shift deleted.');
+        renderRoster();
         renderMarketplace();
       }
     }
 
-    // --- VIEW 3: OPERATIONS & DISPATCH ---
-    function toggleDispatchMode() {
-      const mode = document.querySelector('input[name="dispatchMode"]:checked').value;
-      const container = document.getElementById('directStaffSelectContainer');
+    // --- TAB 3: DISPATCH & OPERATIONS HUB ---
+    function toggleRouteMode() {
+      const mode = document.querySelector('input[name="dispatchRoute"]:checked').value;
+      const box = document.getElementById('directStaffBox');
       if (mode === 'direct') {
-        container.classList.remove('hidden');
-        populateStaffDropdown();
+        box.classList.remove('hidden');
+        populateStaffSelect();
       } else {
-        container.classList.add('hidden');
+        box.classList.add('hidden');
       }
     }
 
-    function populateStaffDropdown() {
-      const select = document.getElementById('directAssignStaffId');
+    function populateStaffSelect() {
+      const select = document.getElementById('directStaffSelect');
       select.innerHTML = '';
-      const staffList = users.filter(u => u.role === 'staff');
-      staffList.forEach(stf => {
+      users.filter(u => u.role === 'staff').forEach(s => {
         const opt = document.createElement('option');
-        opt.value = stf.id;
-        opt.innerText = `${stf.name} — ${stf.jobTitle || 'Staff'} (${stf.email})`;
+        opt.value = s.id;
+        opt.innerText = `${s.name} (${s.jobTitle || 'Staff'} - ${s.email})`;
         select.appendChild(opt);
       });
     }
 
-    function handleDispatchShift(e) {
+    function handleDispatch(e) {
       e.preventDefault();
       const jobTitle = document.getElementById('shiftJobTitle').value;
       const clientName = document.getElementById('shiftClientName').value.trim();
-      const location = document.getElementById('shiftLocation').value.trim();
+      const location = document.getElementById('shiftAddress').value.trim();
       const date = document.getElementById('shiftDate').value;
       const startTime = document.getElementById('shiftStartTime').value;
       const endTime = document.getElementById('shiftEndTime').value;
       const staffRate = parseFloat(document.getElementById('shiftStaffRate').value) || 14.50;
       const clientRate = parseFloat(document.getElementById('shiftClientRate').value) || 21.00;
-      const description = document.getElementById('shiftDescription').value.trim();
+      const description = document.getElementById('shiftDesc').value.trim();
 
-      const dispatchMode = document.querySelector('input[name="dispatchMode"]:checked').value;
+      const routeMode = document.querySelector('input[name="dispatchRoute"]:checked').value;
 
-      // Auto-register client by Name if new
+      // Ensure client is in directory (identified by Name)
       if (!clients.some(c => c.name.toLowerCase() === clientName.toLowerCase())) {
         clients.push({
           id: 'cli-' + Date.now(),
           name: clientName,
           address: location,
-          contact: 'Not specified'
+          contact: 'Office'
         });
       }
 
@@ -1488,13 +1392,13 @@
       let claimedBy = null;
       let claimedById = null;
 
-      if (dispatchMode === 'direct') {
-        const staffId = document.getElementById('directAssignStaffId').value;
-        const staff = users.find(u => u.id === staffId);
-        if (staff) {
+      if (routeMode === 'direct') {
+        const staffId = document.getElementById('directStaffSelect').value;
+        const targetStaff = users.find(u => u.id === staffId);
+        if (targetStaff) {
           status = 'claimed';
-          claimedBy = staff.name;
-          claimedById = staff.id;
+          claimedBy = targetStaff.name;
+          claimedById = targetStaff.id;
         }
       }
 
@@ -1520,30 +1424,28 @@
       shifts.unshift(newShift);
       saveState();
 
-      showToast(dispatchMode === 'direct' 
-        ? `Shift allocated directly to ${claimedBy}!` 
-        : `Shift posted to Marketplace for all staff!`
+      showToast(routeMode === 'direct'
+        ? `Shift allocated directly to ${claimedBy}`
+        : `Shift broadcasted to Marketplace for all staff`
       );
 
       e.target.reset();
-      document.querySelector('input[name="dispatchMode"][value="marketplace"]').checked = true;
-      toggleDispatchMode();
+      document.querySelector('input[name="dispatchRoute"][value="marketplace"]').checked = true;
+      toggleRouteMode();
 
       renderMarketplace();
-      renderRosterScheduler();
+      renderRoster();
       renderManagerHub();
     }
 
     function renderManagerHub() {
-      // Metrics (Calculated for Managers & IT Admin)
+      // Calculate metrics
       let turnover = 0;
       let payroll = 0;
       shifts.forEach(s => {
-        const hrs = calculateHours(s.startTime, s.endTime);
+        const hrs = getHours(s.startTime, s.endTime);
         turnover += (s.clientRate || 21.00) * hrs;
-        if (s.status !== 'open') {
-          payroll += (s.staffRate || 14.50) * hrs;
-        }
+        if (s.status !== 'open') payroll += (s.staffRate || 14.50) * hrs;
       });
       const margin = turnover - payroll;
 
@@ -1557,58 +1459,52 @@
       if (payrollEl) payrollEl.innerText = `£${payroll.toFixed(2)}`;
       if (countEl) countEl.innerText = shifts.length;
 
-      // Update Client Suggestions Datalist
-      const dl = document.getElementById('clientNameSuggestions');
+      // Client suggestion datalist
+      const dl = document.getElementById('clientListSuggestions');
       if (dl) {
         dl.innerHTML = clients.map(c => `<option value="${c.name}">`).join('');
       }
 
-      // Render Clients List
-      const clientsContainer = document.getElementById('clients-list');
-      if (clientsContainer) {
-        clientsContainer.innerHTML = clients.map(c => `
-          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-            <div class="font-bold text-white">${c.name}</div>
-            <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-              <i class="fa-solid fa-location-dot text-indigo-400"></i> ${c.address}
-            </div>
-            <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-              <i class="fa-solid fa-phone text-emerald-400"></i> ${c.contact}
-            </div>
+      // Clients grid
+      const cGrid = document.getElementById('clients-grid');
+      if (cGrid) {
+        cGrid.innerHTML = clients.map(c => `
+          <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+            <div class="font-bold text-slate-800 text-sm">${c.name}</div>
+            <div class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot mr-1"></i>${c.address}</div>
+            <div class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${c.contact}</div>
           </div>
         `).join('');
       }
     }
 
-    function calculateHours(start = '08:00', end = '16:00') {
-      const [sH, sM] = start.split(':').map(Number);
-      const [eH, eM] = end.split(':').map(Number);
-      let diff = (eH + eM / 60) - (sH + sM / 60);
+    function getHours(s = '08:00', e = '16:00') {
+      const [sH, sM] = s.split(':').map(Number);
+      const [eH, eM] = e.split(':').map(Number);
+      const diff = (eH + eM/60) - (sH + sM/60);
       return diff > 0 ? diff : 8;
     }
 
-    function promptAddClient() {
-      const name = prompt('Enter Client Name (Care Home or Domestic Client):');
+    function addClientPrompt() {
+      const name = prompt('Enter Client Name (Care Home or Facility):');
       if (!name) return;
-      const address = prompt('Enter Full Facility Address & Postcode:');
-      const contact = prompt('Enter Contact Phone / Manager:');
-
+      const addr = prompt('Enter Full Address & Postcode:');
+      const tel = prompt('Enter Phone Number:');
       clients.push({
         id: 'cli-' + Date.now(),
         name: name.trim(),
-        address: address ? address.trim() : 'London, UK',
-        contact: contact ? contact.trim() : 'Office'
+        address: addr ? addr.trim() : 'United Kingdom',
+        contact: tel ? tel.trim() : 'Office'
       });
       saveState();
-      showToast(`Client "${name}" added.`);
+      showToast(`Client "${name}" registered.`);
       renderManagerHub();
     }
 
-    // --- VIEW 4: CLIENT INVOICES ---
-    function renderInvoiceView() {
+    // --- TAB 4: CLIENT INVOICES ---
+    function renderInvoice() {
       const select = document.getElementById('invoiceClientSelect');
       
-      // Populate select dropdown
       if (select.options.length === 0) {
         clients.forEach(c => {
           const opt = document.createElement('option');
@@ -1618,37 +1514,31 @@
         });
       }
 
-      if (selectedInvoiceClient) {
-        select.value = selectedInvoiceClient;
+      if (currentInvoiceClient) {
+        select.value = currentInvoiceClient;
       } else if (clients.length > 0) {
-        selectedInvoiceClient = clients[0].name;
-        select.value = selectedInvoiceClient;
+        currentInvoiceClient = clients[0].name;
+        select.value = currentInvoiceClient;
       }
 
       const clientName = select.value;
-      selectedInvoiceClient = clientName;
+      currentInvoiceClient = clientName;
       localStorage.setItem('gtc_inv_client', clientName);
 
-      const clientObj = clients.find(c => c.name === clientName) || { name: clientName, address: 'Address on file' };
+      const client = clients.find(c => c.name === clientName) || { name: clientName, address: 'Address on file' };
 
-      // Set Document Fields
-      document.getElementById('inv-client-name').innerText = clientObj.name;
-      document.getElementById('inv-client-address').innerText = clientObj.address;
+      document.getElementById('inv-client-name').innerText = client.name;
+      document.getElementById('inv-client-addr').innerText = client.address;
       document.getElementById('inv-date').innerText = new Date().toLocaleDateString('en-GB');
-      
-      const due = new Date();
-      due.setDate(due.getDate() + 14);
-      document.getElementById('inv-due').innerText = due.toLocaleDateString('en-GB');
 
-      // Filter shifts for this client
       const clientShifts = shifts.filter(s => s.clientName.toLowerCase() === clientName.toLowerCase() && s.status !== 'open');
-      const tbody = document.getElementById('inv-table-body');
+      const tbody = document.getElementById('inv-items-body');
 
       if (clientShifts.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="py-6 text-center text-slate-500 italic">
-              No completed or fulfilled shifts recorded for this client yet.
+            <td colspan="6" class="py-6 text-center text-slate-400 italic">
+              No completed or fulfilled shifts recorded for ${clientName} yet.
             </td>
           </tr>
         `;
@@ -1660,78 +1550,64 @@
 
       let subtotal = 0;
       tbody.innerHTML = clientShifts.map(s => {
-        const hrs = calculateHours(s.startTime, s.endTime);
+        const hrs = getHours(s.startTime, s.endTime);
         const rate = s.clientRate || 21.00;
         const lineTotal = hrs * rate;
         subtotal += lineTotal;
         return `
-          <tr class="text-slate-800">
-            <td class="py-3 px-4">${s.date}</td>
-            <td class="py-3 px-4 font-medium">${s.claimedBy || 'Allocated Staff'}</td>
-            <td class="py-3 px-4">${s.jobTitle}</td>
-            <td class="py-3 px-4 text-center">${hrs.toFixed(1)} hrs</td>
-            <td class="py-3 px-4 text-right">£${Number(rate).toFixed(2)}</td>
-            <td class="py-3 px-4 text-right font-semibold">£${lineTotal.toFixed(2)}</td>
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-3 text-slate-800">${s.date}</td>
+            <td class="py-2.5 px-3 font-medium text-slate-900">${s.claimedBy || 'Allocated Staff'}</td>
+            <td class="py-2.5 px-3 text-slate-600">${s.jobTitle}</td>
+            <td class="py-2.5 px-3 text-center text-slate-700">${hrs.toFixed(1)} hrs</td>
+            <td class="py-2.5 px-3 text-right text-slate-700">£${Number(rate).toFixed(2)}</td>
+            <td class="py-2.5 px-3 text-right font-semibold text-slate-900">£${lineTotal.toFixed(2)}</td>
           </tr>
         `;
       }).join('');
 
       const vat = subtotal * 0.20;
-      const grandTotal = subtotal + vat;
+      const total = subtotal + vat;
 
       document.getElementById('inv-subtotal').innerText = `£${subtotal.toFixed(2)}`;
       document.getElementById('inv-vat').innerText = `£${vat.toFixed(2)}`;
-      document.getElementById('inv-total').innerText = `£${grandTotal.toFixed(2)}`;
+      document.getElementById('inv-total').innerText = `£${total.toFixed(2)}`;
     }
 
-    function printCurrentInvoice() {
-      window.print();
-    }
-
-    // --- VIEW 5: IT ADMIN DIRECTORY ---
+    // --- TAB 5: IT DIRECTORY ---
     function renderItDirectory() {
-      const tbody = document.getElementById('it-users-table-body');
+      const tbody = document.getElementById('it-directory-body');
       tbody.innerHTML = users.map(u => {
-        const roleBadge = u.role === 'it_admin'
-          ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">IT ADMIN</span>`
-          : (u.role === 'manager'
-              ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">MANAGER</span>`
-              : (u.role === 'consultant'
-                  ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">CONSULTANT</span>`
-                  : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-700 text-slate-300">STAFF</span>`));
+        let badge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700">STAFF</span>`;
+        if (u.role === 'it_admin') badge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-800">IT ADMIN</span>`;
+        if (u.role === 'manager') badge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-800">MANAGER</span>`;
+        if (u.role === 'consultant') badge = `<span class="px-2 py-0.5 rounded text-xs font-semibold bg-teal-100 text-teal-800">CONSULTANT</span>`;
 
         return `
-          <tr class="hover:bg-slate-800/40">
-            <td class="px-5 py-4">
-              <div class="font-bold text-white">${u.name}</div>
-              <div class="text-xs text-slate-400">${u.email}</div>
+          <tr class="hover:bg-slate-50">
+            <td class="px-5 py-3">
+              <div class="font-bold text-slate-900">${u.name}</div>
+              <div class="text-xs text-slate-500">${u.email}</div>
             </td>
-            <td class="px-5 py-4">${roleBadge}</td>
-            <td class="px-5 py-4 text-slate-300">${u.jobTitle || 'Team Member'}</td>
-            <td class="px-5 py-4 font-semibold text-emerald-400">£${Number(u.rate || 15).toFixed(2)}/hr</td>
-            <td class="px-5 py-4">
-              <span class="inline-flex items-center gap-1 text-xs text-emerald-400">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Active
-              </span>
-            </td>
-            <td class="px-5 py-4 text-right">
-              <div class="flex items-center justify-end gap-2">
-                <button onclick="toggleUserRole('${u.id}')" title="Cycle Role (Staff -> Consultant -> Manager)" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs text-indigo-300 border border-slate-700">
-                  <i class="fa-solid fa-arrows-rotate mr-1"></i> Role
-                </button>
-              </div>
+            <td class="px-5 py-3">${badge}</td>
+            <td class="px-5 py-3 text-slate-600">${u.jobTitle || 'Team Member'}</td>
+            <td class="px-5 py-3 font-semibold text-emerald-700">£${Number(u.rate || 15).toFixed(2)}/hr</td>
+            <td class="px-5 py-3 text-right">
+              <button onclick="cycleUserRole('${u.id}')" title="Cycle role (Staff -> Consultant -> Manager)" class="px-2.5 py-1 rounded border border-slate-300 hover:bg-slate-100 text-xs font-medium text-slate-700">
+                <i class="fa-solid fa-arrows-rotate mr-1"></i> Change Role
+              </button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    function toggleUserRole(userId) {
-      const u = users.find(x => x.id === userId);
+    function cycleUserRole(id) {
+      const u = users.find(x => x.id === id);
       if (!u) return;
       if (u.role === 'staff') {
         u.role = 'consultant';
-        u.jobTitle = 'Recruitment & Care Consultant';
+        u.jobTitle = 'Placement Consultant';
         u.rate = 20.00;
       } else if (u.role === 'consultant') {
         u.role = 'manager';
@@ -1743,74 +1619,68 @@
         u.rate = 15.00;
       }
       saveState();
-      showToast(`${u.name} promoted/updated to ${u.role.toUpperCase()}`);
+      showToast(`${u.name} is now ${u.role.toUpperCase()}`);
       renderItDirectory();
     }
 
-    function showModalAddUser() {
+    function openAddUserModal() {
       document.getElementById('modal-add-user').classList.remove('hidden');
     }
-
-    function closeModalAddUser() {
+    function closeAddUserModal() {
       document.getElementById('modal-add-user').classList.add('hidden');
     }
 
     function handleItAddUser(e) {
       e.preventDefault();
-      const name = document.getElementById('itAddName').value.trim();
-      const email = document.getElementById('itAddEmail').value.trim().toLowerCase();
-      const role = document.getElementById('itAddRole').value;
-      const rate = parseFloat(document.getElementById('itAddRate').value) || 18.50;
+      const name = document.getElementById('itName').value.trim();
+      const email = document.getElementById('itEmail').value.trim().toLowerCase();
+      const role = document.getElementById('itRole').value;
+      const rate = parseFloat(document.getElementById('itRate').value) || 18.50;
 
-      const newUser = {
+      users.push({
         id: 'usr-' + Date.now(),
         name,
         email,
         role,
-        jobTitle: role === 'consultant' ? 'Recruitment & Care Consultant' : (role === 'manager' ? 'Operations Manager' : 'Healthcare Worker'),
+        jobTitle: role === 'consultant' ? 'Placement Consultant' : (role === 'manager' ? 'Operations Manager' : 'Healthcare Worker'),
         rate
-      };
-
-      users.push(newUser);
+      });
       saveState();
-      closeModalAddUser();
+      closeAddUserModal();
       e.target.reset();
-      showToast(`User ${name} provisioned as ${role.toUpperCase()}!`);
+      showToast(`User ${name} provisioned as ${role.toUpperCase()}`);
       renderItDirectory();
     }
 
-    // --- Application Initialization ---
+    // --- Application Bootstrapping ---
     function initApp() {
       const savedUser = localStorage.getItem('gtc_current_user');
       if (savedUser) {
         try {
           currentUser = JSON.parse(savedUser);
-          // Sync with users array if updated
-          const updated = users.find(u => u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase());
-          if (updated) currentUser = updated;
+          const found = users.find(u => u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase());
+          if (found) currentUser = found;
         } catch (e) {
           currentUser = null;
         }
       }
 
       if (currentUser) {
-        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('auth-modal').classList.add('hidden');
         applyRolePermissions();
-        
-        // Restore active tab if accessible, otherwise fallback
+
         let targetTab = localStorage.getItem('gtc_active_tab') || 'shifts';
         if (targetTab === 'it-admin' && currentUser.role !== 'it_admin') targetTab = 'shifts';
         if (targetTab === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) targetTab = 'shifts';
         if (targetTab === 'roster' && currentUser.role === 'staff') targetTab = 'shifts';
         if (targetTab === 'manager' && currentUser.role === 'staff') targetTab = 'shifts';
 
-        navigateTab(targetTab);
+        switchTab(targetTab);
       } else {
-        document.getElementById('auth-container').classList.remove('hidden');
+        document.getElementById('auth-modal').classList.remove('hidden');
       }
     }
 
-    // Initialize on DOM load
     document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
