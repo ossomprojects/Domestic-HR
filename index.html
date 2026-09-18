@@ -561,6 +561,29 @@
           </div>
         </div>
 
+        <!-- SECTION C: CLIENT MANAGEMENT (IT ONLY) -->
+        <div id="itClientSection" class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hidden">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2"><i class="fa-solid fa-house-user text-indigo-600"></i> Client & Facility Management</h3>
+              <p class="text-xs text-slate-500">Remove clients that are no longer active.</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Client Name</th>
+                  <th class="p-3">Address</th>
+                  <th class="p-3">Default Rate</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itClientTable" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
       </section>
 
       <!-- ================= TAB 5: CLIENT INVOICES ================= -->
@@ -969,6 +992,7 @@
           localStorage.setItem('enin_live_clients_v4', JSON.stringify(clients));
           if (document.getElementById('mainApp').classList.contains('hidden') === false) {
             populateDropdowns();
+            updateITDirectory();
           }
         }
       });
@@ -1237,6 +1261,7 @@
       emailjs.send(sId, tId, {
         to_name: currentUser ? currentUser.name : "Admin",
         to_email: testEmail,
+        subject: "Golden Tree HR API Test",
         message: "Test connection successful! Golden Tree HR notifications are active."
       }, pKey).then(() => {
         showToast("✓ EmailJS Notification Sent Successfully! Config Saved.", "bg-emerald-50 text-emerald-800 border-emerald-200");
@@ -1258,7 +1283,8 @@
         emailjs.send(sId, tId, {
           to_name: s.name,
           to_email: s.email,
-          message: `[${subject}] ${details}`
+          subject: subject,
+          message: details
         }, pKey).then(() => {
           console.log("Automated email sent to " + s.email);
         }).catch(err => {
@@ -1815,6 +1841,39 @@
           `;
         }).join('');
       }
+
+      // Populate IT Client Table
+      const clientSec = document.getElementById('itClientSection');
+      if (clientSec) clientSec.classList.toggle('hidden', !isIT);
+
+      const cTable = document.getElementById('itClientTable');
+      if (cTable && isIT) {
+        cTable.innerHTML = clients.map(c => `
+          <tr class="hover:bg-slate-50 text-xs">
+            <td class="p-3 font-bold text-snoo-navy">${c.name}</td>
+            <td class="p-3 text-slate-600">${c.address}</td>
+            <td class="p-3 font-semibold text-emerald-700">£${c.rate.toFixed(2)}</td>
+            <td class="p-3 text-right">
+              <button onclick="deleteClient(${c.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function deleteClient(id) {
+      const c = clients.find(x => x.id === id);
+      if (!c) return;
+      if (confirm(`Are you sure you want to permanently delete client: ${c.name}?`)) {
+        clients = clients.filter(x => x.id !== id);
+        pushToCloud();
+        updateITDirectory();
+        populateDropdowns();
+        renderShifts();
+        renderRosterGrid();
+        updateManagerView();
+        showToast(`Deleted ${c.name} successfully`, 'bg-rose-50 text-rose-800 border-rose-200');
+      }
     }
 
     function approveUser(userId, roleToAssign) {
@@ -1978,6 +2037,9 @@
         clients.push(newClient);
         finalClientId = newClient.id;
         populateDropdowns();
+        
+        // Also update IT Client table if IT is on that tab
+        if(currentUser.role === 'it_admin') updateITDirectory();
       }
 
       const t = document.getElementById('newShiftTitle').value;
@@ -2113,7 +2175,7 @@
 
       // Render Dynamic Table Body
       document.getElementById('managerTable').innerHTML = shifts.map(s => {
-        const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
+        const cl = clients.find(x => x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
         const st = users.find(u => u.id === s.staffId);
         const shiftGross = s.hours * s.chargeRate;
         const staffEarned = s.hours * s.pay;
