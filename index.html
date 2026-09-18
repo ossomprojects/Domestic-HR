@@ -282,6 +282,9 @@
           </span>
         </div>
         
+        <!-- STAFF EARNINGS HUB -->
+        <div id="staffEarningsHub" class="hidden mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+
         <div id="shiftsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </section>
 
@@ -1698,6 +1701,41 @@
         return;
       }
 
+      // STAFF EARNINGS HUB
+      const earningsHub = document.getElementById('staffEarningsHub');
+      if (earningsHub) {
+        if (currentUser && currentUser.role !== 'it_admin') {
+           const myCompleted = shifts.filter(s => s.staffId === currentUser.id && s.status === 'completed');
+           let totalEarned = 0;
+           myCompleted.forEach(s => totalEarned += (s.hours * s.pay));
+           const totalLeave = totalEarned * 0.01;
+           
+           earningsHub.innerHTML = `
+             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+               <div>
+                 <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">My Total Earnings</p>
+                 <p class="text-xl font-black text-snoo-navy mt-0.5">£${totalEarned.toFixed(2)}</p>
+               </div>
+               <div class="h-10 w-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                 <i class="fa-solid fa-wallet"></i>
+               </div>
+             </div>
+             <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+               <div>
+                 <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Gathered Annual Leave (1%)</p>
+                 <p class="text-xl font-black text-indigo-600 mt-0.5">£${totalLeave.toFixed(2)}</p>
+               </div>
+               <div class="h-10 w-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                 <i class="fa-solid fa-umbrella-beach"></i>
+               </div>
+             </div>
+           `;
+           earningsHub.classList.remove('hidden');
+        } else {
+           earningsHub.classList.add('hidden');
+        }
+      }
+
       if (shifts.length === 0) {
         c.innerHTML = `
           <div class="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center text-slate-400">
@@ -1715,7 +1753,10 @@
         const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         const isMine = s.staffId === currentUser.id;
         const isBlock = s.isBlock === true;
-        const totalEarnings = (s.pay * s.hours).toFixed(2);
+        
+        const totalEarningsNum = s.pay * s.hours;
+        const totalEarnings = totalEarningsNum.toFixed(2);
+        const leavePay = (totalEarningsNum * 0.01).toFixed(2);
 
         return `
           <div class="bg-white p-6 rounded-3xl shadow-sm border ${isBlock ? 'border-snoo-blue/40 ring-1 ring-snoo-blue/20 bg-gradient-to-b from-blue-50/20 to-white' : 'border-slate-200'} flex flex-col justify-between hover:shadow-md transition">
@@ -1744,9 +1785,15 @@
                 <p class="text-xs text-indigo-900 font-bold mb-3"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p>
               `}
 
-              <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 flex justify-between items-center">
-                <span>Rate: £${s.pay.toFixed(2)}/hr</span>
-                <span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span>
+              <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span>Rate: £${s.pay.toFixed(2)}/hr</span>
+                  <span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span>
+                </div>
+                <div class="flex justify-between items-center text-[10px] text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100">
+                  <span><i class="fa-solid fa-umbrella-beach"></i> Annual Leave (1%)</span>
+                  <span>+ £${leavePay}</span>
+                </div>
               </div>
               <p class="text-[10px] text-slate-400 italic mb-2 text-right">Dispatched by: ${s.postedByName || 'Admin'}</p>
             </div>
