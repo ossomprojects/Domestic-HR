@@ -49,6 +49,11 @@
 </head>
 <body class="bg-snoo-slate text-slate-800 antialiased min-h-screen flex flex-col selection:bg-snoo-blue selection:text-white">
 
+  <!-- Version Tag -->
+  <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
+    v4.1.0
+  </div>
+
   <!-- ================= 1. AUTHENTICATION & LOGIN SCREEN ================= -->
   <div id="authScreen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-slate-100 my-8">
@@ -201,7 +206,7 @@
     </nav>
 
     <!-- Toast Notification -->
-    <div id="toast" class="hidden max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition">
+    <div id="toast" class="hidden max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative">
       <span id="toast-msg"></span>
       <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-sm">&times;</button>
     </div>
@@ -916,9 +921,8 @@
     let clientDispatchMode = 'existing';
     let scheduleMode = 'single';
 
-    // Roster week offset state
     let rosterWeekOffset = 0; 
-    let expandedFacilities = new Set(); // To toggle client rows
+    let expandedFacilities = new Set(); 
 
     function initApp() {
       try {
@@ -945,7 +949,6 @@
         } catch(e) {}
       }
 
-      // Load saved EmailJS Config if exists
       setTimeout(() => {
         if(document.getElementById('emailjsTestEmail')) document.getElementById('emailjsTestEmail').value = localStorage.getItem('enin_email_test_recipient') || '';
         if(document.getElementById('emailjsKey')) document.getElementById('emailjsKey').value = localStorage.getItem('enin_email_key') || '';
@@ -962,8 +965,6 @@
         updateSystemDiagnosticsUI(false, "Firebase SDK Not Loaded");
         return;
       }
-
-      // Listen to Firebase's special presence path
       fbDb.ref('.info/connected').on('value', (snap) => {
         const connected = snap.val() === true;
         updateSystemDiagnosticsUI(connected);
@@ -1024,7 +1025,7 @@
             renderShifts();
             updateManagerView();
             renderRosterGrid();
-            populateDropdowns(); // Update dispatcher filter dropdown
+            populateDropdowns(); 
           }
         }
       });
@@ -1112,50 +1113,58 @@
       showToast(`Welcome back, ${currentUser.name}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
     }
 
+    // ==========================================
+    // DIAGNOSTIC WRAPPER: handleStaffSignup
+    // ==========================================
     function handleStaffSignup(e) {
       e.preventDefault();
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const phone = document.getElementById('regPhone').value.trim();
-      const requestedRole = document.getElementById('regRole').value;
-      const pass = document.getElementById('regPassword').value;
+      try {
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const phone = document.getElementById('regPhone').value.trim();
+        const requestedRole = document.getElementById('regRole').value;
+        const pass = document.getElementById('regPassword').value;
 
-      if (users.some(u => u.email.toLowerCase() === email)) {
-        return showToast("An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
-      }
+        if (users.some(u => u.email.toLowerCase() === email)) {
+          return showToast("⚠️ ERROR: An account with this exact email already exists. Try logging in.", "bg-rose-50 text-rose-800 border-rose-200 text-sm py-4");
+        }
 
-      let titleVal = 'Domestic Staff';
-      if (requestedRole === 'manager') titleVal = 'Operations Manager';
-      if (requestedRole === 'consultant') titleVal = 'Consultant';
+        let titleVal = 'Domestic Staff';
+        if (requestedRole === 'manager') titleVal = 'Operations Manager';
+        if (requestedRole === 'consultant') titleVal = 'Consultant';
 
-      const newUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        phone: phone,
-        password: pass,
-        role: requestedRole,
-        title: titleVal,
-        status: "pending", 
-        hourlyRate: requestedRole === 'manager' || requestedRole === 'consultant' ? 22.00 : 15.00,
-        registeredAt: new Date().toLocaleDateString('en-GB')
-      };
+        const newUser = {
+          id: Date.now(),
+          name: name,
+          email: email,
+          phone: phone,
+          password: pass,
+          role: requestedRole,
+          title: titleVal,
+          status: "pending", 
+          hourlyRate: requestedRole === 'manager' || requestedRole === 'consultant' ? 22.00 : 15.00,
+          registeredAt: new Date().toLocaleDateString('en-GB')
+        };
 
-      users.push(newUser);
-      currentUser = newUser;
+        users.push(newUser);
+        currentUser = newUser;
+        
+        localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+        pushToCloud();
+
+        // Safe notification call
+        notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
+        notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
+
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        setupAppForUser();
+        showToast(`Sign up complete! Submitted for authorization.`, 'bg-amber-50 text-amber-800 border-amber-200');
       
-      localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
-      pushToCloud();
-
-      // Email Automation for Sign Up (now wrapped in fail-safes so it doesn't crash the script)
-      notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
-      notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
-
-      // UI Transition
-      document.getElementById('authScreen').classList.add('hidden');
-      document.getElementById('mainApp').classList.remove('hidden');
-      setupAppForUser();
-      showToast(`Sign up complete! Submitted for authorization.`, 'bg-amber-50 text-amber-800 border-amber-200');
+      } catch (err) {
+        showToast("CRASH LOG: " + err.message, "bg-rose-500 text-white border-rose-700 py-4 text-sm z-50");
+        console.error("Signup Crash:", err);
+      }
     }
 
     function setupAppForUser() {
@@ -1183,7 +1192,6 @@
       renderRosterGrid();
       updateITDirectory();
 
-      // Retrieve last active tab, force shifts tab if pending
       let savedTab = localStorage.getItem('enin_active_tab') || 'shifts';
       if (isPending) savedTab = 'shifts';
       navigateTab(savedTab, true);
@@ -1207,7 +1215,6 @@
       const isAdminTabAccess = currentUser && isApproved && (currentUser.role === 'it_admin' || currentUser.role === 'consultant');
       const isSuperAdmin = currentUser && isApproved && currentUser.role === 'it_admin';
 
-      // Hide tabs entirely if pending
       document.getElementById('tab-roster').classList.toggle('hidden', !isApproved);
 
       document.querySelectorAll('.manager-only').forEach(el => {
@@ -1230,7 +1237,6 @@
     function navigateTab(tabName, skipSave = false) {
       const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
       
-      // Strict block for unapproved users
       if (!isApproved && tabName !== 'shifts') {
         tabName = 'shifts';
       }
@@ -1272,9 +1278,6 @@
       if (tabName === 'roster') renderRosterGrid();
     }
 
-    /* =====================================================================
-       SYSTEM DIAGNOSTICS & NOTIFICATION LOGIC (IT ADMIN)
-       ===================================================================== */
     function testFirebaseConnection() {
       if (!fbDb) return showToast("Firebase SDK not loaded. Check script imports.", "bg-rose-50 text-rose-800 border-rose-200");
       
@@ -1360,10 +1363,6 @@
       });
     }
 
-
-    /* =====================================================================
-       ROSTER SCHEDULER LOGIC 
-       ===================================================================== */
     function getMonday(d) {
       d = new Date(d);
       const day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6:1);
@@ -1387,7 +1386,6 @@
       const rosterBody = document.getElementById("rosterBody");
       if (!rosterTableHeaders || !rosterBody) return;
 
-      // Extract Dispatcher Filter state
       const filterSelect = document.getElementById('rosterDispatcherFilter');
       const dispatcherFilter = filterSelect ? filterSelect.value : 'all';
 
@@ -1412,19 +1410,16 @@
       rosterTableHeaders.innerHTML = headerHTML;
 
       let bodyHTML = "";
-      // Consultants, Managers, and IT Admins have access to the Roster Edit/Cancel menus
       const isManagerOrAdmin = ['manager', 'it_admin', 'consultant'].includes(currentUser?.role);
 
       clients.forEach(client => {
         let clientShifts = shifts.filter(s => s.clientId === client.id && daysOfWeek.some(d => s.date === d.isoStr || (s.datesList && s.datesList.includes(d.isoStr))));
         
-        // APPLY DISPATCHER FILTER
         if (dispatcherFilter !== 'all') {
            const filterId = parseInt(dispatcherFilter);
            clientShifts = clientShifts.filter(s => s.postedBy === filterId);
         }
 
-        // HIDE ENTIRE FACILITY ROW IF FILTER IS ACTIVE AND NO SHIFTS MATCH
         if (dispatcherFilter !== 'all' && clientShifts.length === 0) return;
 
         const isExpanded = !expandedFacilities.has(client.id);
@@ -1584,9 +1579,6 @@
       }
     }
 
-    /* ---------------------------------------------------------
-       OPERATIONS MANAGER LOGIC
-       --------------------------------------------------------- */
     function setClientMode(mode) {
       clientDispatchMode = mode;
       const btnEx = document.getElementById('btnClientExisting');
@@ -1632,12 +1624,10 @@
     }
 
     function populateDropdowns() {
-      // Clients
       const opts = clients.map(c => `<option value="${c.id}">${c.name} (${c.address})</option>`).join('');
       if(document.getElementById('newShiftClient')) document.getElementById('newShiftClient').innerHTML = opts;
       if(document.getElementById('invoiceClientSelect')) document.getElementById('invoiceClientSelect').innerHTML = opts;
       
-      // Staff (for direct assign dropdown in New Shift form)
       const staffOpts = users.filter(u => u.status === 'active' && u.role !== 'it_admin').map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
       if(document.getElementById('newShiftAssignee')) {
         document.getElementById('newShiftAssignee').innerHTML = `<option value="">🌍 Post to Open Marketplace</option>` + staffOpts;
@@ -1649,19 +1639,16 @@
       if(document.getElementById('newShiftStartDate')) document.getElementById('newShiftStartDate').value = today;
       if(document.getElementById('newShiftEndDate')) document.getElementById('newShiftEndDate').value = nextWeek;
 
-      // Dispatcher Filter Dropdown for Roster
       const rosterFilter = document.getElementById('rosterDispatcherFilter');
       if (rosterFilter) {
         const currentVal = rosterFilter.value || 'all';
         let filterOpts = `<option value="all">🌍 All Dispatched Shifts</option>`;
         const uniqueDispatchers = new Map();
         
-        // Include all managers, consultants, admins currently active
         users.filter(u => ['manager', 'consultant', 'it_admin'].includes(u.role) && u.status === 'active').forEach(u => {
             uniqueDispatchers.set(u.id, `${u.name} (${u.role})`);
         });
         
-        // Include anyone else who has shifts on the board (e.g. legacy/deleted users)
         shifts.forEach(s => {
            if (s.postedBy && s.postedByName && !uniqueDispatchers.has(s.postedBy)) {
               uniqueDispatchers.set(s.postedBy, s.postedByName + " (Legacy)");
@@ -1673,8 +1660,6 @@
         });
         
         rosterFilter.innerHTML = filterOpts;
-        
-        // Restore previous selection if it still exists
         if (currentVal !== 'all' && !uniqueDispatchers.has(parseInt(currentVal))) {
            rosterFilter.value = 'all';
         } else {
@@ -1682,7 +1667,6 @@
         }
       }
 
-      // Timesheet Staff Filter
       const tsFilter = document.getElementById('tsFilterStaff');
       if(tsFilter) {
           const curVal = tsFilter.value || 'all';
@@ -1717,7 +1701,6 @@
         return;
       }
 
-      // STAFF EARNINGS HUB
       const earningsHub = document.getElementById('staffEarningsHub');
       if (earningsHub) {
         if (currentUser && currentUser.role !== 'it_admin') {
@@ -1849,23 +1832,18 @@
       }
     }
 
-    /* ---------------------------------------------------------
-       DIRECTORY & APPROVALS (IT & CONSULTANT LOGIC)
-       --------------------------------------------------------- */
     function updateITDirectory() {
       if (!currentUser) return;
 
       const isIT = currentUser.role === 'it_admin';
       const isConsultant = currentUser.role === 'consultant';
 
-      // IT Onboarding Visibility
       const obSection = document.getElementById('itOnboardSection');
       if (obSection) obSection.classList.toggle('hidden', !isIT);
 
       let pendingUsers = users.filter(u => u.status === 'pending');
       let activeUsers = users.filter(u => u.status !== 'pending');
 
-      // CONSULTANT CONSTRAINT: ONLY SEE STAFF
       if (isConsultant) {
         pendingUsers = pendingUsers.filter(u => u.role === 'staff');
         activeUsers = activeUsers.filter(u => u.role === 'staff');
@@ -1957,7 +1935,6 @@
         }).join('');
       }
 
-      // Populate IT Client Table
       const clientSec = document.getElementById('itClientSection');
       if (clientSec) clientSec.classList.toggle('hidden', !isIT);
 
@@ -2001,7 +1978,6 @@
         else u.title = 'Domestic Staff';
         pushToCloud();
         
-        // Notify user they have been approved!
         notifyStaff(u.id, "Account Authorized", `Congratulations! Your Golden Tree HR account has been fully authorized as ${u.title}. You can now log in to the portal and access the roster matrix and shift board.`);
 
         updateITDirectory();
@@ -2010,44 +1986,51 @@
       }
     }
 
+    // ==========================================
+    // DIAGNOSTIC WRAPPER: directOnboardUser
+    // ==========================================
     function directOnboardUser() {
-      const name = document.getElementById('obName').value.trim();
-      const email = document.getElementById('obEmail').value.trim().toLowerCase();
-      const phone = document.getElementById('obPhone').value.trim();
-      const role = document.getElementById('obRole').value;
-      const pass = document.getElementById('obPassword').value.trim();
+      try {
+        const name = document.getElementById('obName').value.trim();
+        const email = document.getElementById('obEmail').value.trim().toLowerCase();
+        const phone = document.getElementById('obPhone').value.trim();
+        const role = document.getElementById('obRole').value;
+        const pass = document.getElementById('obPassword').value.trim();
 
-      if (!name || !email || !pass) return showToast("Name, Email, and Password are required", "bg-rose-50 text-rose-800 border-rose-200");
-      if (users.some(u => u.email.toLowerCase() === email)) return showToast("An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
+        if (!name || !email || !pass) return showToast("Name, Email, and Password are required", "bg-rose-50 text-rose-800 border-rose-200");
+        if (users.some(u => u.email.toLowerCase() === email)) return showToast("⚠️ ERROR: An account with this email already exists.", "bg-rose-50 text-rose-800 border-rose-200");
 
-      let titleVal = 'Domestic Staff';
-      if (role === 'manager') titleVal = 'Operations Manager';
-      if (role === 'consultant') titleVal = 'Consultant';
+        let titleVal = 'Domestic Staff';
+        if (role === 'manager') titleVal = 'Operations Manager';
+        if (role === 'consultant') titleVal = 'Consultant';
 
-      const newUser = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        phone: phone,
-        password: pass,
-        role: role,
-        title: titleVal,
-        status: "active", // Directly active
-        hourlyRate: role === 'manager' || role === 'consultant' ? 22.00 : 15.00,
-        registeredAt: new Date().toLocaleDateString('en-GB')
-      };
+        const newUser = {
+          id: Date.now(),
+          name: name,
+          email: email,
+          phone: phone,
+          password: pass,
+          role: role,
+          title: titleVal,
+          status: "active",
+          hourlyRate: role === 'manager' || role === 'consultant' ? 22.00 : 15.00,
+          registeredAt: new Date().toLocaleDateString('en-GB')
+        };
 
-      users.push(newUser);
-      pushToCloud();
-      updateITDirectory();
-      populateDropdowns(); // Update Assign dropdowns
-      showToast(`✓ Added ${name} directly as active ${titleVal}.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
-      
-      // Clear fields
-      document.getElementById('obName').value = '';
-      document.getElementById('obEmail').value = '';
-      document.getElementById('obPhone').value = '';
-      document.getElementById('obPassword').value = 'password123';
+        users.push(newUser);
+        pushToCloud();
+        updateITDirectory();
+        populateDropdowns(); 
+        showToast(`✓ Added ${name} directly as active ${titleVal}.`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+        
+        document.getElementById('obName').value = '';
+        document.getElementById('obEmail').value = '';
+        document.getElementById('obPhone').value = '';
+        document.getElementById('obPassword').value = 'password123';
+      } catch (err) {
+        showToast("CRASH LOG: " + err.message, "bg-rose-500 text-white border-rose-700 py-4 text-sm z-50");
+        console.error("Onboard Crash:", err);
+      }
     }
 
     function openEditUser(id) {
@@ -2062,7 +2045,6 @@
       const roleSel = document.getElementById('editUserRole');
       roleSel.value = u.role;
       
-      // Consultants can't make people managers or IT admins
       if (currentUser.role === 'consultant') {
         Array.from(roleSel.options).forEach(opt => {
           if (opt.value !== 'staff') {
@@ -2111,7 +2093,6 @@
       if (confirm(`Are you sure you want to permanently delete ${u.name}'s account?`)) {
         users = users.filter(x => x.id !== id);
         
-        // Also unassign their shifts
         shifts.forEach(s => {
           if (s.staffId === id) {
             s.staffId = null;
@@ -2128,12 +2109,8 @@
       }
     }
 
-    /* ---------------------------------------------------------
-       MANAGER SHIFT CREATION & INVOICE / HMRC
-       --------------------------------------------------------- */
     function createShift() {
       let finalClientId = null;
-      // Parse float handles hidden/disabled inputs if they retain value
       const ch = parseFloat(document.getElementById('newShiftCharge').value);
 
       if (clientDispatchMode === 'existing') {
@@ -2153,7 +2130,6 @@
         finalClientId = newClient.id;
         populateDropdowns();
         
-        // Also update IT Client table if IT is on that tab
         if(currentUser.role === 'it_admin') updateITDirectory();
       }
 
@@ -2248,7 +2224,7 @@
       renderShifts();
       updateManagerView();
       renderRosterGrid();
-      populateDropdowns(); // Re-render dropdown to include self if this is their first shift posted
+      populateDropdowns(); 
     }
 
     function clearTimesheetFilters() {
@@ -2265,11 +2241,9 @@
       const kpi = document.getElementById('kpiFinancials');
       const disp = document.getElementById('dispatchFinancials');
       
-      // Toggle financials visibility
       if (kpi) kpi.classList.toggle('hidden', !showFin);
       if (disp) disp.classList.toggle('hidden', !showFin);
 
-      // TIMESHEET FILTERING
       let filteredShifts = [...shifts];
       const tsStart = document.getElementById('tsFilterStart')?.value;
       const tsEnd = document.getElementById('tsFilterEnd')?.value;
@@ -2285,7 +2259,6 @@
           filteredShifts = filteredShifts.filter(s => s.staffId == tsStaff);
       }
 
-      // Sort by date (newest first) to build a historical DB
       filteredShifts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let rev = 0, wages = 0;
@@ -2304,7 +2277,6 @@
       document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
       document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
 
-      // Render Dynamic Table Header
       document.getElementById('managerTableHeader').innerHTML = `
         <tr>
           <th class="p-3">Staff & Client</th>
@@ -2314,7 +2286,6 @@
         </tr>
       `;
 
-      // Render Dynamic Table Body
       document.getElementById('managerTable').innerHTML = filteredShifts.length === 0 
         ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>`
         : filteredShifts.map(s => {
@@ -2401,10 +2372,10 @@
 
     function showToast(m, cls) {
       const t = document.getElementById('toast');
-      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center ${cls}`;
+      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative ${cls}`;
       document.getElementById('toast-msg').textContent = m;
       t.classList.remove('hidden');
-      setTimeout(hideToast, 4500);
+      setTimeout(hideToast, 6000);
     }
     function hideToast() { document.getElementById('toast').classList.add('hidden'); }
 
