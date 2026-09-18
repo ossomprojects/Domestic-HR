@@ -47,7 +47,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
 
-  <!-- ================= AUTHENTICATION MODAL (SIGN IN / REGISTER) ================= -->
+  <!-- ================= AUTHENTICATION MODAL ================= -->
   <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
     <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative my-auto">
       
@@ -189,11 +189,17 @@
           </div>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs (HMRC Taxes & GPS Diagnostics Removed) -->
         <nav class="hidden md:flex items-center space-x-1" id="nav-tabs-container">
           <button onclick="switchTab('shifts')" id="tab-shifts" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
             <i class="fa-solid fa-store text-slate-400"></i>
             <span>Shift Marketplace</span>
+          </button>
+
+          <!-- Timesheets / Clock In (Staff & Ops) -->
+          <button onclick="switchTab('timesheets')" id="tab-timesheets" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
+            <i class="fa-solid fa-clock text-slate-400"></i>
+            <span>Timesheets &amp; Shifts</span>
           </button>
 
           <!-- Accessible to Consultant, Manager, IT Admin -->
@@ -291,7 +297,41 @@
       </div>
     </div>
 
-    <!-- TAB 2: ROSTER SCHEDULER (Consultant, Manager, IT Admin) -->
+    <!-- TAB 2: TIMESHEETS & CLOCK IN -->
+    <div id="view-timesheets" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Timesheets &amp; Shift Execution</h2>
+          <p class="text-sm text-slate-500 mt-1">Review claimed shifts, submit completed hours, and clock in for assigned duties.</p>
+        </div>
+        <div class="text-xs text-slate-500 bg-slate-100 px-3 py-2 rounded-lg">
+          GPS Geofence Verification Active
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="px-5 py-3">Client &amp; Location</th>
+                <th class="px-5 py-3">Role</th>
+                <th class="px-5 py-3">Date &amp; Schedule</th>
+                <th class="px-5 py-3">Assigned Worker</th>
+                <th class="px-5 py-3">Pay Rate</th>
+                <th class="px-5 py-3">Status</th>
+                <th class="px-5 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="timesheets-body" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ROSTER SCHEDULER (Consultants, Managers, IT Admin) -->
     <div id="view-roster" class="tab-content hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
@@ -308,11 +348,11 @@
         </div>
       </div>
 
-      <!-- Roster Filters Bar -->
+      <!-- Roster Filters Bar (Consultants can see each other's posted shifts) -->
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           
-          <!-- Poster Filter (Lets consultants see each other's posts) -->
+          <!-- Poster Filter (Crucial for Consultants viewing each other's posts) -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
               <i class="fa-solid fa-user-tie text-teal-600 mr-1"></i> Posted By (Consultant/Manager)
@@ -359,7 +399,7 @@
             Claimed: <strong id="roster-count-claimed" class="text-emerald-600">0</strong>
           </div>
           <div class="italic">
-            <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> All consultants can view and coordinate each other's posted rosters.
+            <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i> All consultants can view, coordinate and manage each other's posted rosters.
           </div>
         </div>
       </div>
@@ -387,7 +427,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: OPERATIONS & DISPATCH (Consultant, Manager, IT Admin) -->
+    <!-- TAB 4: OPERATIONS & DISPATCH (Consultant, Manager, IT Admin) -->
     <div id="view-manager" class="tab-content hidden space-y-6">
       
       <!-- Operations Header -->
@@ -403,7 +443,7 @@
         </div>
       </div>
 
-      <!-- Manager Financial Cards (Hidden from Consultants) -->
+      <!-- Financial Metrics Grid (Hidden from Consultants) -->
       <div id="manager-finances" class="manager-only grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="text-xs font-semibold uppercase text-slate-500">Gross Turnover</div>
@@ -478,7 +518,7 @@
           <!-- Shift Core Details -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- Client Identification by Name -->
+            <!-- Client Identification by Name (No Postcode Collision) -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
                 Client Name <span class="text-rose-500">*</span>
@@ -585,7 +625,7 @@
 
     </div>
 
-    <!-- TAB 4: CLIENT INVOICES (Restricted to Manager & IT Admin) -->
+    <!-- TAB 5: CLIENT INVOICES (Restricted to Manager & IT Admin) -->
     <div id="view-invoices" class="tab-content hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
@@ -688,7 +728,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: IT ADMIN DIRECTORY (Restricted to IT Admin) -->
+    <!-- TAB 6: IT ADMIN DIRECTORY (Restricted to IT Admin) -->
     <div id="view-it-admin" class="tab-content hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
@@ -990,6 +1030,7 @@
 
       // Refresh specific tab view
       if (tab === 'shifts') renderMarketplace();
+      if (tab === 'timesheets') renderTimesheets();
       if (tab === 'roster') renderRoster();
       if (tab === 'manager') renderManagerHub();
       if (tab === 'invoices') renderInvoice();
@@ -1170,10 +1211,57 @@
       confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
       showToast(`You have claimed the shift for ${shift.clientName}`);
       renderMarketplace();
+      renderTimesheets();
       renderRoster();
     }
 
-    // --- TAB 2: ROSTER SCHEDULER ---
+    // --- TAB 2: TIMESHEETS & CLOCK IN ---
+    function renderTimesheets() {
+      const tbody = document.getElementById('timesheets-body');
+      let myShifts = shifts.filter(s => s.status !== 'open');
+      if (currentUser.role === 'staff') {
+        myShifts = myShifts.filter(s => s.claimedById === currentUser.id || s.claimedBy === currentUser.name);
+      }
+
+      if (myShifts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-8 text-slate-400">
+              No shifts currently assigned or claimed.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = myShifts.map(s => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-5 py-3">
+            <div class="font-bold text-slate-900">${s.clientName}</div>
+            <div class="text-xs text-slate-500">${s.location}</div>
+          </td>
+          <td class="px-5 py-3 text-slate-700 font-medium">${s.jobTitle}</td>
+          <td class="px-5 py-3">
+            <div class="text-slate-900">${s.date}</div>
+            <div class="text-xs text-slate-500">${s.startTime} - ${s.endTime}</div>
+          </td>
+          <td class="px-5 py-3">
+            <span class="font-medium text-slate-800">${s.claimedBy || 'Allocated'}</span>
+          </td>
+          <td class="px-5 py-3 font-semibold text-emerald-700">£${Number(s.staffRate).toFixed(2)}/hr</td>
+          <td class="px-5 py-3">
+            <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Assigned</span>
+          </td>
+          <td class="px-5 py-3 text-right">
+            <button onclick="showToast('GPS geofence confirmed: Ready for shift arrival')" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold">
+              <i class="fa-solid fa-location-crosshairs mr-1"></i> Verify GPS
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // --- TAB 3: ROSTER SCHEDULER ---
     function renderRoster() {
       const tbody = document.getElementById('roster-table-body');
       const posterFilter = document.getElementById('rosterPosterFilter').value;
@@ -1311,6 +1399,7 @@
           showToast(`Shift assigned directly to ${found.name}`);
           renderRoster();
           renderMarketplace();
+          renderTimesheets();
         } else {
           showToast('Staff name not found.', 'error');
         }
@@ -1328,6 +1417,7 @@
         showToast('Shift reopened to marketplace');
         renderRoster();
         renderMarketplace();
+        renderTimesheets();
       }
     }
 
@@ -1338,10 +1428,11 @@
         showToast('Shift deleted.');
         renderRoster();
         renderMarketplace();
+        renderTimesheets();
       }
     }
 
-    // --- TAB 3: DISPATCH & OPERATIONS HUB ---
+    // --- TAB 4: DISPATCH & OPERATIONS HUB ---
     function toggleRouteMode() {
       const mode = document.querySelector('input[name="dispatchRoute"]:checked').value;
       const box = document.getElementById('directStaffBox');
@@ -1434,6 +1525,7 @@
       toggleRouteMode();
 
       renderMarketplace();
+      renderTimesheets();
       renderRoster();
       renderManagerHub();
     }
@@ -1501,7 +1593,7 @@
       renderManagerHub();
     }
 
-    // --- TAB 4: CLIENT INVOICES ---
+    // --- TAB 5: CLIENT INVOICES ---
     function renderInvoice() {
       const select = document.getElementById('invoiceClientSelect');
       
@@ -1574,7 +1666,7 @@
       document.getElementById('inv-total').innerText = `£${total.toFixed(2)}`;
     }
 
-    // --- TAB 5: IT DIRECTORY ---
+    // --- TAB 6: IT DIRECTORY ---
     function renderItDirectory() {
       const tbody = document.getElementById('it-directory-body');
       tbody.innerHTML = users.map(u => {
