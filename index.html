@@ -196,14 +196,13 @@
           </div>
         </div>
 
-        <!-- Navigation Tabs (HMRC Taxes & GPS Diagnostics Removed) -->
+        <!-- Navigation Tabs -->
         <nav class="hidden md:flex items-center space-x-1" id="nav-tabs-container">
           <button onclick="switchTab('shifts')" id="tab-shifts" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
             <i class="fa-solid fa-store text-slate-400"></i>
             <span>Shift Marketplace</span>
           </button>
 
-          <!-- Timesheets / Shifts -->
           <button onclick="switchTab('timesheets')" id="tab-timesheets" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
             <i class="fa-solid fa-clock text-slate-400"></i>
             <span>Timesheets &amp; Shifts</span>
@@ -353,7 +352,6 @@
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           
-          <!-- Poster Filter (Consultants see each other's posts) -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
               <i class="fa-solid fa-user-tie text-teal-600 mr-1"></i> Posted By (Consultant/Manager)
@@ -485,7 +483,6 @@
 
         <form id="formDispatch" onsubmit="handleDispatch(event)" class="space-y-5">
           
-          <!-- Dispatch Routing Method -->
           <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <label class="block text-xs font-bold uppercase text-slate-700">Dispatch Routing Method</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -749,7 +746,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Realtime DB Target:</span>
-                <span id="fb-live-url" class="font-mono text-slate-800 truncate max-w-[210px]" title="https://ennins-domestic-hr-default-rtdb.europe-west1.firebasedatabase.app">europe-west1.firebasedatabase.app</span>
+                <span id="fb-live-url" class="font-mono text-slate-800 truncate max-w-[210px]">europe-west1.firebasedatabase.app</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Synchronized Staff Accounts:</span>
@@ -775,36 +772,36 @@
           <div>
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div class="flex items-center gap-2.5">
-                <span class="relative flex h-3 w-3">
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                </span>
-                <span class="font-bold text-slate-800 text-sm">EmailJS Service: Active</span>
+                <span id="emailjs-dot" class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                <span id="emailjs-title" class="font-bold text-slate-800 text-sm">EmailJS Service</span>
               </div>
               <span id="emailjs-status-pill" class="px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                READY
+                CONFIGURED
               </span>
             </div>
 
             <div class="text-xs text-slate-600 space-y-1.5">
               <div class="flex justify-between">
-                <span class="text-slate-500">Dispatches:</span>
-                <span class="text-slate-800">Automated Shift Claim Alerts</span>
+                <span class="text-slate-500">Service ID:</span>
+                <span id="emailjs-disp-service" class="font-mono text-slate-800 font-semibold">Not Set</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Template ID:</span>
+                <span id="emailjs-disp-template" class="font-mono text-slate-800">Not Set</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Portal Target:</span>
                 <a href="https://gtchr.co.uk" target="_blank" class="text-blue-600 font-semibold underline">https://gtchr.co.uk</a>
               </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">Registered Office:</span>
-                <span class="text-slate-700">71-75 Shelton Street, London</span>
-              </div>
             </div>
           </div>
 
           <div class="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-envelope-circle-check mr-1"></i> Notification Delivery</span>
-            <button onclick="sendTestEmailNotification()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white shadow-sm">
-              <i class="fa-solid fa-paper-plane mr-1"></i> Send Test Notification
+            <button onclick="openEmailJSConfigModal()" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-xs font-semibold text-blue-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-gear"></i> Edit Config
+            </button>
+            <button onclick="sendTestEmailNotification()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-xs font-semibold text-white shadow-sm flex items-center gap-1">
+              <i class="fa-solid fa-paper-plane"></i> Send Test Notification
             </button>
           </div>
         </div>
@@ -837,7 +834,7 @@
 
   </main>
 
-  <!-- ================= MODAL: ADD USER (IT ADMIN) ================= -->
+  <!-- ================= MODAL: ADD USER ================= -->
   <div id="modal-add-user" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-xl p-6 max-w-md w-full shadow-xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -880,7 +877,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: FIREBASE CONFIG (IT ADMIN) ================= -->
+  <!-- ================= MODAL: FIREBASE CONFIG ================= -->
   <div id="modal-firebase-config" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-xl p-6 max-w-lg w-full shadow-xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -927,10 +924,57 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: EMAILJS CONFIGURATION (NEW) ================= -->
+  <div id="modal-emailjs-config" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 max-w-md w-full shadow-xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div>
+          <h4 class="font-bold text-slate-900 text-base">EmailJS Configuration</h4>
+          <p class="text-xs text-slate-500">From your <a href="https://dashboard.emailjs.com" target="_blank" class="text-blue-600 underline">EmailJS Dashboard</a></p>
+        </div>
+        <button onclick="closeEmailJSConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="formEmailJSConfig" onsubmit="saveEmailJSConfig(event)" class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+            Service ID <span class="text-rose-500">*</span>
+          </label>
+          <input type="text" id="cfgEmailServiceId" required placeholder="e.g. service_xxxxxxx"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
+          <span class="text-[11px] text-slate-400">Found in Email Services tab</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+            Template ID <span class="text-rose-500">*</span>
+          </label>
+          <input type="text" id="cfgEmailTemplateId" required placeholder="e.g. template_xxxxxxx"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
+          <span class="text-[11px] text-slate-400">Found in Email Templates tab</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+            Public Key (User ID) <span class="text-rose-500">*</span>
+          </label>
+          <input type="text" id="cfgEmailPublicKey" required placeholder="e.g. YOUR_PUBLIC_KEY"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
+          <span class="text-[11px] text-slate-400">Found in Account &gt; General &gt; API Keys</span>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeEmailJSConfigModal()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save Email Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= NOTIFICATION TOAST ================= -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
-  <!-- ================= APPLICATION & REALTIME FIREBASE SYNC ================= -->
+  <!-- ================= APPLICATION & REALTIME CLOUD SYNC ================= -->
   <script>
     // --- EXACT VERIFIED FIREBASE CONFIGURATION (ennins-domestic-hr) ---
     const APP_FIREBASE_CONFIG = {
@@ -944,7 +988,6 @@
       measurementId: "G-97W3NF50JG"
     };
 
-    // Store verified config in localStorage
     let fbConfig = APP_FIREBASE_CONFIG;
     localStorage.setItem('gtc_firebase_config', JSON.stringify(fbConfig));
 
@@ -1057,13 +1100,11 @@
 
         const rtdb = firebase.database();
 
-        // 1. Connection listener
         rtdb.ref('.info/connected').on('value', snap => {
           isFirebaseLive = snap.val() === true;
           updateFirebaseStatusUI(isFirebaseLive);
         });
 
-        // 2. Realtime sync for USERS (Restores all staff signed up)
         rtdb.ref('gtc_users').on('value', snap => {
           const cloudData = snap.val();
           if (cloudData) mergeUsersFromCloud(Object.values(cloudData));
@@ -1074,7 +1115,6 @@
           if (cloudData) mergeUsersFromCloud(Object.values(cloudData));
         });
 
-        // 3. Realtime sync for SHIFTS
         rtdb.ref('gtc_shifts').on('value', snap => {
           const cloudData = snap.val();
           if (cloudData) {
@@ -1085,12 +1125,10 @@
             renderTimesheets();
             renderManagerHub();
           } else {
-            // Seed cloud if initially empty
             shifts.forEach(s => rtdb.ref('gtc_shifts/' + s.id).set(s));
           }
         });
 
-        // 4. Realtime sync for CLIENTS
         rtdb.ref('gtc_clients').on('value', snap => {
           const cloudData = snap.val();
           if (cloudData) {
@@ -1181,56 +1219,130 @@
 
     // --- EMAILJS INTEGRATION ---
     let emailjsConfig = JSON.parse(localStorage.getItem('gtc_emailjs_config')) || {
-      publicKey: "user_gtc_key",
-      serviceId: "service_gtc_shifts",
-      templateId: "template_shift_dispatch"
+      publicKey: "",
+      serviceId: "",
+      templateId: ""
     };
 
     function initEmailJS() {
       try {
-        if (window.emailjs && emailjsConfig.publicKey) {
-          emailjs.init(emailjsConfig.publicKey);
+        if (window.emailjs && emailjsConfig.publicKey && emailjsConfig.publicKey.trim().length > 3) {
+          emailjs.init(emailjsConfig.publicKey.trim());
+          updateEmailJSStatusUI(true);
+        } else {
+          updateEmailJSStatusUI(false);
         }
-      } catch(e) { console.warn('EmailJS init notice:', e); }
+      } catch(e) {
+        console.warn('EmailJS init notice:', e);
+        updateEmailJSStatusUI(false);
+      }
+    }
+
+    function updateEmailJSStatusUI(ready) {
+      const dot = document.getElementById('emailjs-dot');
+      const title = document.getElementById('emailjs-title');
+      const pill = document.getElementById('emailjs-status-pill');
+      const sDisp = document.getElementById('emailjs-disp-service');
+      const tDisp = document.getElementById('emailjs-disp-template');
+
+      if (sDisp) sDisp.innerText = emailjsConfig.serviceId || 'Not Configured';
+      if (tDisp) tDisp.innerText = emailjsConfig.templateId || 'Not Configured';
+
+      if (ready) {
+        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-emerald-500';
+        if (title) title.innerHTML = `<span class="text-emerald-700 font-bold">EmailJS: Ready &amp; Active</span>`;
+        if (pill) {
+          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          pill.innerText = 'ACTIVE';
+        }
+      } else {
+        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-amber-500';
+        if (title) title.innerHTML = `<span class="text-amber-700 font-bold">EmailJS: Setup Required</span>`;
+        if (pill) {
+          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200';
+          pill.innerText = 'CLICK EDIT CONFIG';
+        }
+      }
+    }
+
+    function openEmailJSConfigModal() {
+      document.getElementById('cfgEmailServiceId').value = emailjsConfig.serviceId || '';
+      document.getElementById('cfgEmailTemplateId').value = emailjsConfig.templateId || '';
+      document.getElementById('cfgEmailPublicKey').value = emailjsConfig.publicKey || '';
+      document.getElementById('modal-emailjs-config').classList.remove('hidden');
+    }
+
+    function closeEmailJSConfigModal() {
+      document.getElementById('modal-emailjs-config').classList.add('hidden');
+    }
+
+    function saveEmailJSConfig(e) {
+      e.preventDefault();
+      emailjsConfig.serviceId = document.getElementById('cfgEmailServiceId').value.trim();
+      emailjsConfig.templateId = document.getElementById('cfgEmailTemplateId').value.trim();
+      emailjsConfig.publicKey = document.getElementById('cfgEmailPublicKey').value.trim();
+
+      localStorage.setItem('gtc_emailjs_config', JSON.stringify(emailjsConfig));
+      closeEmailJSConfigModal();
+      initEmailJS();
+      showToast('EmailJS configuration saved successfully!');
     }
 
     function sendShiftNotificationEmail(shift, recipientEmail, recipientName, action = 'allocated') {
-      try {
-        if (window.emailjs && emailjsConfig.serviceId && emailjsConfig.templateId) {
-          const params = {
-            to_name: recipientName,
-            to_email: recipientEmail,
-            client_name: shift.clientName,
-            job_title: shift.jobTitle,
-            shift_date: shift.date,
-            shift_hours: `${shift.startTime} - ${shift.endTime}`,
-            hourly_rate: `£${Number(shift.staffRate).toFixed(2)}/hr`,
-            portal_url: 'https://gtchr.co.uk',
-            action_type: action,
-            company_address: 'GTC Healthcare Ltd, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ'
-          };
-          emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, params);
-        }
-      } catch(e) { console.warn(e); }
+      if (!window.emailjs || !emailjsConfig.serviceId || !emailjsConfig.templateId || !emailjsConfig.publicKey) {
+        console.warn('EmailJS keys not configured.');
+        return;
+      }
+      const params = {
+        to_name: recipientName,
+        to_email: recipientEmail,
+        client_name: shift.clientName,
+        job_title: shift.jobTitle,
+        shift_date: shift.date,
+        shift_hours: `${shift.startTime} - ${shift.endTime}`,
+        hourly_rate: `£${Number(shift.staffRate).toFixed(2)}/hr`,
+        portal_url: 'https://gtchr.co.uk',
+        action_type: action,
+        company_address: 'GTC Healthcare Ltd, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ'
+      };
+      emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, params)
+        .then(res => console.log('EmailJS sent:', res))
+        .catch(err => console.error('EmailJS error:', err));
     }
 
     function sendTestEmailNotification() {
-      const email = prompt('Enter email to receive test shift dispatch notification:', currentUser ? currentUser.email : 'admin@gtchr.co.uk');
+      if (!emailjsConfig.serviceId || !emailjsConfig.templateId || !emailjsConfig.publicKey) {
+        showToast('Please click "Edit Config" to enter your EmailJS credentials first.', 'error');
+        openEmailJSConfigModal();
+        return;
+      }
+
+      const email = prompt('Enter recipient email address for test notification:', currentUser ? currentUser.email : 'admin@gtchr.co.uk');
       if (!email) return;
 
-      showToast(`Sending test alert to ${email}...`);
-      sendShiftNotificationEmail({
-        clientName: 'St. Jude Care Centre',
-        jobTitle: 'Support worker',
-        date: '2026-09-20',
-        startTime: '08:00',
-        endTime: '16:00',
-        staffRate: 15.50
-      }, email, 'Valued Team Member', 'dispatched');
+      showToast(`Contacting EmailJS for ${email}...`);
 
-      setTimeout(() => {
-        showToast(`Dispatched test to ${email}. Check inbox & spam.`);
-      }, 1000);
+      const params = {
+        to_name: currentUser ? currentUser.name : 'Team Administrator',
+        to_email: email.trim(),
+        client_name: 'St. Jude Care Centre',
+        job_title: 'Support worker',
+        shift_date: '2026-09-20',
+        shift_hours: '08:00 - 16:00',
+        hourly_rate: '£15.50/hr',
+        portal_url: 'https://gtchr.co.uk',
+        action_type: 'Test Verification Dispatch',
+        company_address: 'GTC Healthcare Ltd, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ'
+      };
+
+      emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, params)
+        .then(response => {
+          showToast(`✅ Email sent successfully! (Status: ${response.status})`);
+        })
+        .catch(err => {
+          const errMsg = (err && (err.text || err.message)) ? (err.text || err.message) : JSON.stringify(err);
+          showToast(`❌ EmailJS Rejected: ${errMsg}`, 'error');
+        });
     }
 
     // --- TOAST NOTIFICATIONS ---
@@ -1244,7 +1356,7 @@
       setTimeout(() => {
         t.style.opacity = '0';
         setTimeout(() => t.remove(), 300);
-      }, 3000);
+      }, 4000);
     }
 
     // --- AUTHENTICATION & LOGIN ---
@@ -1314,7 +1426,7 @@
 
       users.push(newUser);
       saveState();
-      syncUserToCloud(newUser); // Cloud Realtime Database write
+      syncUserToCloud(newUser);
 
       currentUser = newUser;
       localStorage.setItem('gtc_current_user', JSON.stringify(currentUser));
@@ -2099,7 +2211,7 @@
       renderItDirectory();
     }
 
-    // --- FIREBASE CONFIGURATION MODAL HANDLERS ---
+    // --- FIREBASE CONFIG MODAL HANDLERS ---
     function openFirebaseConfigModal() {
       document.getElementById('fbCfgProjectId').value = APP_FIREBASE_CONFIG.projectId;
       document.getElementById('fbCfgDatabaseURL').value = APP_FIREBASE_CONFIG.databaseURL;
