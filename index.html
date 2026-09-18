@@ -1147,10 +1147,11 @@
       localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
       pushToCloud();
 
-      // Email Automation for Sign Up
+      // Email Automation for Sign Up (now wrapped in fail-safes so it doesn't crash the script)
       notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
       notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
 
+      // UI Transition
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
@@ -1300,17 +1301,24 @@
       localStorage.setItem('enin_email_service', sId);
       localStorage.setItem('enin_email_template', tId);
 
-      showToast("Sending test notification via EmailJS...", "bg-snoo-blue/10 text-snoo-blue");
-      emailjs.send(sId, tId, {
-        to_name: currentUser ? currentUser.name : "Admin",
-        to_email: testEmail,
-        subject: "Golden Tree HR API Test",
-        message: "Test connection successful! Golden Tree HR notifications are active."
-      }, pKey).then(() => {
-        showToast("✓ EmailJS Notification Sent Successfully! Config Saved.", "bg-emerald-50 text-emerald-800 border-emerald-200");
-      }).catch(err => {
-        showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800 border-rose-200");
-      });
+      try {
+        if (typeof emailjs === 'undefined') {
+          return showToast("Error: EmailJS library blocked by your browser.", "bg-rose-50 text-rose-800 border-rose-200");
+        }
+        showToast("Sending test notification via EmailJS...", "bg-snoo-blue/10 text-snoo-blue");
+        emailjs.send(sId, tId, {
+          to_name: currentUser ? currentUser.name : "Admin",
+          to_email: testEmail,
+          subject: "Golden Tree HR API Test",
+          message: "Test connection successful! Golden Tree HR notifications are active."
+        }, pKey).then(() => {
+          showToast("✓ EmailJS Notification Sent Successfully! Config Saved.", "bg-emerald-50 text-emerald-800 border-emerald-200");
+        }).catch(err => {
+          showToast("EmailJS Error: " + (err.text || "Check console"), "bg-rose-50 text-rose-800 border-rose-200");
+        });
+      } catch (e) {
+        showToast("EmailJS Crash: " + e.message, "bg-rose-50 text-rose-800 border-rose-200");
+      }
     }
 
     function notifyStaff(staffId, subject, details) {
@@ -1323,16 +1331,24 @@
       const tId = localStorage.getItem('enin_email_template');
 
       if (pKey && sId && tId) {
-        emailjs.send(sId, tId, {
-          to_name: s.name,
-          to_email: s.email,
-          subject: subject,
-          message: details
-        }, pKey).then(() => {
-          console.log("Automated email sent to " + s.email);
-        }).catch(err => {
-          console.error("EmailJS failed:", err);
-        });
+        try {
+          if (typeof emailjs !== 'undefined') {
+            emailjs.send(sId, tId, {
+              to_name: s.name,
+              to_email: s.email,
+              subject: subject,
+              message: details
+            }, pKey).then(() => {
+              console.log("Automated email sent to " + s.email);
+            }).catch(err => {
+              console.error("EmailJS failed:", err);
+            });
+          } else {
+            console.warn("EmailJS library is blocked by browser. Email skipped.");
+          }
+        } catch (e) {
+          console.error("Error triggering EmailJS:", e);
+        }
       } else {
         console.warn("EmailJS credentials not configured. Email not sent.");
       }
