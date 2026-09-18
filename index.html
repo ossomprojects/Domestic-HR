@@ -179,7 +179,9 @@
         <button onclick="navigateTab('manager')" id="tab-manager" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
         </button>
-        <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn manager-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
+        
+        <!-- Client Invoices (Managers & IT ONLY - No Consultants) -->
+        <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn invoice-access py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Client Invoices
         </button>
 
@@ -272,7 +274,8 @@
       <!-- ================= TAB 3: OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- KPIs (Hidden from Consultants) -->
+        <div id="kpiFinancials" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Total Client Revenue</span>
             <p id="sumRevenue" class="text-2xl font-black text-snoo-navy mt-1">£0.00</p>
@@ -407,7 +410,8 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
+            <!-- Financials (Hidden from Consultants) -->
+            <div id="dispatchFinancials" class="grid grid-cols-2 gap-2 hidden">
               <div>
                 <label class="font-bold block mb-1 text-slate-700">Staff Pay (£/hr):</label>
                 <input type="number" id="newShiftPay" value="15.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
@@ -430,13 +434,8 @@
             </h3>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
-                  <tr>
-                    <th class="p-3">Staff & Client</th>
-                    <th class="p-3">Status</th>
-                    <th class="p-3 text-right text-amber-700">Staff Pay</th>
-                    <th class="p-3 text-right text-emerald-700">Gross Margin</th>
-                  </tr>
+                <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]" id="managerTableHeader">
+                  <!-- Injected via JS based on role -->
                 </thead>
                 <tbody id="managerTable" class="divide-y"></tbody>
               </table>
@@ -750,14 +749,19 @@
           <label class="font-bold text-slate-700 block mb-1">Shift Time</label>
           <input type="text" id="amendShiftTime" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="09:00 - 13:00">
         </div>
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">Staff Pay (£/hr)</label>
-          <input type="number" id="amendShiftPay" step="0.25" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+        
+        <!-- Hidden from consultants -->
+        <div id="amendFinancials" class="space-y-3 hidden">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Staff Pay (£/hr)</label>
+            <input type="number" id="amendShiftPay" step="0.25" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Client Charge (£/hr)</label>
+            <input type="number" id="amendShiftCharge" step="0.25" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
+          </div>
         </div>
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">Client Charge (£/hr)</label>
-          <input type="number" id="amendShiftCharge" step="0.25" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium">
-        </div>
+
         <button onclick="saveAmendedShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl mt-2 transition cursor-pointer">
           Save Changes
         </button>
@@ -1118,14 +1122,19 @@
     function applyRolePermissions() {
       const isApproved = currentUser && (currentUser.status === 'active' || currentUser.role === 'it_admin');
       const isManagerOrIT = currentUser && isApproved && (currentUser.role === 'manager' || currentUser.role === 'it_admin' || currentUser.role === 'consultant');
+      const isInvoiceAccess = currentUser && isApproved && (currentUser.role === 'manager' || currentUser.role === 'it_admin');
       const isAdminTabAccess = currentUser && isApproved && (currentUser.role === 'it_admin' || currentUser.role === 'consultant');
       const isSuperAdmin = currentUser && isApproved && currentUser.role === 'it_admin';
 
-      // Hide tabs entirely if pending (even if consultant)
+      // Hide tabs entirely if pending
       document.getElementById('tab-roster').classList.toggle('hidden', !isApproved);
 
       document.querySelectorAll('.manager-only').forEach(el => {
         el.classList.toggle('hidden', !isManagerOrIT);
+      });
+
+      document.querySelectorAll('.invoice-access').forEach(el => {
+        el.classList.toggle('hidden', !isInvoiceAccess);
       });
 
       document.querySelectorAll('.admin-only').forEach(el => {
@@ -1153,7 +1162,11 @@
         showToast("Access Denied: Super Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
-      if (['manager', 'invoices'].includes(tabName) && (currentUser.role === 'staff' || !isApproved)) {
+      if (tabName === 'invoices' && !['manager', 'it_admin'].includes(currentUser.role)) {
+        showToast("Access Denied: Manager or IT Admin privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
+        return;
+      }
+      if (['manager'].includes(tabName) && (currentUser.role === 'staff' || !isApproved)) {
         showToast("Access Denied: Manager privilege required.", "bg-rose-50 text-rose-800 border-rose-200");
         return;
       }
@@ -1173,7 +1186,7 @@
 
       if (!skipSave) localStorage.setItem('enin_active_tab', tabName);
 
-      if (tabName === 'manager' || tabName === 'it-admin') updateManagerView();
+      if (tabName === 'manager') updateManagerView();
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'roster') renderRosterGrid();
     }
@@ -1363,6 +1376,11 @@
     function openAmendShift(id) {
       const s = shifts.find(x => x.id === id);
       if(!s) return;
+      
+      const showFin = ['manager', 'it_admin'].includes(currentUser.role);
+      const amFin = document.getElementById('amendFinancials');
+      if (amFin) amFin.classList.toggle('hidden', !showFin);
+
       document.getElementById('amendShiftId').value = s.id;
       document.getElementById('amendShiftTime').value = s.time || "09:00 - 13:00";
       document.getElementById('amendShiftPay').value = s.pay;
@@ -1644,8 +1662,14 @@
       const obSection = document.getElementById('itOnboardSection');
       if (obSection) obSection.classList.toggle('hidden', !isIT);
 
-      const pendingUsers = users.filter(u => u.status === 'pending');
-      const activeUsers = users.filter(u => u.status !== 'pending');
+      let pendingUsers = users.filter(u => u.status === 'pending');
+      let activeUsers = users.filter(u => u.status !== 'pending');
+
+      // CONSULTANT CONSTRAINT: ONLY SEE STAFF
+      if (isConsultant) {
+        pendingUsers = pendingUsers.filter(u => u.role === 'staff');
+        activeUsers = activeUsers.filter(u => u.role === 'staff');
+      }
 
       const pCount = pendingUsers.length;
       const hb = document.getElementById('itPendingHeaderBadge');
@@ -1659,7 +1683,7 @@
       const pTable = document.getElementById('itPendingTable');
       if (pTable) {
         if (pendingUsers.length === 0) {
-          pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending sign-ups right now. All staff are authorized.</td></tr>`;
+          pTable.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium italic">No pending staff right now.</td></tr>`;
         } else {
           pTable.innerHTML = pendingUsers.map(u => {
             let actions = '';
@@ -1671,11 +1695,7 @@
                 <button onclick="approveUser(${u.id}, 'consultant')" class="bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs">Consultant</button>
               `;
             } else if (isConsultant) {
-              if (u.role === 'staff') {
-                actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Approve as Staff</button>`;
-              } else {
-                actions = `<span class="text-[10px] text-slate-400 font-bold bg-slate-50 px-2 py-1 rounded">IT Approval Req.</span>`;
-              }
+              actions = `<button onclick="approveUser(${u.id}, 'staff')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer shadow-xs"><i class="fa-solid fa-check"></i> Approve as Staff</button>`;
             }
 
             return `
@@ -1711,14 +1731,10 @@
               <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
             `;
           } else if (isConsultant) {
-            if (u.role === 'staff') {
-              actions = `
-                <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
-                <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
-              `;
-            } else {
-              actions = '<span class="text-slate-400 font-bold text-[11px]">Restricted</span>';
-            }
+            actions = `
+              <button onclick="openEditUser(${u.id})" class="text-snoo-blue font-bold px-2 py-1 bg-snoo-blue/10 hover:bg-snoo-blue/20 rounded mr-1">Edit</button>
+              <button onclick="deleteUser(${u.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded">Del</button>
+            `;
           }
 
           return `
@@ -1884,6 +1900,7 @@
        --------------------------------------------------------- */
     function createShift() {
       let finalClientId = null;
+      // Parse float handles hidden/disabled inputs if they retain value
       const ch = parseFloat(document.getElementById('newShiftCharge').value);
 
       if (clientDispatchMode === 'existing') {
@@ -1998,6 +2015,16 @@
     }
 
     function updateManagerView() {
+      if (!currentUser) return;
+
+      const showFin = ['manager', 'it_admin'].includes(currentUser.role);
+      const kpi = document.getElementById('kpiFinancials');
+      const disp = document.getElementById('dispatchFinancials');
+      
+      // Toggle financials visibility
+      if (kpi) kpi.classList.toggle('hidden', !showFin);
+      if (disp) disp.classList.toggle('hidden', !showFin);
+
       let rev = 0, wages = 0;
       
       shifts.forEach(s => {
@@ -2014,6 +2041,17 @@
       document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
       document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
 
+      // Render Dynamic Table Header
+      document.getElementById('managerTableHeader').innerHTML = `
+        <tr>
+          <th class="p-3">Staff & Client</th>
+          <th class="p-3">Status</th>
+          ${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th>
+                       <th class="p-3 text-right text-emerald-700">Gross Margin</th>` : ''}
+        </tr>
+      `;
+
+      // Render Dynamic Table Body
       document.getElementById('managerTable').innerHTML = shifts.map(s => {
         const cl = clients.find(x => x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         const st = users.find(u => u.id === s.staffId);
@@ -2034,10 +2072,12 @@
                 <span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>
               ` : '<span class="text-slate-400 italic">Not completed</span>'}
             </td>
-            <td class="p-3 text-right">
-              <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
-            </td>
-            <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
+            ${showFin ? `
+              <td class="p-3 text-right">
+                <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span>
+              </td>
+              <td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>
+            ` : ''}
           </tr>
         `;
       }).join('');
