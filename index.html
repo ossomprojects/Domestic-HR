@@ -146,10 +146,12 @@
         </div>
 
         <div class="flex items-center space-x-3">
-          <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
-            <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
-            <span class="hidden sm:inline">Sync Cloud</span>
-          </button>
+          <div class="super-admin-only hidden">
+            <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
+              <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
+              <span class="hidden sm:inline">Sync Cloud</span>
+            </button>
+          </div>
 
           <div class="text-right hidden sm:block">
             <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900">User</p>
@@ -2348,4 +2350,3 @@
   </script>
 </body>
 </html>
-```
