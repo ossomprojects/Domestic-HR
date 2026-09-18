@@ -16,10 +16,11 @@
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <!-- Firebase 9 Compat SDKs -->
+  <!-- Firebase 9 Compat SDKs (App, Auth, Database, Firestore) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -60,7 +61,6 @@
   <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
     <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md p-8 relative my-auto">
       
-      <!-- Brand Logo -->
       <div class="text-center mb-6">
         <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-600 text-white shadow-md mb-3">
           <i class="fa-solid fa-hospital-user text-2xl"></i>
@@ -69,7 +69,6 @@
         <p class="text-sm text-slate-500 mt-0.5">Staff, Consultant &amp; Operations Portal</p>
       </div>
 
-      <!-- Error Alert -->
       <div id="auth-error-box" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
         <i class="fa-solid fa-circle-exclamation"></i>
         <span id="auth-error-msg">Invalid login credentials</span>
@@ -205,7 +204,7 @@
             <span>Shift Marketplace</span>
           </button>
 
-          <!-- Timesheets / Clock In (Staff & Ops) -->
+          <!-- Timesheets / Shifts -->
           <button onclick="switchTab('timesheets')" id="tab-timesheets" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
             <i class="fa-solid fa-clock text-slate-400"></i>
             <span>Timesheets &amp; Shifts</span>
@@ -232,7 +231,7 @@
           <!-- Restricted to IT Admin -->
           <button onclick="switchTab('it-admin')" id="tab-it-admin" class="tab-btn it-only px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center gap-2">
             <i class="fa-solid fa-shield-halved text-slate-400"></i>
-            <span>IT Admin</span>
+            <span>IT Admin &amp; Cloud</span>
           </button>
         </nav>
 
@@ -300,10 +299,7 @@
         </div>
       </div>
 
-      <!-- Shifts Grid -->
-      <div id="shifts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Injected via JavaScript -->
-      </div>
+      <div id="shifts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
     <!-- TAB 2: TIMESHEETS & CLOCK IN -->
@@ -332,9 +328,7 @@
                 <th class="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="timesheets-body" class="divide-y divide-slate-100 text-slate-700">
-              <!-- Rendered dynamically -->
-            </tbody>
+            <tbody id="timesheets-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
           </table>
         </div>
       </div>
@@ -361,7 +355,7 @@
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           
-          <!-- Poster Filter (Crucial for Consultants viewing each other's posts) -->
+          <!-- Poster Filter -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">
               <i class="fa-solid fa-user-tie text-teal-600 mr-1"></i> Posted By (Consultant/Manager)
@@ -428,9 +422,7 @@
                 <th class="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="roster-table-body" class="divide-y divide-slate-100 text-slate-700">
-              <!-- Rendered dynamically -->
-            </tbody>
+            <tbody id="roster-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
           </table>
         </div>
       </div>
@@ -439,7 +431,6 @@
     <!-- TAB 4: OPERATIONS & DISPATCH (Consultant, Manager, IT Admin) -->
     <div id="view-manager" class="tab-content hidden space-y-6">
       
-      <!-- Operations Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <h2 id="manager-hub-title" class="text-xl font-bold text-slate-900">Operations &amp; Shift Dispatch Hub</h2>
@@ -496,7 +487,7 @@
 
         <form id="formDispatch" onsubmit="handleDispatch(event)" class="space-y-5">
           
-          <!-- Dispatch Routing: Marketplace vs Direct Staff -->
+          <!-- Dispatch Routing Method -->
           <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <label class="block text-xs font-bold uppercase text-slate-700">Dispatch Routing Method</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -519,7 +510,7 @@
             <div id="directStaffBox" class="hidden pt-2">
               <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Specific Staff Member</label>
               <select id="directStaffSelect" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
-                <!-- Populated via script -->
+                <!-- Populated dynamically with all cloud staff -->
               </select>
             </div>
           </div>
@@ -537,21 +528,18 @@
               <datalist id="clientListSuggestions"></datalist>
             </div>
 
-            <!-- Location -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Facility Address / Postcode</label>
               <input type="text" id="shiftAddress" required placeholder="e.g. 14 High Street, Manchester, M1 4BT"
                 class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
 
-            <!-- Shift Date -->
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Shift Date</label>
               <input type="date" id="shiftDate" required
                 class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500" />
             </div>
 
-            <!-- Shift Times -->
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Start Time</label>
@@ -565,7 +553,6 @@
               </div>
             </div>
 
-            <!-- Staff Rate & Client Rate -->
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Staff Pay (£/hr)</label>
@@ -581,7 +568,7 @@
 
           </div>
 
-          <!-- Job Titles Dropdown (Placed Exactly Above Service Description) -->
+          <!-- Job Titles Dropdown (Exactly Above Service Description) -->
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
               Job Title <span class="text-rose-500">*</span>
@@ -603,7 +590,6 @@
               class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
 
-          <!-- Submit Button -->
           <div class="flex items-center justify-end gap-3 pt-2">
             <button type="reset" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition">
               Clear
@@ -627,9 +613,7 @@
             <i class="fa-solid fa-plus"></i> Add Client
           </button>
         </div>
-        <div id="clients-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <!-- Rendered dynamically -->
-        </div>
+        <div id="clients-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </div>
 
     </div>
@@ -646,12 +630,11 @@
         </button>
       </div>
 
-      <!-- Invoice Client Selection (Preserves selected client across generation) -->
+      <!-- Invoice Client Selection (Preserves selection across reload) -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="w-full sm:w-80">
           <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Select Client for Statement</label>
           <select id="invoiceClientSelect" onchange="renderInvoice()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500">
-            <!-- Client Options -->
           </select>
         </div>
         <div class="text-xs text-slate-500">
@@ -661,8 +644,6 @@
 
       <!-- Printable Invoice Document -->
       <div id="invoice-printable" class="bg-white rounded-xl border border-slate-200 p-8 shadow-sm text-slate-800">
-        
-        <!-- Invoice Header -->
         <div class="flex justify-between items-start border-b border-slate-200 pb-6 mb-6">
           <div>
             <div class="text-2xl font-bold text-blue-700 flex items-center gap-2">
@@ -684,14 +665,12 @@
           </div>
         </div>
 
-        <!-- Bill To -->
         <div class="mb-6">
           <div class="text-xs font-semibold text-slate-500 uppercase">BILLED TO:</div>
           <div class="text-base font-bold text-slate-900" id="inv-client-name">Client Name</div>
           <div class="text-xs text-slate-600" id="inv-client-addr">Address</div>
         </div>
 
-        <!-- Table -->
         <div class="overflow-x-auto mb-6">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-700 border-b border-slate-200">
@@ -704,13 +683,10 @@
                 <th class="py-2.5 px-3 text-right">Amount</th>
               </tr>
             </thead>
-            <tbody id="inv-items-body" class="divide-y divide-slate-100">
-              <!-- Rendered items -->
-            </tbody>
+            <tbody id="inv-items-body" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
 
-        <!-- Totals -->
         <div class="flex justify-end pt-4 border-t border-slate-200">
           <div class="w-60 space-y-1.5 text-sm">
             <div class="flex justify-between text-slate-600">
@@ -728,23 +704,20 @@
           </div>
         </div>
 
-        <!-- Official Footer -->
         <div class="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500 leading-relaxed">
           GTC Healthcare Ltd &bull; 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ &bull; VAT Reg: GB 459 1823 44<br>
           For billing queries please contact accounts@gtchr.co.uk &bull; Login &amp; Shifts: <a href="https://gtchr.co.uk" class="text-blue-600 underline">gtchr.co.uk</a>
         </div>
-
       </div>
     </div>
 
-    <!-- TAB 6: IT ADMIN DIRECTORY & LIVE STATUS (Restricted to IT Admin) -->
+    <!-- TAB 6: IT ADMIN DIRECTORY & LIVE STATUS -->
     <div id="view-it-admin" class="tab-content hidden space-y-6">
       
-      <!-- IT Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <h2 class="text-xl font-bold text-slate-900">IT Administration &amp; Cloud Services</h2>
-          <p class="text-sm text-slate-500 mt-1">Live cloud status, database connections, user accounts, and email dispatch.</p>
+          <p class="text-sm text-slate-500 mt-1">Live cloud status, database synchronization, user accounts, and email dispatch.</p>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="openAddUserModal()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow transition flex items-center gap-2">
@@ -753,7 +726,7 @@
         </div>
       </div>
 
-      <!-- LIVE FIREBASE & EMAILJS STATUS DASHBOARD (Requested Feature) -->
+      <!-- LIVE FIREBASE & EMAILJS STATUS DASHBOARD -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
         <!-- Live Firebase Status Card -->
@@ -762,36 +735,36 @@
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div class="flex items-center gap-2.5">
                 <span class="relative flex h-3 w-3">
-                  <span id="fb-ping-indicator" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span id="fb-dot-indicator" class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  <span id="fb-ping-indicator" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 hidden"></span>
+                  <span id="fb-dot-indicator" class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
                 </span>
-                <span id="fb-live-title" class="font-bold text-slate-800 text-sm">Firebase Live: Connected</span>
+                <span id="fb-live-title" class="font-bold text-slate-800 text-sm">Firebase: Checking Connection...</span>
               </div>
-              <span id="fb-status-pill" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                ACTIVE &bull; WEBSOCKET
+              <span id="fb-status-pill" class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                INITIALIZING
               </span>
             </div>
 
             <div class="text-xs text-slate-600 space-y-1.5">
               <div class="flex justify-between">
-                <span class="text-slate-500">Realtime DB URL:</span>
-                <span id="fb-live-url" class="font-mono text-slate-800 truncate max-w-[200px]" title="Default Firebase Realtime Database">Connected</span>
+                <span class="text-slate-500">Database Target:</span>
+                <span id="fb-live-url" class="font-mono text-slate-800 truncate max-w-[210px]">Loading...</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-500">Synchronized Staff &amp; Users:</span>
-                <span id="fb-live-users-count" class="font-semibold text-slate-800">0 Accounts</span>
+                <span class="text-slate-500">Synchronized Staff Accounts:</span>
+                <span id="fb-live-users-count" class="font-semibold text-slate-800">Checking...</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Synchronized Shifts:</span>
-                <span id="fb-live-shifts-count" class="font-semibold text-slate-800">0 Shifts</span>
+                <span id="fb-live-shifts-count" class="font-semibold text-slate-800">Checking...</span>
               </div>
             </div>
           </div>
 
           <div class="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-arrows-rotate mr-1"></i> Continuous Two-Way Sync</span>
-            <button onclick="openFirebaseConfigModal()" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-xs font-medium text-slate-700">
-              <i class="fa-solid fa-gear mr-1"></i> Edit Firebase Config
+            <span id="fb-live-note" class="text-[11px] text-slate-400"><i class="fa-solid fa-arrows-rotate mr-1"></i> Two-Way Sync Active</span>
+            <button onclick="openFirebaseConfigModal()" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-xs font-semibold text-blue-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-gear"></i> Edit Firebase Config
             </button>
           </div>
         </div>
@@ -822,7 +795,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-500">Registered Office:</span>
-                <span class="text-slate-700">Shelton Street, London</span>
+                <span class="text-slate-700">71-75 Shelton Street, London</span>
               </div>
             </div>
           </div>
@@ -841,7 +814,7 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-4 border-b border-slate-100 flex items-center justify-between">
           <h3 class="font-bold text-slate-900 text-base">Platform User &amp; Staff Directory</h3>
-          <span class="text-xs text-slate-500">Includes all staff registered in Firebase</span>
+          <span class="text-xs text-slate-500">Includes all staff registered in Cloud Database</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
@@ -855,9 +828,7 @@
                 <th class="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="it-directory-body" class="divide-y divide-slate-100 text-slate-700">
-              <!-- Rendered dynamically -->
-            </tbody>
+            <tbody id="it-directory-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
           </table>
         </div>
       </div>
@@ -908,17 +879,38 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: FIREBASE CONFIG (IT ADMIN) ================= -->
+  <!-- ================= MODAL: FIREBASE CONFIGURATION (IT ADMIN) ================= -->
   <div id="modal-firebase-config" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-xl p-6 max-w-lg w-full shadow-xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <h4 class="font-bold text-slate-900 text-base">Firebase Realtime Configuration</h4>
+        <div>
+          <h4 class="font-bold text-slate-900 text-base">Firebase Cloud Connection Settings</h4>
+          <p class="text-xs text-slate-500">Paste your credentials directly from your Firebase Console.</p>
+        </div>
         <button onclick="closeFirebaseConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
+
+      <!-- Quick Paste Snippet Area -->
+      <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900">
+        <div class="font-bold mb-1 flex items-center gap-1.5">
+          <i class="fa-solid fa-paste"></i> Quick Paste from Firebase Console:
+        </div>
+        <textarea id="fbPasteSnippet" rows="3" placeholder='Paste your const firebaseConfig = { ... } snippet here and click "Auto-Fill Fields"'
+          class="w-full p-2 mt-1 border border-blue-300 rounded font-mono text-xs bg-white text-slate-800"></textarea>
+        <button type="button" onclick="autoFillFirebaseFromSnippet()" class="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold">
+          Auto-Fill Fields
+        </button>
+      </div>
+
       <form id="formFbConfig" onsubmit="saveFirebaseConfig(event)" class="space-y-3 text-sm">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Database URL</label>
-          <input type="text" id="fbCfgDatabaseURL" required placeholder="https://your-app-default-rtdb.firebaseio.com"
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Project ID</label>
+          <input type="text" id="fbCfgProjectId" required placeholder="e.g. gtchr-portal-12345"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Realtime Database URL (Optional if using Firestore)</label>
+          <input type="text" id="fbCfgDatabaseURL" placeholder="https://your-project-default-rtdb.firebaseio.com"
             class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
         </div>
         <div>
@@ -928,19 +920,19 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Project ID</label>
-            <input type="text" id="fbCfgProjectId" required placeholder="gtc-healthcare-hr"
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Auth Domain</label>
+            <input type="text" id="fbCfgAuthDomain" placeholder="your-project.firebaseapp.com"
               class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Auth Domain</label>
-            <input type="text" id="fbCfgAuthDomain" placeholder="gtc-healthcare-hr.firebaseapp.com"
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Storage Bucket</label>
+            <input type="text" id="fbCfgStorageBucket" placeholder="your-project.appspot.com"
               class="w-full px-3 py-2 rounded-lg border border-slate-300 font-mono text-xs focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
           <button type="button" onclick="closeFirebaseConfigModal()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 text-sm">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save &amp; Reconnect</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save &amp; Connect Live</button>
         </div>
       </form>
     </div>
@@ -949,9 +941,9 @@
   <!-- ================= NOTIFICATION TOAST ================= -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
-  <!-- ================= APPLICATION & CLOUD LOGIC ================= -->
+  <!-- ================= APPLICATION & CLOUD SYNC LOGIC ================= -->
   <script>
-    // --- Initial Fallback Seed Users ---
+    // --- Initial Base Seed Users ---
     const SEED_USERS = [
       { id: 'usr-admin', name: 'IT Admin Master', email: 'admin@gtchr.co.uk', role: 'it_admin', jobTitle: 'IT Director', rate: 35.00 },
       { id: 'usr-mgr', name: 'Claire Sterling', email: 'manager@gtchr.co.uk', role: 'manager', jobTitle: 'Operations Manager', rate: 28.00 },
@@ -962,14 +954,12 @@
       { id: 'usr-stf3', name: 'James Wilson', email: 'james@gtchr.co.uk', role: 'staff', jobTitle: 'General Cleaner', rate: 14.00 }
     ];
 
-    // --- Initial Seed Clients (Identified by Name) ---
     const SEED_CLIENTS = [
       { id: 'cli-1', name: 'St. Jude Care Centre', address: '14 High Street, Manchester, M1 4BT', contact: '0161 555 0192' },
       { id: 'cli-2', name: 'Oak Manor Residential Home', address: '88 Oak Avenue, Birmingham, B2 5HG', contact: '0121 444 8831' },
       { id: 'cli-3', name: 'The Priory Domestic Suites', address: '32 Park Lane, Leeds, LS1 2TW', contact: '0113 777 9922' }
     ];
 
-    // --- Initial Seed Shifts ---
     const SEED_SHIFTS = [
       {
         id: 'sh-101',
@@ -1027,11 +1017,21 @@
       }
     ];
 
-    // --- State Storage with multi-key recovery so no staff are lost ---
+    // State Storage: Scans all possible previous keys so NO registered staff are lost
     let currentUser = null;
-    let users = JSON.parse(localStorage.getItem('gtc_users')) || JSON.parse(localStorage.getItem('domestic_hr_users')) || SEED_USERS;
-    let clients = JSON.parse(localStorage.getItem('gtc_clients')) || SEED_CLIENTS;
-    let shifts = JSON.parse(localStorage.getItem('gtc_shifts')) || SEED_SHIFTS;
+    let users = JSON.parse(localStorage.getItem('gtc_users')) || 
+                JSON.parse(localStorage.getItem('domestic_hr_users')) || 
+                JSON.parse(localStorage.getItem('users')) || 
+                SEED_USERS;
+
+    let clients = JSON.parse(localStorage.getItem('gtc_clients')) || 
+                  JSON.parse(localStorage.getItem('clients')) || 
+                  SEED_CLIENTS;
+
+    let shifts = JSON.parse(localStorage.getItem('gtc_shifts')) || 
+                 JSON.parse(localStorage.getItem('shifts')) || 
+                 SEED_SHIFTS;
+
     let currentTab = localStorage.getItem('gtc_active_tab') || 'shifts';
     let currentInvoiceClient = localStorage.getItem('gtc_inv_client') || (clients[0] ? clients[0].name : '');
 
@@ -1042,140 +1042,142 @@
       updateLiveCounts();
     }
 
-    // --- FIREBASE CONFIGURATION & LIVE SYNC ---
-    const DEFAULT_FB_CONFIG = {
-      apiKey: "AIzaSyB_GTCHourlyHR_AppKey12984",
-      authDomain: "gtc-healthcare-hr.firebaseapp.com",
-      databaseURL: "https://gtc-healthcare-hr-default-rtdb.firebaseio.com",
-      projectId: "gtc-healthcare-hr",
-      storageBucket: "gtc-healthcare-hr.appspot.com",
-      messagingSenderId: "1029384756",
-      appId: "1:1029384756:web:gtchrportal998"
-    };
-
-    let fbConfig = JSON.parse(localStorage.getItem('gtc_firebase_config')) || DEFAULT_FB_CONFIG;
+    // --- FIREBASE DUAL CLOUD ENGINE (Realtime DB & Firestore) ---
+    let fbConfig = JSON.parse(localStorage.getItem('gtc_firebase_config')) || null;
     let isFirebaseLive = false;
+    let activeDatabaseType = 'none';
 
     function initFirebase() {
+      if (!fbConfig || !fbConfig.projectId || fbConfig.apiKey.includes('Placeholder')) {
+        updateFirebaseStatusUI(false, 'Configuration required: Please paste your Firebase credentials');
+        return;
+      }
+
       try {
         if (!firebase.apps.length) {
           firebase.initializeApp(fbConfig);
         }
-        const db = firebase.database();
 
-        // Monitor Realtime Websocket Connection
-        db.ref('.info/connected').on('value', snap => {
-          isFirebaseLive = snap.val() === true;
-          updateFirebaseStatusUI(isFirebaseLive);
-        });
-
-        // 1. Listen & merge users (Restores all staff who signed up)
-        db.ref('gtc_users').on('value', snap => {
-          const cloudUsers = snap.val();
-          if (cloudUsers) {
-            Object.values(cloudUsers).forEach(cUser => {
-              const idx = users.findIndex(u => u.email.toLowerCase() === cUser.email.toLowerCase());
-              if (idx >= 0) {
-                users[idx] = { ...users[idx], ...cUser };
-              } else {
-                users.push(cUser);
+        // 1. Attempt Realtime Database Sync if databaseURL provided
+        if (fbConfig.databaseURL && fbConfig.databaseURL.trim().length > 5) {
+          try {
+            const rtdb = firebase.database();
+            rtdb.ref('.info/connected').on('value', snap => {
+              const live = snap.val() === true;
+              if (live) {
+                isFirebaseLive = true;
+                activeDatabaseType = 'Realtime Database';
+                updateFirebaseStatusUI(true);
+                setupRealtimeDbListeners(rtdb);
               }
             });
-            saveState();
-            renderItDirectory();
-          } else {
-            // Seed cloud if empty
-            users.forEach(u => db.ref('gtc_users/' + u.id).set(u));
+          } catch(e) {
+            console.warn('RTDB connect issue, trying Firestore fallback...', e);
           }
-        });
+        }
 
-        // Also check standard 'users' path for legacy registrations
-        db.ref('users').on('value', snap => {
-          const cloudUsers = snap.val();
-          if (cloudUsers) {
-            Object.values(cloudUsers).forEach(cUser => {
-              if (cUser && cUser.email) {
-                const idx = users.findIndex(u => u.email.toLowerCase() === cUser.email.toLowerCase());
-                if (idx < 0) users.push(cUser);
-              }
-            });
-            saveState();
-            renderItDirectory();
-          }
-        });
-
-        // 2. Listen & sync shifts
-        db.ref('gtc_shifts').on('value', snap => {
-          const cloudShifts = snap.val();
-          if (cloudShifts) {
-            shifts = Object.values(cloudShifts);
-            saveState();
-            renderMarketplace();
-            renderRoster();
-            renderTimesheets();
-            renderManagerHub();
-          } else {
-            shifts.forEach(s => db.ref('gtc_shifts/' + s.id).set(s));
-          }
-        });
-
-        // 3. Listen & sync clients
-        db.ref('gtc_clients').on('value', snap => {
-          const cloudClients = snap.val();
-          if (cloudClients) {
-            clients = Object.values(cloudClients);
-            saveState();
-          } else {
-            clients.forEach(c => db.ref('gtc_clients/' + c.id).set(c));
-          }
-        });
+        // 2. Attempt Firestore Sync as companion / fallback
+        try {
+          const firestore = firebase.firestore();
+          // Test ping with users collection
+          firestore.collection('gtc_users').limit(1).onSnapshot(() => {
+            isFirebaseLive = true;
+            if (activeDatabaseType === 'none') activeDatabaseType = 'Cloud Firestore';
+            updateFirebaseStatusUI(true);
+            setupFirestoreListeners(firestore);
+          }, err => {
+            if (!isFirebaseLive) {
+              console.warn('Firestore snapshot notice:', err);
+              updateFirebaseStatusUI(false, err.message || 'Connecting...');
+            }
+          });
+        } catch(e) {
+          console.warn('Firestore initialization:', e);
+        }
 
       } catch (err) {
-        console.warn('Firebase connection check:', err);
-        updateFirebaseStatusUI(false);
+        console.error('Firebase initialization error:', err);
+        updateFirebaseStatusUI(false, err.message);
       }
     }
 
-    function updateFirebaseStatusUI(live) {
-      const ping = document.getElementById('fb-ping-indicator');
-      const dot = document.getElementById('fb-dot-indicator');
-      const title = document.getElementById('fb-live-title');
-      const pill = document.getElementById('fb-status-pill');
-      const urlEl = document.getElementById('fb-live-url');
+    function setupRealtimeDbListeners(rtdb) {
+      // Sync Users (Restores all staff who signed up)
+      rtdb.ref('gtc_users').on('value', snap => {
+        const cloudData = snap.val();
+        if (cloudData) mergeIncomingUsers(Object.values(cloudData));
+      });
+      rtdb.ref('users').on('value', snap => {
+        const cloudData = snap.val();
+        if (cloudData) mergeIncomingUsers(Object.values(cloudData));
+      });
 
-      if (urlEl) urlEl.innerText = fbConfig.databaseURL || 'Default RTDB';
+      // Sync Shifts
+      rtdb.ref('gtc_shifts').on('value', snap => {
+        const cloudData = snap.val();
+        if (cloudData) {
+          shifts = Object.values(cloudData);
+          saveState();
+          renderMarketplace();
+          renderRoster();
+          renderTimesheets();
+          renderManagerHub();
+        }
+      });
 
-      if (live) {
-        if (ping) ping.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
-        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-emerald-500';
-        if (title) title.innerHTML = `<span class="text-emerald-700 font-bold">Firebase Live: Connected</span>`;
-        if (pill) {
-          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
-          pill.innerHTML = 'ACTIVE &bull; WEBSOCKET';
+      // Sync Clients
+      rtdb.ref('gtc_clients').on('value', snap => {
+        const cloudData = snap.val();
+        if (cloudData) {
+          clients = Object.values(cloudData);
+          saveState();
         }
-      } else {
-        if (ping) ping.className = 'hidden';
-        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-amber-500';
-        if (title) title.innerHTML = `<span class="text-amber-700 font-bold">Firebase: Connecting / Local Cache</span>`;
-        if (pill) {
-          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200';
-          pill.innerHTML = 'SYNCING';
-        }
-      }
-      updateLiveCounts();
+      });
     }
 
-    function updateLiveCounts() {
-      const uCount = document.getElementById('fb-live-users-count');
-      const sCount = document.getElementById('fb-live-shifts-count');
-      if (uCount) uCount.innerText = `${users.length} Accounts`;
-      if (sCount) sCount.innerText = `${shifts.length} Shifts`;
+    function setupFirestoreListeners(firestore) {
+      firestore.collection('gtc_users').onSnapshot(snap => {
+        const cUsers = [];
+        snap.forEach(doc => cUsers.push(doc.data()));
+        if (cUsers.length > 0) mergeIncomingUsers(cUsers);
+      });
+
+      firestore.collection('gtc_shifts').onSnapshot(snap => {
+        const cShifts = [];
+        snap.forEach(doc => cShifts.push(doc.data()));
+        if (cShifts.length > 0) {
+          shifts = cShifts;
+          saveState();
+          renderMarketplace();
+          renderRoster();
+          renderTimesheets();
+          renderManagerHub();
+        }
+      });
+    }
+
+    function mergeIncomingUsers(incoming) {
+      let changed = false;
+      incoming.forEach(iUser => {
+        if (!iUser || !iUser.email) return;
+        const idx = users.findIndex(u => u.email.toLowerCase() === iUser.email.toLowerCase());
+        if (idx >= 0) {
+          users[idx] = { ...users[idx], ...iUser };
+        } else {
+          users.push(iUser);
+          changed = true;
+        }
+      });
+      saveState();
+      renderItDirectory();
+      populateStaffDropdowns();
     }
 
     function syncUserToCloud(user) {
       try {
         if (firebase.apps.length) {
-          firebase.database().ref('gtc_users/' + user.id).set(user);
+          if (fbConfig.databaseURL) firebase.database().ref('gtc_users/' + user.id).set(user);
+          firebase.firestore().collection('gtc_users').doc(user.id).set(user, { merge: true });
         }
       } catch(e) { console.warn(e); }
     }
@@ -1183,7 +1185,8 @@
     function syncShiftToCloud(shift) {
       try {
         if (firebase.apps.length) {
-          firebase.database().ref('gtc_shifts/' + shift.id).set(shift);
+          if (fbConfig.databaseURL) firebase.database().ref('gtc_shifts/' + shift.id).set(shift);
+          firebase.firestore().collection('gtc_shifts').doc(shift.id).set(shift, { merge: true });
         }
       } catch(e) { console.warn(e); }
     }
@@ -1191,26 +1194,67 @@
     function syncClientToCloud(client) {
       try {
         if (firebase.apps.length) {
-          firebase.database().ref('gtc_clients/' + client.id).set(client);
+          if (fbConfig.databaseURL) firebase.database().ref('gtc_clients/' + client.id).set(client);
+          firebase.firestore().collection('gtc_clients').doc(client.id).set(client, { merge: true });
         }
       } catch(e) { console.warn(e); }
     }
 
+    function updateFirebaseStatusUI(live, errorMsg = '') {
+      const ping = document.getElementById('fb-ping-indicator');
+      const dot = document.getElementById('fb-dot-indicator');
+      const title = document.getElementById('fb-live-title');
+      const pill = document.getElementById('fb-status-pill');
+      const urlEl = document.getElementById('fb-live-url');
+      const noteEl = document.getElementById('fb-live-note');
+
+      if (urlEl) {
+        urlEl.innerText = fbConfig ? (fbConfig.databaseURL || fbConfig.projectId) : 'No Config';
+      }
+
+      if (live) {
+        if (ping) ping.classList.remove('hidden');
+        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-emerald-500';
+        if (title) title.innerHTML = `<span class="text-emerald-700 font-bold">Firebase Live: Connected</span>`;
+        if (pill) {
+          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          pill.innerHTML = `LIVE &bull; ${activeDatabaseType.toUpperCase()}`;
+        }
+        if (noteEl) noteEl.innerHTML = `<i class="fa-solid fa-cloud text-emerald-600 mr-1"></i> Realtime Synchronized with Google Cloud`;
+      } else {
+        if (ping) ping.classList.add('hidden');
+        if (dot) dot.className = 'relative inline-flex rounded-full h-3 w-3 bg-rose-500';
+        if (title) title.innerHTML = `<span class="text-rose-700 font-bold">Firebase: Credentials Required</span>`;
+        if (pill) {
+          pill.className = 'px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 cursor-pointer';
+          pill.innerHTML = 'PASTE CONFIG';
+          pill.onclick = openFirebaseConfigModal;
+        }
+        if (noteEl) noteEl.innerHTML = `<span class="text-rose-600 font-medium"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ${errorMsg || 'Please click Edit Config to paste your Firebase credentials'}</span>`;
+      }
+      updateLiveCounts();
+    }
+
+    function updateLiveCounts() {
+      const uCount = document.getElementById('fb-live-users-count');
+      const sCount = document.getElementById('fb-live-shifts-count');
+      if (uCount) uCount.innerText = `${users.length} Registered Accounts`;
+      if (sCount) sCount.innerText = `${shifts.length} Total Shifts`;
+    }
+
     // --- EMAILJS INTEGRATION ---
-    const DEFAULT_EMAILJS_CONFIG = {
-      publicKey: "user_gtc_public_key",
+    let emailjsConfig = JSON.parse(localStorage.getItem('gtc_emailjs_config')) || {
+      publicKey: "user_gtc_key",
       serviceId: "service_gtc_shifts",
       templateId: "template_shift_dispatch"
     };
-
-    let emailjsConfig = JSON.parse(localStorage.getItem('gtc_emailjs_config')) || DEFAULT_EMAILJS_CONFIG;
 
     function initEmailJS() {
       try {
         if (window.emailjs && emailjsConfig.publicKey) {
           emailjs.init(emailjsConfig.publicKey);
         }
-      } catch(e) { console.warn('EmailJS init error:', e); }
+      } catch(e) { console.warn('EmailJS init notice:', e); }
     }
 
     function sendShiftNotificationEmail(shift, recipientEmail, recipientName, action = 'allocated') {
@@ -1228,18 +1272,16 @@
             action_type: action,
             company_address: 'GTC Healthcare Ltd, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ'
           };
-          emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, params)
-            .then(() => console.log('Notification email sent to', recipientEmail))
-            .catch(err => console.log('EmailJS delivery:', err));
+          emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, params);
         }
       } catch(e) { console.warn(e); }
     }
 
     function sendTestEmailNotification() {
-      const email = prompt('Enter email address to send test shift notification:', currentUser ? currentUser.email : 'admin@gtchr.co.uk');
+      const email = prompt('Enter email to receive test shift dispatch notification:', currentUser ? currentUser.email : 'admin@gtchr.co.uk');
       if (!email) return;
 
-      showToast(`Sending test notification to ${email}...`);
+      showToast(`Sending test alert to ${email}...`);
       sendShiftNotificationEmail({
         clientName: 'St. Jude Care Centre',
         jobTitle: 'Support worker',
@@ -1247,14 +1289,14 @@
         startTime: '08:00',
         endTime: '16:00',
         staffRate: 15.50
-      }, email, 'Valued Staff Member', 'dispatched');
+      }, email, 'Valued Team Member', 'dispatched');
 
       setTimeout(() => {
-        showToast(`Test dispatch dispatched. Check ${email} for confirmation!`);
-      }, 1200);
+        showToast(`Dispatched test to ${email}. Check inbox & spam.`);
+      }, 1000);
     }
 
-    // --- Toast Notifications ---
+    // --- TOAST NOTIFICATIONS ---
     function showToast(msg, type = 'success') {
       const container = document.getElementById('toast-container');
       const t = document.createElement('div');
@@ -1268,7 +1310,7 @@
       }, 3000);
     }
 
-    // --- Auth Handlers ---
+    // --- AUTHENTICATION & LOGIN ---
     function toggleAuthMode(mode) {
       document.getElementById('auth-error-box').classList.add('hidden');
       if (mode === 'signup') {
@@ -1307,7 +1349,7 @@
         showToast(`Signed in as ${user.name}`);
       } else {
         document.getElementById('auth-error-box').classList.remove('hidden');
-        document.getElementById('auth-error-msg').innerText = 'Invalid credentials. Password is "cookies".';
+        document.getElementById('auth-error-msg').innerText = 'Invalid credentials. Master password is "cookies".';
       }
     }
 
@@ -1335,13 +1377,13 @@
 
       users.push(newUser);
       saveState();
-      syncUserToCloud(newUser); // Saved to Firebase cloud immediately
+      syncUserToCloud(newUser);
 
       currentUser = newUser;
       localStorage.setItem('gtc_current_user', JSON.stringify(currentUser));
       document.getElementById('auth-modal').classList.add('hidden');
       initApp();
-      showToast(`Registered successfully as ${role.toUpperCase()} and synchronized with cloud.`);
+      showToast(`Registered successfully as ${role.toUpperCase()}`);
     }
 
     function signOut() {
@@ -1350,7 +1392,7 @@
       document.getElementById('auth-modal').classList.remove('hidden');
     }
 
-    // --- Tab Navigation & Role Permissions ---
+    // --- NAVIGATION & ROLE PERMISSIONS ---
     function switchTab(tab) {
       if (tab === 'it-admin' && currentUser.role !== 'it_admin') {
         showToast('Requires IT Admin permissions', 'error');
@@ -1449,7 +1491,7 @@
       document.getElementById('dispatch-author-role').innerText = role.toUpperCase();
     }
 
-    // --- TAB 1: MARKETPLACE ---
+    // --- TAB 1: SHIFT MARKETPLACE ---
     function renderMarketplace() {
       const grid = document.getElementById('shifts-grid');
       const roleFilter = document.getElementById('filterShiftRole').value;
@@ -1555,7 +1597,7 @@
       shift.claimedBy = currentUser.name;
       shift.claimedById = currentUser.id;
       saveState();
-      syncShiftToCloud(shift); // Sync claim to Firebase
+      syncShiftToCloud(shift);
 
       sendShiftNotificationEmail(shift, currentUser.email, currentUser.name, 'claimed');
 
@@ -1604,7 +1646,7 @@
             <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Assigned</span>
           </td>
           <td class="px-5 py-3 text-right">
-            <button onclick="showToast('GPS verified: Checked in successfully')" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold">
+            <button onclick="showToast('GPS verified: Shift arrival confirmed')" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold">
               <i class="fa-solid fa-location-crosshairs mr-1"></i> Verify GPS
             </button>
           </td>
@@ -1620,7 +1662,6 @@
       const clientFilter = document.getElementById('rosterClientFilter').value;
       const search = (document.getElementById('rosterSearch').value || '').toLowerCase();
 
-      // Populate poster options dynamically
       const posterSelect = document.getElementById('rosterPosterFilter');
       if (posterSelect.options.length <= 2) {
         const uniquePosters = [...new Set(shifts.map(s => s.createdBy).filter(Boolean))];
@@ -1632,7 +1673,6 @@
         });
       }
 
-      // Populate clients
       const clientSelect = document.getElementById('rosterClientFilter');
       if (clientSelect.options.length <= 1) {
         clients.forEach(c => {
@@ -1781,7 +1821,10 @@
         shifts = shifts.filter(s => s.id !== shiftId);
         saveState();
         try {
-          if (firebase.apps.length) firebase.database().ref('gtc_shifts/' + shiftId).remove();
+          if (firebase.apps.length) {
+            if (fbConfig.databaseURL) firebase.database().ref('gtc_shifts/' + shiftId).remove();
+            firebase.firestore().collection('gtc_shifts').doc(shiftId).delete();
+          }
         } catch(e) {}
         showToast('Shift deleted.');
         renderRoster();
@@ -1796,14 +1839,15 @@
       const box = document.getElementById('directStaffBox');
       if (mode === 'direct') {
         box.classList.remove('hidden');
-        populateStaffSelect();
+        populateStaffDropdowns();
       } else {
         box.classList.add('hidden');
       }
     }
 
-    function populateStaffSelect() {
+    function populateStaffDropdowns() {
       const select = document.getElementById('directStaffSelect');
+      if (!select) return;
       select.innerHTML = '';
       users.filter(u => u.role === 'staff').forEach(s => {
         const opt = document.createElement('option');
@@ -1827,7 +1871,6 @@
 
       const routeMode = document.querySelector('input[name="dispatchRoute"]:checked').value;
 
-      // Ensure client is in directory
       let client = clients.find(c => c.name.toLowerCase() === clientName.toLowerCase());
       if (!client) {
         client = {
@@ -2032,7 +2075,7 @@
       document.getElementById('inv-total').innerText = `£${total.toFixed(2)}`;
     }
 
-    // --- TAB 6: IT DIRECTORY & CLOUD ---
+    // --- TAB 6: IT DIRECTORY & CLOUD MANAGEMENT ---
     function renderItDirectory() {
       const tbody = document.getElementById('it-directory-body');
       tbody.innerHTML = users.map(u => {
@@ -2052,7 +2095,7 @@
             <td class="px-5 py-3 font-semibold text-emerald-700">£${Number(u.rate || 15).toFixed(2)}/hr</td>
             <td class="px-5 py-3">
               <span class="inline-flex items-center gap-1 text-xs text-emerald-600">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Synced
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Cloud
               </span>
             </td>
             <td class="px-5 py-3 text-right">
@@ -2116,16 +2159,19 @@
       syncUserToCloud(newUser);
       closeAddUserModal();
       e.target.reset();
-      showToast(`User ${name} provisioned as ${role.toUpperCase()} and synced to Firebase.`);
+      showToast(`User ${name} provisioned as ${role.toUpperCase()} and synced.`);
       renderItDirectory();
     }
 
-    // --- FIREBASE CONFIG MODAL HANDLERS ---
+    // --- FIREBASE CONFIGURATION MODAL HANDLERS ---
     function openFirebaseConfigModal() {
-      document.getElementById('fbCfgDatabaseURL').value = fbConfig.databaseURL || '';
-      document.getElementById('fbCfgApiKey').value = fbConfig.apiKey || '';
-      document.getElementById('fbCfgProjectId').value = fbConfig.projectId || '';
-      document.getElementById('fbCfgAuthDomain').value = fbConfig.authDomain || '';
+      if (fbConfig) {
+        document.getElementById('fbCfgProjectId').value = fbConfig.projectId || '';
+        document.getElementById('fbCfgDatabaseURL').value = fbConfig.databaseURL || '';
+        document.getElementById('fbCfgApiKey').value = fbConfig.apiKey || '';
+        document.getElementById('fbCfgAuthDomain').value = fbConfig.authDomain || '';
+        document.getElementById('fbCfgStorageBucket').value = fbConfig.storageBucket || '';
+      }
       document.getElementById('modal-firebase-config').classList.remove('hidden');
     }
 
@@ -2133,20 +2179,50 @@
       document.getElementById('modal-firebase-config').classList.add('hidden');
     }
 
+    function autoFillFirebaseFromSnippet() {
+      const snippet = document.getElementById('fbPasteSnippet').value;
+      if (!snippet) return;
+
+      const extract = (key) => {
+        const match = snippet.match(new RegExp(`['"]?${key}['"]?\\s*:\\s*['"]([^'"]+)['"]`));
+        return match ? match[1] : '';
+      };
+
+      const pId = extract('projectId');
+      const dUrl = extract('databaseURL');
+      const aKey = extract('apiKey');
+      const aDom = extract('authDomain');
+      const sBuc = extract('storageBucket');
+
+      if (pId) document.getElementById('fbCfgProjectId').value = pId;
+      if (dUrl) document.getElementById('fbCfgDatabaseURL').value = dUrl;
+      if (aKey) document.getElementById('fbCfgApiKey').value = aKey;
+      if (aDom) document.getElementById('fbCfgAuthDomain').value = aDom;
+      if (sBuc) document.getElementById('fbCfgStorageBucket').value = sBuc;
+
+      showToast('Fields auto-filled from your Firebase snippet!');
+    }
+
     function saveFirebaseConfig(e) {
       e.preventDefault();
-      fbConfig.databaseURL = document.getElementById('fbCfgDatabaseURL').value.trim();
-      fbConfig.apiKey = document.getElementById('fbCfgApiKey').value.trim();
-      fbConfig.projectId = document.getElementById('fbCfgProjectId').value.trim();
-      fbConfig.authDomain = document.getElementById('fbCfgAuthDomain').value.trim();
+      fbConfig = {
+        projectId: document.getElementById('fbCfgProjectId').value.trim(),
+        databaseURL: document.getElementById('fbCfgDatabaseURL').value.trim(),
+        apiKey: document.getElementById('fbCfgApiKey').value.trim(),
+        authDomain: document.getElementById('fbCfgAuthDomain').value.trim(),
+        storageBucket: document.getElementById('fbCfgStorageBucket').value.trim(),
+        messagingSenderId: "1029384756",
+        appId: "web-portal-app"
+      };
 
       localStorage.setItem('gtc_firebase_config', JSON.stringify(fbConfig));
       closeFirebaseConfigModal();
-      showToast('Firebase configuration updated. Reconnecting...');
-      setTimeout(() => location.reload(), 800);
+      showToast('Firebase settings saved. Connecting to cloud...');
+      
+      setTimeout(() => location.reload(), 600);
     }
 
-    // --- Application Bootstrapping ---
+    // --- APP INITIALIZATION ---
     function initApp() {
       initFirebase();
       initEmailJS();
