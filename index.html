@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.11
+    v4.1.12
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -205,7 +205,7 @@
         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
           <div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Weekly Roster Matrix</h2>
-            <p class="text-xs text-slate-500 font-medium">Track who is where and manage allocations live.</p>
+            <p class="text-xs text-slate-500 font-medium">Track who is where and instantly add or manage shifts live.</p>
           </div>
           <div class="flex items-center space-x-3 flex-wrap justify-end gap-y-2">
             <div class="flex items-center space-x-2 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
@@ -763,6 +763,82 @@
             <i class="fa-solid fa-lock"></i> Update Password
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="modal-quick-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b">
+        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-bolt text-snoo-blue mr-1"></i> Quick Add Shift</h3>
+        <button onclick="closeQuickShiftModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">&times;</button>
+      </div>
+      
+      <input type="hidden" id="qsClientId">
+      <input type="hidden" id="qsDate">
+
+      <div class="space-y-3">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+             <p class="text-[10px] uppercase font-bold text-slate-400">Client / Facility</p>
+             <p class="font-bold text-slate-800" id="qsClientNameDisplay"></p>
+          </div>
+          <div class="text-right">
+             <p class="text-[10px] uppercase font-bold text-slate-400">Date</p>
+             <p class="font-bold text-indigo-700" id="qsDateDisplay"></p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Job Title:</label>
+            <select id="qsJobTitle" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium bg-white">
+              <option value="Support worker">Support worker</option>
+              <option value="House keeper">House keeper</option>
+              <option value="General Cleaner">General Cleaner</option>
+              <option value="Domestic Assistant">Domestic Assistant</option>
+              <option value="Maintenance person">Maintenance person</option>
+              <option value="Kitchen Porter">Kitchen Porter</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Assign To:</label>
+            <select id="qsAssignee" class="w-full border border-indigo-200 rounded-xl p-2.5 font-bold bg-indigo-50 text-indigo-900">
+              <option value="">🌍 Marketplace</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold block mb-1 text-slate-700">Service Description:</label>
+          <input type="text" id="qsTitle" value="Deep Clean" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Hours:</label>
+            <input type="number" id="qsHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Time:</label>
+            <input type="text" id="qsTime" value="09:00 - 13:00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+        </div>
+
+        <div id="qsFinancials" class="grid grid-cols-2 gap-2 hidden pt-2 border-t border-slate-200">
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Staff Pay (£):</label>
+            <input type="number" id="qsPay" value="15.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Charge (£):</label>
+            <input type="number" id="qsCharge" value="26.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium">
+          </div>
+        </div>
+
+        <button onclick="saveQuickShift()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl mt-2 transition cursor-pointer shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus-circle"></i> Add Shift to Roster
+        </button>
       </div>
     </div>
   </div>
@@ -1369,7 +1445,8 @@
           bodyHTML += `<tr><td class="p-2 border-r border-slate-200 text-slate-400 font-medium align-top break-words max-w-[15rem]">${client.name}</td>`;
           daysOfWeek.forEach(day => {
             const dayShifts = clientShifts.filter(s => s && (s.date === day.isoStr || (s.datesList && s.datesList.includes(day.isoStr))));
-            bodyHTML += `<td class="p-1.5 align-top border-r border-slate-200">`;
+            bodyHTML += `<td class="p-1.5 align-top border-r border-slate-200 min-w-[120px]">`;
+            
             dayShifts.forEach((s, idx) => {
               const assignee = users.find(u => u && u.id == s.staffId);
               const pillHTML = s.staffId 
@@ -1398,12 +1475,116 @@
                 </div>
               `;
             });
+            
+            if (isManagerOrAdmin) {
+              bodyHTML += `
+                <button onclick="openQuickShiftModal(${client.id}, '${day.isoStr}')" class="w-full mt-1.5 border border-dashed border-slate-300 hover:border-snoo-blue hover:bg-snoo-blue/5 text-slate-400 hover:text-snoo-blue text-[10px] font-bold py-1.5 rounded-lg flex items-center justify-center gap-1 transition cursor-pointer opacity-60 hover:opacity-100">
+                  <i class="fa-solid fa-plus"></i> Add
+                </button>
+              `;
+            }
+
             bodyHTML += `</td>`;
           });
           bodyHTML += `</tr>`;
         }
       });
       rosterBody.innerHTML = bodyHTML;
+    }
+
+    function openQuickShiftModal(clientId, dateIso) {
+      const client = clients.find(c => c && c.id === clientId);
+      if (!client) return;
+
+      document.getElementById('qsClientId').value = clientId;
+      document.getElementById('qsDate').value = dateIso;
+      
+      document.getElementById('qsClientNameDisplay').textContent = client.name;
+      document.getElementById('qsDateDisplay').textContent = dateIso;
+
+      const qsAssignee = document.getElementById('qsAssignee');
+      qsAssignee.innerHTML = `<option value="">🌍 Marketplace (Open)</option>`;
+      users.forEach(u => {
+        if(u && u.role !== 'it_admin' && u.status === 'active') {
+          qsAssignee.innerHTML += `<option value="${u.id}">${u.name} (${u.role})</option>`;
+        }
+      });
+      
+      document.getElementById('qsTitle').value = 'Deep Clean';
+      document.getElementById('qsJobTitle').value = 'Support worker';
+      document.getElementById('qsHours').value = '4.0';
+      document.getElementById('qsTime').value = '09:00 - 13:00';
+      document.getElementById('qsPay').value = '15.00';
+      document.getElementById('qsCharge').value = client.rate ? client.rate.toFixed(2) : '26.00';
+
+      const showFin = ['manager', 'it_admin'].includes(currentUser.role);
+      document.getElementById('qsFinancials').classList.toggle('hidden', !showFin);
+
+      document.getElementById('modal-quick-shift').classList.remove('hidden');
+    }
+
+    function closeQuickShiftModal() {
+      document.getElementById('modal-quick-shift').classList.add('hidden');
+    }
+
+    function saveQuickShift() {
+      const clientId = parseInt(document.getElementById('qsClientId').value);
+      const dateIso = document.getElementById('qsDate').value;
+      const title = document.getElementById('qsTitle').value.trim() || 'Deep Clean';
+      const jobTitle = document.getElementById('qsJobTitle').value;
+      const assigneeVal = document.getElementById('qsAssignee').value;
+      const staffId = assigneeVal ? parseInt(assigneeVal) : null;
+      const hours = parseFloat(document.getElementById('qsHours').value) || 4.0;
+      const time = document.getElementById('qsTime').value || '09:00 - 13:00';
+      const pay = parseFloat(document.getElementById('qsPay').value) || 15.00;
+      const charge = parseFloat(document.getElementById('qsCharge').value) || 26.00;
+      const status = staffId ? 'claimed' : 'open';
+      
+      const client = clients.find(c => c && c.id === clientId);
+      const clientName = client ? client.name : "Client";
+      const clientAddress = client ? client.address : "UK";
+
+      shifts.push({
+        id: Date.now(),
+        clientId: clientId,
+        title: title,
+        jobTitle: jobTitle,
+        isBlock: false,
+        date: dateIso,
+        time: time,
+        hours: hours,
+        pay: pay,
+        chargeRate: charge,
+        status: status,
+        staffId: staffId,
+        clockOutTime: null,
+        postedBy: currentUser.id,
+        postedByName: currentUser.name
+      });
+
+      let emailSubject = staffId ? "New Shift Directly Assigned To You" : "New Open Shift Available in Marketplace";
+      let emailDetails = `Role: ${jobTitle} - ${title}\nClient: ${clientName}\nLocation: ${clientAddress}\nDate: ${dateIso}\nTime: ${time} (${hours} hrs)\nPay Rate: £${pay.toFixed(2)}/hr\n\n`;
+      emailDetails += staffId ? "This shift has been directly assigned to you. It is already on your roster." : "This shift is open in the marketplace. Log into the portal immediately to claim it before someone else does!";
+      
+      if (staffId) {
+        notifyStaff(staffId, emailSubject, emailDetails, false);
+      } else {
+        showToast('Sending marketplace alerts to all active staff...', 'bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20');
+        const activeStaff = users.filter(u => u && u.status === 'active' && u.role === 'staff');
+        activeStaff.forEach((staff, idx) => {
+          setTimeout(() => {
+            notifyStaff(staff.id, emailSubject, emailDetails, true);
+          }, idx * 250); 
+        });
+      }
+
+      pushToCloud();
+      renderRosterGrid();
+      renderShifts();
+      if (['manager', 'it_admin'].includes(currentUser.role)) updateManagerView();
+      
+      closeQuickShiftModal();
+      showToast("✓ Shift quickly dispatched to roster!", "bg-emerald-50 text-emerald-800");
     }
 
     function openAmendShift(id) {
