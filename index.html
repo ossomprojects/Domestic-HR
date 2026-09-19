@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.8
+    v4.1.9
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -1053,7 +1053,7 @@
         localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
         pushToCloud();
 
-        notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`);
+        notifyStaff(newUser.id, "Account Pending IT Approval", `Welcome to Golden Tree HR! Your account request for the role of ${titleVal} has been securely received. You are currently in pending status and must wait for an IT Administrator to review and approve your account before you can access the roster.`, true);
         notifyITAdmin("New User Registration Awaiting Approval", `A new user named ${name} (${email}) has just registered and requested access as a ${titleVal}. Please log in to the Directory console to review and authorize their account.`);
 
         document.getElementById('authScreen').classList.add('hidden');
@@ -1188,9 +1188,8 @@
       } catch (e) { showToast("EmailJS Crash: " + e.message, "bg-rose-50 text-rose-800"); }
     }
 
-    function notifyStaff(staffId, subject, details) {
+    function notifyStaff(staffId, subject, details, suppressToast = false) {
       if(!staffId) return;
-      // Note: Using loose equality (==) here just in case ID got casted to a string during dropdown selection
       const s = users.find(u => u && u.id == staffId);
       if (!s || !s.email) return;
 
@@ -1203,21 +1202,21 @@
           if (typeof emailjs !== 'undefined') {
             emailjs.send(sId, tId, { to_name: s.name, to_email: s.email, subject: subject, message: details }, pKey)
               .then(() => {
-                setTimeout(() => { showToast(`✓ Email alert successfully delivered to ${s.name}`, 'bg-emerald-50 text-emerald-800 border-emerald-200'); }, 1000);
+                if(!suppressToast) setTimeout(() => { showToast(`✓ Email alert successfully delivered to ${s.name}`, 'bg-emerald-50 text-emerald-800 border-emerald-200'); }, 1000);
               })
               .catch(e => {
                 console.error(e);
-                setTimeout(() => { showToast(`Failed to send email alert to ${s.name}. Check System Diagnostics API.`, 'bg-rose-50 text-rose-800 border-rose-200'); }, 1000);
+                if(!suppressToast) setTimeout(() => { showToast(`Failed to send email alert to ${s.name}. Check System Diagnostics API.`, 'bg-rose-50 text-rose-800 border-rose-200'); }, 1000);
               });
           }
         } catch (e) { console.error(e); }
       } else {
-         setTimeout(() => { showToast(`Note: Alert not sent to ${s.name} (Email API missing in Sys Diag)`, 'bg-amber-50 text-amber-800 border-amber-200'); }, 1500);
+         if(!suppressToast) setTimeout(() => { showToast(`Note: Alert not sent to ${s.name} (Email API missing in Sys Diag)`, 'bg-amber-50 text-amber-800 border-amber-200'); }, 1500);
       }
     }
 
     function notifyITAdmin(subject, details) {
-      users.filter(u => u && u.role === 'it_admin').forEach(admin => notifyStaff(admin.id, subject, details));
+      users.filter(u => u && u.role === 'it_admin').forEach(admin => notifyStaff(admin.id, subject, details, true));
     }
 
     function getMonday(d) {
@@ -1511,7 +1510,6 @@
 
       let displayShifts = shifts.filter(x => x !== null);
       if (currentUser && currentUser.role === 'staff') {
-        // This line right here proves it is hidden from all other staff!
         displayShifts = displayShifts.filter(s => s.status === 'open' || s.staffId == currentUser.id);
       }
 
@@ -1704,9 +1702,16 @@
 
     function createShift() {
       let finalClientId = null; const ch = parseFloat(document.getElementById('newShiftCharge').value);
-      if (clientDispatchMode === 'existing') { finalClientId = parseInt(document.getElementById('newShiftClient').value); } 
-      else {
-        const newClient = { id: Date.now(), name: document.getElementById('customClientName').value.trim() || 'Private Client', address: document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK', rate: ch };
+      let clientName = '', clientAddress = '';
+
+      if (clientDispatchMode === 'existing') { 
+        finalClientId = parseInt(document.getElementById('newShiftClient').value); 
+        const cl = clients.find(x => x && x.id === finalClientId);
+        if(cl) { clientName = cl.name; clientAddress = cl.address; }
+      } else {
+        clientName = document.getElementById('customClientName').value.trim() || 'Private Client';
+        clientAddress = document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK';
+        const newClient = { id: Date.now(), name: clientName, address: clientAddress, rate: ch };
         clients.push(newClient); finalClientId = newClient.id; populateDropdowns(); if(currentUser.role === 'it_admin') updateITDirectory();
       }
 
@@ -1714,10 +1719,16 @@
       const assigneeId = document.getElementById('newShiftAssignee').value; const parsedAssigneeId = assigneeId ? parseInt(assigneeId) : null;
       const shiftStatus = parsedAssigneeId ? "claimed" : "open";
 
+      let emailSubject = "", emailDetails = "";
+
       if (scheduleMode === 'single') {
         const d = document.getElementById('newShiftDate').value, h = parseFloat(document.getElementById('newShiftHours').value);
         shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", hours: h, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
-        if (parsedAssigneeId) notifyStaff(parsedAssigneeId, "New Shift Assigned", `You have been directly assigned a new shift on ${d}. Log into the portal to check details.`);
+        
+        emailSubject = parsedAssigneeId ? "New Shift Directly Assigned To You" : "New Open Shift Available in Marketplace";
+        emailDetails = `Role: ${jTitle} - ${t}\nClient: ${clientName}\nLocation: ${clientAddress}\nDate: ${d}\nTime: 09:00 - 13:00 (${h} hrs)\nPay Rate: £${p.toFixed(2)}/hr\n\n`;
+        emailDetails += parsedAssigneeId ? "This shift has been directly assigned to you. It is already on your roster." : "This shift is open in the marketplace. Log into the portal immediately to claim it before someone else does!";
+        
         showToast(`✓ Single shift published & dispatched!`, 'bg-emerald-50 text-emerald-800');
       } else {
         const startStr = document.getElementById('newShiftStartDate').value, endStr = document.getElementById('newShiftEndDate').value, pattern = document.getElementById('newShiftRepeatPattern').value, hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value);
@@ -1732,12 +1743,49 @@
         }
 
         if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800');
-        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr: `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`, date: startStr, datesList: datesList, time: "09:00 - 13:00", hoursPerDay: hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
-        if (parsedAssigneeId) notifyStaff(parsedAssigneeId, "New Contract Assigned", `You have been directly assigned a multi-day block contract starting on ${startStr}.`);
+        const dateRangeStr = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
+        
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr: dateRangeStr, date: startStr, datesList: datesList, time: "09:00 - 13:00", hoursPerDay: hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        
+        emailSubject = parsedAssigneeId ? "New Contract Block Assigned To You" : "New Contract Block Available in Marketplace";
+        emailDetails = `Role: ${jTitle} - ${t} (Block Contract)\nClient: ${clientName}\nLocation: ${clientAddress}\nDates: ${dateRangeStr}\nTime: 09:00 - 13:00 (${hoursPerDay} hrs/day)\nPay Rate: £${p.toFixed(2)}/hr\n\n`;
+        emailDetails += parsedAssigneeId ? "This contract block has been directly assigned to you. It is already on your roster." : "This block is open in the marketplace. Log into the portal immediately to claim the whole block!";
+
         showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days)!`, 'bg-emerald-50 text-emerald-800');
       }
       
+      if (parsedAssigneeId) {
+        notifyStaff(parsedAssigneeId, emailSubject, emailDetails, false);
+      } else {
+        showToast('Sending marketplace alerts to all active staff...', 'bg-snoo-blue/10 text-snoo-blue border-snoo-blue/20');
+        const activeStaff = users.filter(u => u && u.status === 'active' && u.role === 'staff');
+        activeStaff.forEach((staff, idx) => {
+          setTimeout(() => {
+            notifyStaff(staff.id, emailSubject, emailDetails, true);
+          }, idx * 250); 
+        });
+      }
+
       pushToCloud(); renderShifts(); updateManagerView(); renderRosterGrid(); populateDropdowns(); 
+
+      document.getElementById('newShiftTitle').value = 'Deep Clean';
+      document.getElementById('newShiftAssignee').value = '';
+      document.getElementById('customClientName').value = '';
+      document.getElementById('customPostcode').value = '';
+      document.getElementById('customAddress').value = '';
+      document.getElementById('newShiftHours').value = '4.0';
+      document.getElementById('newShiftRangeHours').value = '4.0';
+      document.getElementById('newShiftPay').value = '15.00';
+      document.getElementById('newShiftCharge').value = '26.00';
+      
+      const today = new Date().toISOString().split('T')[0];
+      const nextWeek = new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0];
+      document.getElementById('newShiftDate').value = today;
+      document.getElementById('newShiftStartDate').value = today;
+      document.getElementById('newShiftEndDate').value = nextWeek;
+      
+      setClientMode('existing');
+      setScheduleMode('single');
     }
 
     function clearTimesheetFilters() {
