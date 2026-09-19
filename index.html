@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.17
+    v4.1.18
   </div>
 
   <!-- Global Toast Notification -->
@@ -686,6 +686,54 @@
             </div>
           </div>
         </div>
+
+        <!-- WEEKLY PAYMENT TRACKER -->
+        <div class="mt-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-4">
+             <div>
+               <h3 class="text-base font-bold text-snoo-navy flex items-center gap-2"><i class="fa-solid fa-money-bill-transfer text-emerald-600"></i> Finance Tracking: Staff Payouts</h3>
+               <p class="text-xs text-slate-500 mt-1">Track which completed shifts have been paid out to staff for the selected period.</p>
+             </div>
+             <div class="flex flex-wrap items-center gap-2 text-xs">
+                <input type="date" id="finTrackStart" onchange="renderFinanceTracking()" class="border border-slate-200 rounded-xl p-2 bg-slate-50 font-bold text-slate-700">
+                <span class="text-slate-400 font-bold">to</span>
+                <input type="date" id="finTrackEnd" onchange="renderFinanceTracking()" class="border border-slate-200 rounded-xl p-2 bg-slate-50 font-bold text-slate-700">
+                <button onclick="setThisWeekTrack()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 transition cursor-pointer">This Week</button>
+             </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-4 mb-4 text-xs">
+             <div class="bg-amber-50 text-amber-800 px-4 py-3 rounded-2xl border border-amber-200 font-bold flex items-center gap-3 w-full sm:w-auto">
+                <div class="h-8 w-8 rounded-full bg-amber-200/50 flex items-center justify-center"><i class="fa-solid fa-clock text-amber-700"></i></div>
+                <div>
+                   <p class="text-[10px] uppercase tracking-wider opacity-75">Pending Payouts</p>
+                   <p id="finTrackPendingSum" class="text-lg font-black text-amber-900 leading-none mt-0.5">£0.00</p>
+                </div>
+             </div>
+             <div class="bg-emerald-50 text-emerald-800 px-4 py-3 rounded-2xl border border-emerald-200 font-bold flex items-center gap-3 w-full sm:w-auto">
+                <div class="h-8 w-8 rounded-full bg-emerald-200/50 flex items-center justify-center"><i class="fa-solid fa-check text-emerald-700"></i></div>
+                <div>
+                   <p class="text-[10px] uppercase tracking-wider opacity-75">Paid This Period</p>
+                   <p id="finTrackPaidSum" class="text-lg font-black text-emerald-900 leading-none mt-0.5">£0.00</p>
+                </div>
+             </div>
+          </div>
+
+          <div class="overflow-x-auto">
+             <table class="w-full text-left text-xs">
+               <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
+                 <tr>
+                    <th class="p-3">Shift Details</th>
+                    <th class="p-3">Staff Member</th>
+                    <th class="p-3 text-right">Staff Pay</th>
+                    <th class="p-3 text-right">Client Gross</th>
+                    <th class="p-3 text-center">Payout Status</th>
+                 </tr>
+               </thead>
+               <tbody id="financeTrackingTable" class="divide-y divide-slate-100"></tbody>
+             </table>
+          </div>
+        </div>
       </section>
 
       <!-- ================= SYSTEM DIAGNOSTICS ================= -->
@@ -1169,6 +1217,7 @@
             renderRosterGrid();
             populateDropdowns(); 
             renderSystemDiagnostics();
+            if(typeof renderFinanceTracking === 'function') renderFinanceTracking();
           }
         }
       });
@@ -1383,6 +1432,8 @@
       renderShifts();
       renderRosterGrid();
       updateITDirectory();
+      
+      if (typeof setThisWeekTrack === 'function') setThisWeekTrack();
 
       let savedTab = localStorage.getItem('enin_active_tab') || 'shifts';
       if (isPending || (currentUser.role === 'staff' && savedTab === 'roster')) savedTab = 'shifts';
@@ -1442,6 +1493,7 @@
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'roster') renderRosterGrid();
       if (tabName === 'sys-diag') renderSystemDiagnostics();
+      if (tabName === 'invoices' && typeof renderFinanceTracking === 'function') renderFinanceTracking();
     }
 
     function renderSystemDiagnostics() {
@@ -1781,6 +1833,7 @@
       renderRosterGrid();
       renderShifts();
       if (['manager', 'it_admin'].includes(currentUser.role)) updateManagerView();
+      if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
       
       closeQuickShiftModal();
       showToast("✓ Shift quickly dispatched to roster!", "bg-emerald-50 text-emerald-800");
@@ -1809,6 +1862,7 @@
         pushToCloud();
         document.getElementById('modal-amend-shift').classList.add('hidden');
         renderRosterGrid(); renderShifts(); updateManagerView();
+        if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
         showToast("Shift amended successfully", "bg-emerald-50 text-emerald-800");
         if (s.staffId) notifyStaff(s.staffId, "Shift Amended", `Your shift/block for ${s.date || s.dateRangeStr} has been amended by management. New time: ${s.time}.`);
       }
@@ -1840,7 +1894,9 @@
         
         pushToCloud();
         document.getElementById('modal-reassign-shift').classList.add('hidden');
-        renderRosterGrid(); renderShifts();
+        renderRosterGrid(); renderShifts(); updateManagerView();
+        if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
+        
         showToast("Shift reassigned successfully", "bg-emerald-50 text-emerald-800");
         if(oldStaffId && oldStaffId != s.staffId) notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned.`);
         if(s.staffId && s.staffId != oldStaffId) notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
@@ -1856,6 +1912,7 @@
         if (fbDb) fbDb.ref('shifts/' + id).remove();
         pushToCloud();
         renderRosterGrid(); renderShifts(); updateManagerView();
+        if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
         showToast("Shift cancelled", "bg-rose-50 text-rose-800 border-rose-200");
         if (staffId) notifyStaff(staffId, "Shift Cancelled", `Your shift/block for ${shiftDate} has been cancelled by management.`);
       }
@@ -2034,7 +2091,11 @@
         s.status = 'completed'; const now = new Date();
         s.paymentStatus = 'pending'; // Reset payment status to pending when completed
         s.clockOutTime = `Today ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        pushToCloud(); renderShifts(); if (currentUser.role !== 'staff') updateManagerView();
+        pushToCloud(); renderShifts(); 
+        if (currentUser.role !== 'staff') {
+            updateManagerView();
+            if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
+        }
         showToast('✓ Shift marked as completed!', 'bg-emerald-50 text-emerald-800');
       }
     }
@@ -2045,6 +2106,7 @@
         s.paymentStatus = s.paymentStatus === 'paid' ? 'pending' : 'paid';
         pushToCloud();
         updateManagerView();
+        if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
       }
     }
 
@@ -2241,6 +2303,7 @@
       }
 
       pushToCloud(); renderShifts(); updateManagerView(); renderRosterGrid(); populateDropdowns(); 
+      if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
 
       document.getElementById('newShiftTitle').value = 'Deep Clean';
       document.getElementById('newShiftAssignee').value = '';
@@ -2309,6 +2372,78 @@
           return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3">${s.status === 'completed' ? paymentToggle : '<span class="text-slate-300">-</span>'}</td><td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
         }).join('');
     }
+
+    // --- WEEKLY FINANCE PAYMENTS TRACKER LOGIC ---
+    function setThisWeekTrack() {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = now.getDate() - day + (day === 0 ? -6 : 1);
+      
+      const monday = new Date(now);
+      monday.setDate(diffToMonday);
+      
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      
+      const monStr = monday.toISOString().split('T')[0];
+      const sunStr = sunday.toISOString().split('T')[0];
+      
+      if(document.getElementById('finTrackStart')) document.getElementById('finTrackStart').value = monStr;
+      if(document.getElementById('finTrackEnd')) document.getElementById('finTrackEnd').value = sunStr;
+      
+      if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
+    }
+
+    function renderFinanceTracking() {
+      if (!currentUser || !['manager', 'it_admin'].includes(currentUser.role)) return;
+      
+      const start = document.getElementById('finTrackStart')?.value;
+      const end = document.getElementById('finTrackEnd')?.value;
+      
+      let sList = shifts.filter(s => s && s.status === 'completed');
+      if (start) sList = sList.filter(s => s.date >= start);
+      if (end) sList = sList.filter(s => s.date <= end);
+      
+      sList.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      let pendingSum = 0;
+      let paidSum = 0;
+      
+      const tbody = document.getElementById('financeTrackingTable');
+      if (tbody) {
+        if (sList.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 italic font-bold">No completed shifts found for the selected period.</td></tr>`;
+        } else {
+          tbody.innerHTML = sList.map(s => {
+            const cl = clients.find(x => x && x.id === s.clientId) || { name: "Client", address: "Unknown Address" };
+            const st = users.find(u => u && u.id == s.staffId) || { name: "Unassigned" };
+            const isPaid = s.paymentStatus === 'paid';
+            const shiftGross = s.hours * s.chargeRate;
+            const staffEarned = s.hours * s.pay;
+            
+            if (isPaid) paidSum += staffEarned;
+            else pendingSum += staffEarned;
+            
+            const paymentToggle = `<button onclick="togglePaymentStatus(${s.id})" class="w-24 px-2 py-1.5 rounded-lg text-[10px] font-black uppercase transition-colors shadow-xs cursor-pointer ${isPaid ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200'}">${isPaid ? '<i class="fa-solid fa-check"></i> Paid' : 'Pending'}</button>`;
+            
+            return `<tr class="hover:bg-slate-50 text-xs">
+              <td class="p-3">
+                 <p class="font-bold text-slate-700">${s.title}</p>
+                 <p class="text-[10px] text-slate-400 font-medium">${s.isBlock ? s.dateRangeStr : s.date} &bull; ${s.time} (${s.hours}h)</p>
+              </td>
+              <td class="p-3 font-bold text-snoo-navy">${st.name}</td>
+              <td class="p-3 text-right font-bold text-amber-700">£${staffEarned.toFixed(2)}</td>
+              <td class="p-3 text-right font-bold text-indigo-700">£${shiftGross.toFixed(2)}</td>
+              <td class="p-3 text-center">${paymentToggle}</td>
+            </tr>`;
+          }).join('');
+        }
+      }
+      
+      if(document.getElementById('finTrackPendingSum')) document.getElementById('finTrackPendingSum').textContent = `£${pendingSum.toFixed(2)}`;
+      if(document.getElementById('finTrackPaidSum')) document.getElementById('finTrackPaidSum').textContent = `£${paidSum.toFixed(2)}`;
+    }
+    // ---------------------------------------------
 
     function generateInvoice() {
       const cid = parseInt(document.getElementById('invoiceClientSelect').value);
