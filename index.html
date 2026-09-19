@@ -49,7 +49,13 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.13
+    v4.1.14
+  </div>
+
+  <!-- Global Toast Notification -->
+  <div id="toast" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl p-4 rounded-2xl shadow-2xl border text-xs font-bold flex justify-between items-center transition z-[9999]">
+    <span id="toast-msg"></span>
+    <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-sm">&times;</button>
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -84,6 +90,11 @@
             <a href="#" onclick="openForgotPassword(); return false;" class="text-[10px] text-snoo-blue font-bold hover:underline">Forgot password?</a>
           </div>
           <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
+        </div>
+
+        <div id="loginError" class="hidden bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold p-3 rounded-xl flex items-start gap-2">
+          <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+          <span id="loginErrorMsg"></span>
         </div>
 
         <button type="submit" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3.5 rounded-xl shadow-lg shadow-snoo-blue/20 transition text-sm flex items-center justify-center gap-2 cursor-pointer">
@@ -194,12 +205,6 @@
         </button>
       </div>
     </nav>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="hidden max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative">
-      <span id="toast-msg"></span>
-      <button onclick="hideToast()" class="ml-4 text-slate-400 hover:text-slate-700 font-bold text-sm">&times;</button>
-    </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
@@ -1183,6 +1188,11 @@
 
     function handleLogin(e) {
       if (e) e.preventDefault();
+      
+      const errorDiv = document.getElementById('loginError');
+      const errorMsg = document.getElementById('loginErrorMsg');
+      if (errorDiv) errorDiv.classList.add('hidden');
+      
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
       const pass = document.getElementById('loginPassword').value;
 
@@ -1194,10 +1204,20 @@
 
       const targetUser = users.find(u => u && u.email && u.email.toLowerCase() === email);
       
-      if (!targetUser) return showToast("No account found with this email. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
+      if (!targetUser) {
+        if (errorDiv && errorMsg) {
+           errorMsg.textContent = "No account found with this email. Please click Sign Up.";
+           errorDiv.classList.remove('hidden');
+        }
+        return showToast("No account found with this email.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
       
       if (targetUser.password && targetUser.password !== pass) {
-        return showToast("Incorrect password. Click 'Forgot password?' above to securely reset it.", "bg-rose-50 text-rose-800 border-rose-200");
+        if (errorDiv && errorMsg) {
+           errorMsg.textContent = "Incorrect password. Click 'Forgot password?' above to securely reset it.";
+           errorDiv.classList.remove('hidden');
+        }
+        return showToast("Incorrect password.", "bg-rose-50 text-rose-800 border-rose-200");
       }
 
       currentUser = targetUser;
@@ -2247,12 +2267,15 @@
 
     function showToast(m, cls) {
       const t = document.getElementById('toast');
-      t.className = `max-w-xl mx-auto mt-4 p-3.5 rounded-2xl shadow-lg border text-xs font-bold flex justify-between items-center transition z-50 relative ${cls}`;
+      t.className = `fixed top-6 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl p-4 rounded-2xl shadow-2xl border text-xs font-bold flex justify-between items-center transition z-[9999] ${cls}`;
       document.getElementById('toast-msg').textContent = m;
-      t.classList.remove('hidden');
       setTimeout(hideToast, 6000);
     }
-    function hideToast() { document.getElementById('toast').classList.add('hidden'); }
+    
+    function hideToast() { 
+      const t = document.getElementById('toast');
+      if(t) t.classList.add('hidden'); 
+    }
 
     initApp();
   </script>
