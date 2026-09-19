@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.9
+    v4.1.10
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -218,7 +218,7 @@
         </div>
         
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="overflow-x-auto custom-scroll">
+          <div class="overflow-x-auto overflow-y-visible custom-scroll">
             <table class="w-full text-left text-xs min-w-[1000px]">
               <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
                 <tr id="rosterHeaders"></tr>
@@ -1236,6 +1236,25 @@
       renderRosterGrid();
     }
 
+    // New Function for Roster Dropdown (Click-based)
+    function toggleRosterMenu(e, id) {
+      e.stopPropagation(); // Stop row click
+      const target = document.getElementById('roster-dropdown-' + id);
+      const isCurrentlyHidden = target.classList.contains('hidden');
+      
+      // Hide all other open dropdowns first
+      document.querySelectorAll('.roster-dropdown').forEach(d => d.classList.add('hidden'));
+      
+      if (isCurrentlyHidden) {
+        target.classList.remove('hidden');
+      }
+    }
+
+    // Global listener to close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.roster-dropdown').forEach(d => d.classList.add('hidden'));
+    });
+
     function renderRosterGrid() {
       const rosterTableHeaders = document.getElementById("rosterHeaders");
       const rosterBody = document.getElementById("rosterBody");
@@ -1293,12 +1312,12 @@
                 : `<div class="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded font-bold truncate">⚠️ Open</div>`;
               
               const actionMenu = isManagerOrAdmin ? `
-                <div class="relative group">
-                  <button class="text-white/80 hover:text-white px-1 font-bold">⋮</button>
-                  <div class="hidden group-hover:block absolute right-0 top-full mt-1 w-24 bg-white rounded shadow-lg border border-slate-200 z-50 text-slate-800 flex flex-col font-medium text-[10px]">
-                    <button onclick="openAmendShift(${s.id})" class="px-2 py-1.5 text-left hover:bg-slate-100 border-b border-slate-100">Amend</button>
-                    <button onclick="openReassignShift(${s.id})" class="px-2 py-1.5 text-left hover:bg-slate-100 border-b border-slate-100">Reassign</button>
-                    <button onclick="cancelShift(${s.id})" class="px-2 py-1.5 text-left text-rose-600 hover:bg-rose-50">Cancel</button>
+                <div class="relative roster-action-menu">
+                  <button onclick="toggleRosterMenu(event, ${s.id})" class="text-white hover:text-teal-100 px-2 py-0.5 font-bold cursor-pointer outline-none">⋮</button>
+                  <div id="roster-dropdown-${s.id}" class="hidden roster-dropdown absolute right-0 top-full mt-1 w-28 bg-white rounded-lg shadow-xl border border-slate-200 z-[100] text-slate-800 flex flex-col font-bold text-[11px] overflow-hidden">
+                    <button onclick="openAmendShift(${s.id})" class="px-3 py-2 text-left hover:bg-slate-50 border-b border-slate-100 cursor-pointer">Amend Shift</button>
+                    <button onclick="openReassignShift(${s.id})" class="px-3 py-2 text-left hover:bg-slate-50 border-b border-slate-100 cursor-pointer text-snoo-blue">Reassign</button>
+                    <button onclick="cancelShift(${s.id})" class="px-3 py-2 text-left text-rose-600 hover:bg-rose-50 cursor-pointer">Cancel Shift</button>
                   </div>
                 </div>
               ` : '';
