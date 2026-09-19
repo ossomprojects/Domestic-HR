@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.10
+    v4.1.11
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -143,7 +143,7 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 sm:space-x-3">
           <div class="super-admin-only hidden">
             <button onclick="pullFromCloud(true)" title="Force sync live database" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer">
               <i id="syncSpinIcon" class="fa-solid fa-rotate text-snoo-blue"></i>
@@ -151,12 +151,17 @@
             </button>
           </div>
 
-          <div class="text-right hidden sm:block">
-            <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900">User</p>
-            <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold">Staff</p>
+          <div class="text-right hidden sm:block pr-1 border-r border-slate-200">
+            <p id="userNameDisplay" class="text-xs font-extrabold leading-tight text-slate-900 pr-3">User</p>
+            <p id="userRoleDisplay" class="text-[10px] text-snoo-blue font-bold pr-3">Staff</p>
           </div>
-          <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-            <i class="fa-solid fa-power-off text-rose-500"></i> Logout
+          
+          <button onclick="openMyAccount()" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-snoo-blue text-xs font-bold px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+            <i class="fa-solid fa-user-circle text-snoo-blue"></i> <span class="hidden sm:inline">Account</span>
+          </button>
+
+          <button onclick="handleLogout()" class="bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-700 hover:text-rose-700 text-xs font-bold px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+            <i class="fa-solid fa-power-off text-rose-500"></i> <span class="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>
@@ -727,6 +732,41 @@
   </div>
 
   <!-- MODALS -->
+  <div id="modal-my-account" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b">
+        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-user-shield text-snoo-blue mr-1"></i> My Account & Security</h3>
+        <button onclick="document.getElementById('modal-my-account').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">&times;</button>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Profile Details</span>
+            <span class="text-[9px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">Read Only</span>
+          </div>
+          <div class="flex gap-2 items-center"><i class="fa-solid fa-user text-slate-400 w-3"></i> <span id="myAccName" class="font-bold text-slate-800"></span></div>
+          <div class="flex gap-2 items-center"><i class="fa-solid fa-envelope text-slate-400 w-3"></i> <span id="myAccEmail" class="font-bold text-slate-800"></span></div>
+          <div class="flex gap-2 items-center"><i class="fa-solid fa-phone text-slate-400 w-3"></i> <span id="myAccPhone" class="font-bold text-slate-800"></span></div>
+          <p class="text-[9px] text-slate-500 pt-2 border-t border-slate-200 mt-2 italic">Please contact IT Administration if you need to amend your legal name, registered email, or phone number.</p>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-bold text-snoo-navy border-b border-slate-200 pb-1 text-[11px] uppercase tracking-wider">Change Password</h4>
+          <div>
+            <input type="password" id="myAccNewPassword" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium" placeholder="New Password">
+          </div>
+          <div>
+            <input type="password" id="myAccConfirmPassword" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium" placeholder="Confirm New Password">
+          </div>
+          <button onclick="saveMyPassword()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl transition cursor-pointer shadow-md flex justify-center items-center gap-2">
+            <i class="fa-solid fa-lock"></i> Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -1236,13 +1276,11 @@
       renderRosterGrid();
     }
 
-    // New Function for Roster Dropdown (Click-based)
     function toggleRosterMenu(e, id) {
-      e.stopPropagation(); // Stop row click
+      e.stopPropagation(); 
       const target = document.getElementById('roster-dropdown-' + id);
       const isCurrentlyHidden = target.classList.contains('hidden');
       
-      // Hide all other open dropdowns first
       document.querySelectorAll('.roster-dropdown').forEach(d => d.classList.add('hidden'));
       
       if (isCurrentlyHidden) {
@@ -1250,10 +1288,37 @@
       }
     }
 
-    // Global listener to close dropdowns when clicking outside
     document.addEventListener('click', () => {
       document.querySelectorAll('.roster-dropdown').forEach(d => d.classList.add('hidden'));
     });
+    
+    function openMyAccount() {
+      if (!currentUser) return;
+      document.getElementById('myAccName').textContent = currentUser.name;
+      document.getElementById('myAccEmail').textContent = currentUser.email;
+      document.getElementById('myAccPhone').textContent = currentUser.phone || 'No phone provided';
+      document.getElementById('myAccNewPassword').value = '';
+      document.getElementById('myAccConfirmPassword').value = '';
+      document.getElementById('modal-my-account').classList.remove('hidden');
+    }
+
+    function saveMyPassword() {
+      const p1 = document.getElementById('myAccNewPassword').value;
+      const p2 = document.getElementById('myAccConfirmPassword').value;
+      
+      if (!p1) return showToast("Please enter a new password.", "bg-rose-50 text-rose-800");
+      if (p1 !== p2) return showToast("Passwords do not match.", "bg-rose-50 text-rose-800");
+      
+      const u = users.find(x => x && x.id === currentUser.id);
+      if (u) {
+        u.password = p1;
+        currentUser.password = p1;
+        pushToCloud();
+        localStorage.setItem('enin_active_session', JSON.stringify(currentUser));
+        document.getElementById('modal-my-account').classList.add('hidden');
+        showToast("✓ Password updated successfully!", "bg-emerald-50 text-emerald-800");
+      }
+    }
 
     function renderRosterGrid() {
       const rosterTableHeaders = document.getElementById("rosterHeaders");
