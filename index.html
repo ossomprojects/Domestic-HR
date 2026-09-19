@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.15
+    v4.1.16
   </div>
 
   <!-- Global Toast Notification -->
@@ -194,7 +194,7 @@
           <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
         </button>
         <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn invoice-access py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Client Invoices
+          <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Finance & IT Pay
         </button>
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn admin-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-shield-halved text-indigo-600"></i> Directory & Approvals
@@ -287,7 +287,7 @@
 
       <!-- ================= OPERATIONS MANAGER HUB ================= -->
       <section id="view-manager" class="tab-view hidden space-y-8">
-        <div id="kpiFinancials" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+        <div id="kpiFinancials" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 hidden">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Filtered Client Revenue</span>
             <p id="sumRevenue" class="text-2xl font-black text-snoo-navy mt-1">£0.00</p>
@@ -296,8 +296,12 @@
             <span class="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Filtered Staff Wages</span>
             <p id="sumWages" class="text-2xl font-black text-amber-600 mt-1">£0.00</p>
           </div>
+          <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-200 shadow-sm">
+            <span class="text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered IT Admin (5%)</span>
+            <p id="sumITAdmin" class="text-2xl font-black text-indigo-950 mt-1">£0.00</p>
+          </div>
           <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm">
-            <span class="text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered Operating Margin</span>
+            <span class="text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered Net Margin</span>
             <p id="sumProfit" class="text-2xl font-black text-emerald-950 mt-1">£0.00</p>
           </div>
         </div>
@@ -586,34 +590,56 @@
 
       </section>
 
-      <!-- ================= CLIENT INVOICES ================= -->
+      <!-- ================= FINANCE & IT PAY (INVOICES) ================= -->
       <section id="view-invoices" class="tab-view hidden">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
-            <h3 class="text-sm font-bold text-snoo-navy">Compile Client Invoice</h3>
+          <div class="space-y-6">
             
-            <div>
-              <label class="font-bold block mb-1">Select Domestic Client:</label>
-              <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium"></select>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-4 text-xs">
+              <h3 class="text-sm font-bold text-snoo-navy">Compile Client Invoice</h3>
+              
+              <div>
+                <label class="font-bold block mb-1">Select Domestic Client:</label>
+                <select id="invoiceClientSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-slate-50 font-medium"></select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="font-bold block mb-1">From Date:</label>
+                  <input type="date" id="invoiceFilterStart" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
+                </div>
+                <div>
+                  <label class="font-bold block mb-1">To Date:</label>
+                  <input type="date" id="invoiceFilterEnd" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
+                </div>
+              </div>
+
+              <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer mt-2">
+                <i class="fa-solid fa-file-invoice"></i> Compile Invoice
+              </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="font-bold block mb-1">From Date:</label>
-                <input type="date" id="invoiceFilterStart" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
+            <div class="bg-indigo-50 p-6 rounded-3xl shadow-sm border border-indigo-200 space-y-4 text-xs">
+              <h3 class="text-sm font-bold text-indigo-900"><i class="fa-solid fa-calculator text-indigo-600"></i> Generate IT Admin Statement</h3>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="font-bold block mb-1 text-indigo-800">From Date:</label>
+                  <input type="date" id="itFilterStart" class="w-full border border-indigo-200 rounded-xl p-2 bg-white font-medium">
+                </div>
+                <div>
+                  <label class="font-bold block mb-1 text-indigo-800">To Date:</label>
+                  <input type="date" id="itFilterEnd" class="w-full border border-indigo-200 rounded-xl p-2 bg-white font-medium">
+                </div>
               </div>
-              <div>
-                <label class="font-bold block mb-1">To Date:</label>
-                <input type="date" id="invoiceFilterEnd" class="w-full border border-slate-200 rounded-xl p-2 bg-slate-50 font-medium">
-              </div>
+              <button onclick="generateITEarnings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 mt-2">
+                Compile IT Earnings (5%)
+              </button>
             </div>
 
-            <button onclick="generateInvoice()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer mt-2">
-              <i class="fa-solid fa-file-invoice"></i> Compile Invoice
-            </button>
             <button onclick="window.print()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer">
               <i class="fa-solid fa-print"></i> Print / Save as PDF
             </button>
+
           </div>
 
           <div id="invoicePaper" class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 text-xs">
@@ -2216,21 +2242,25 @@
 
       let rev = 0, wages = 0;
       filteredShifts.forEach(s => { if (s.status === 'completed') { rev += (s.hours * s.chargeRate); wages += (s.hours * s.pay); } });
+      
+      let itCutTotal = rev * 0.05;
+      let netProfit = rev - wages - itCutTotal;
 
       if (document.getElementById('sumRevenue')) document.getElementById('sumRevenue').textContent = `£${rev.toFixed(2)}`;
       if (document.getElementById('sumWages')) document.getElementById('sumWages').textContent = `£${wages.toFixed(2)}`;
-      if (document.getElementById('sumProfit')) document.getElementById('sumProfit').textContent = `£${(rev - wages).toFixed(2)}`;
+      if (document.getElementById('sumITAdmin')) document.getElementById('sumITAdmin').textContent = `£${itCutTotal.toFixed(2)}`;
+      if (document.getElementById('sumProfit')) document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
 
       const header = document.getElementById('managerTableHeader');
-      if (header) header.innerHTML = `<tr><th class="p-3">Staff & Client</th><th class="p-3">Status</th>${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th><th class="p-3 text-right text-emerald-700">Gross Margin</th>` : ''}</tr>`;
+      if (header) header.innerHTML = `<tr><th class="p-3">Staff & Client</th><th class="p-3">Status</th>${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th><th class="p-3 text-right text-indigo-700">IT Cut (5%)</th><th class="p-3 text-right text-emerald-700">Net Margin</th>` : ''}</tr>`;
 
       const table = document.getElementById('managerTable');
-      if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
+      if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 5 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
           const cl = clients.find(x => x && x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
           const st = users.find(u => u && u.id == s.staffId);
-          const shiftGross = s.hours * s.chargeRate, staffEarned = s.hours * s.pay, profit = shiftGross - staffEarned;
+          const shiftGross = s.hours * s.chargeRate, staffEarned = s.hours * s.pay, itCut = shiftGross * 0.05, profit = shiftGross - staffEarned - itCut;
 
-          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
+          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
         }).join('');
     }
 
@@ -2239,16 +2269,29 @@
       const cl = clients.find(x => x && x.id === cid) || { name: "Client", address: "UK Address", rate: 25.00 };
       const start = document.getElementById('invoiceFilterStart').value, end = document.getElementById('invoiceFilterEnd').value;
       
-      let sList = shifts.filter(s => s && s.clientId === cid);
+      let sList = shifts.filter(s => s && s.clientId === cid && s.status === 'completed');
       if (start) sList = sList.filter(s => s.date >= start);
       if (end) sList = sList.filter(s => s.date <= end);
       
       let sub = 0;
-      document.getElementById('invClient').textContent = `${cl.name} (${cl.address})`;
+      document.getElementById('invClient').innerHTML = `<span class="font-bold text-slate-800 text-sm">${cl.name} (${cl.address})</span>`;
       const dr = document.getElementById('invDateRange');
       if (start && end) dr.textContent = `Period: ${start} to ${end}`; else if (start) dr.textContent = `Period: From ${start}`; else if (end) dr.textContent = `Period: Up to ${end}`; else dr.textContent = `Period: All Time`;
 
-      if (sList.length === 0) document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No shifts found for this period</td></tr>`;
+      document.querySelector('#invoicePaper h2').textContent = 'Golden Tree HR Ltd';
+      document.querySelector('#invoicePaper .text-right span').textContent = 'Official Invoice';
+      document.querySelector('#invoicePaper .text-right span').className = 'text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full';
+      document.getElementById('invVat').parentElement.classList.remove('hidden');
+      document.getElementById('invTot').parentElement.classList.replace('text-indigo-700', 'text-snoo-navy');
+      
+      document.querySelector('#invoicePaper thead tr').innerHTML = `
+          <th class="py-2.5 px-2 text-left">Service Description</th>
+          <th class="py-2.5 px-2 text-right">Hours</th>
+          <th class="py-2.5 px-2 text-right">Rate (£/hr)</th>
+          <th class="py-2.5 px-2 text-right">Total</th>
+      `;
+
+      if (sList.length === 0) document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No completed shifts found for this period</td></tr>`;
       else {
         document.getElementById('invoiceRows').innerHTML = sList.map(s => {
           const rate = s.chargeRate || cl.rate; const tot = s.hours * rate; sub += tot;
@@ -2263,6 +2306,47 @@
       document.getElementById('invTot').textContent = `£${(sub + vat).toFixed(2)}`;
       document.getElementById('invNum').textContent = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       showToast('Client invoice compiled!', 'bg-emerald-50 text-emerald-800');
+    }
+
+    function generateITEarnings() {
+      const start = document.getElementById('itFilterStart').value, end = document.getElementById('itFilterEnd').value;
+      
+      let sList = shifts.filter(s => s && s.status === 'completed');
+      if (start) sList = sList.filter(s => s.date >= start);
+      if (end) sList = sList.filter(s => s.date <= end);
+      
+      let sub = 0;
+      document.getElementById('invClient').innerHTML = `<span class="text-indigo-700 font-bold text-sm">Internal IT Admin Remuneration (5% of Gross)</span>`;
+      const dr = document.getElementById('invDateRange');
+      if (start && end) dr.textContent = `Period: ${start} to ${end}`; else if (start) dr.textContent = `Period: From ${start}`; else if (end) dr.textContent = `Period: Up to ${end}`; else dr.textContent = `Period: All Time`;
+
+      document.querySelector('#invoicePaper h2').textContent = 'Golden Tree HR Ltd - IT Earnings';
+      document.querySelector('#invoicePaper .text-right span').textContent = 'IT Admin Statement';
+      document.querySelector('#invoicePaper .text-right span').className = 'text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full';
+
+      document.querySelector('#invoicePaper thead tr').innerHTML = `
+          <th class="py-2.5 px-2 text-left">Shift & Client</th>
+          <th class="py-2.5 px-2 text-right">Hours</th>
+          <th class="py-2.5 px-2 text-right">Client Gross</th>
+          <th class="py-2.5 px-2 text-right">IT Cut (5%)</th>
+      `;
+
+      if (sList.length === 0) document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No completed shifts found for this period</td></tr>`;
+      else {
+        document.getElementById('invoiceRows').innerHTML = sList.map(s => {
+          const rate = s.chargeRate; const gross = s.hours * rate; const itCut = gross * 0.05; sub += itCut;
+          const cl = clients.find(x => x && x.id === s.clientId) || { name: "Client" };
+          return `<tr><td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} - ${cl.name} (${s.isBlock ? s.dateRangeStr : s.date})</td><td class="py-2.5 px-2 text-right">${s.hours}</td><td class="py-2.5 px-2 text-right">£${gross.toFixed(2)}</td><td class="py-2.5 px-2 text-right font-bold text-indigo-600">£${itCut.toFixed(2)}</td></tr>`;
+        }).join('');
+      }
+      
+      document.getElementById('invSub').textContent = `£${sub.toFixed(2)}`;
+      document.getElementById('invVat').parentElement.classList.add('hidden');
+      document.getElementById('invTot').textContent = `£${sub.toFixed(2)}`;
+      document.getElementById('invTot').parentElement.classList.replace('text-snoo-navy', 'text-indigo-700');
+      document.getElementById('invNum').textContent = `IT-STM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      showToast('IT Admin Statement compiled!', 'bg-indigo-50 text-indigo-800');
     }
 
     function showToast(m, cls) {
