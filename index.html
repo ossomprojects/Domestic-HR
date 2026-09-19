@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.12
+    v4.1.13
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -79,7 +79,10 @@
         </div>
 
         <div>
-          <label class="font-bold text-slate-700 block mb-1 text-[11px] uppercase">Password:</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-bold text-slate-700 text-[11px] uppercase">Password:</label>
+            <a href="#" onclick="openForgotPassword(); return false;" class="text-[10px] text-snoo-blue font-bold hover:underline">Forgot password?</a>
+          </div>
           <input type="password" id="loginPassword" placeholder="Enter your password" required class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-snoo-blue bg-slate-50 font-medium">
         </div>
 
@@ -460,7 +463,7 @@
         </div>
       </section>
 
-      <!-- ================= DIRECTORY & APPROVALS ================= -->
+      <!-- ================= DIRECTORY & Approvals ================= -->
       <section id="view-it-admin" class="tab-view hidden space-y-8">
         
         <div class="p-6 bg-white rounded-3xl text-slate-800 border border-slate-200 shadow-sm flex justify-between items-center">
@@ -732,6 +735,48 @@
   </div>
 
   <!-- MODALS -->
+  <div id="modal-forgot-password" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b">
+        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-key text-snoo-blue mr-1"></i> Reset Password</h3>
+        <button type="button" onclick="document.getElementById('modal-forgot-password').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">&times;</button>
+      </div>
+      <p class="text-slate-500 mb-4 font-medium leading-relaxed">Enter the email address associated with your account and we will send you a secure link to reset your password.</p>
+      <div class="space-y-3">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Email Address:</label>
+          <input type="email" id="forgotEmail" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="you@example.com">
+        </div>
+        <button onclick="requestPasswordReset()" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl transition cursor-pointer shadow-md flex justify-center items-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Send Reset Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-reset-password" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[70] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+      <div class="flex items-center mb-4 pb-3 border-b border-slate-200">
+        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-unlock-keyhole text-emerald-500 mr-1"></i> Create New Password</h3>
+      </div>
+      <input type="hidden" id="resetFlowEmail">
+      <input type="hidden" id="resetFlowToken">
+      <div class="space-y-3">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">New Password</label>
+          <input type="password" id="resetNewPassword" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="Enter new password">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Confirm New Password</label>
+          <input type="password" id="resetConfirmPassword" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-medium" placeholder="Confirm new password">
+        </div>
+        <button onclick="executePasswordReset()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition cursor-pointer shadow-md flex justify-center items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Save New Password
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-my-account" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
@@ -962,6 +1007,25 @@
     let expandedFacilities = new Set(); 
 
     function initApp() {
+      // 1. Password Reset Interceptor
+      const urlParams = new URLSearchParams(window.location.search);
+      const resetToken = urlParams.get('reset');
+      const resetEmail = urlParams.get('email');
+      
+      if (resetToken && resetEmail) {
+          document.getElementById('authScreen').classList.add('hidden');
+          document.getElementById('mainApp').classList.add('hidden');
+          document.getElementById('modal-reset-password').classList.remove('hidden');
+          document.getElementById('resetFlowEmail').value = resetEmail;
+          document.getElementById('resetFlowToken').value = resetToken;
+          
+          window.history.replaceState({}, document.title, window.location.pathname);
+          pullFromCloud(false);
+          monitorSystemStatus();
+          return; 
+      }
+
+      // 2. Normal Boot Process
       try {
         const u = JSON.parse(localStorage.getItem('enin_live_users_v4'));
         const s = JSON.parse(localStorage.getItem('enin_live_shifts_v4'));
@@ -1129,8 +1193,12 @@
       }
 
       const targetUser = users.find(u => u && u.email && u.email.toLowerCase() === email);
+      
       if (!targetUser) return showToast("No account found with this email. Please Sign Up.", "bg-rose-50 text-rose-800 border-rose-200");
-      if (targetUser.password && targetUser.password !== pass) return showToast("Incorrect password. Please try again.", "bg-rose-50 text-rose-800 border-rose-200");
+      
+      if (targetUser.password && targetUser.password !== pass) {
+        return showToast("Incorrect password. Click 'Forgot password?' above to securely reset it.", "bg-rose-50 text-rose-800 border-rose-200");
+      }
 
       currentUser = targetUser;
       loginSuccess();
@@ -1142,6 +1210,58 @@
       document.getElementById('mainApp').classList.remove('hidden');
       setupAppForUser();
       showToast(`Welcome back, ${currentUser.name}!`, 'bg-emerald-50 text-emerald-800 border-emerald-200');
+    }
+
+    function openForgotPassword() {
+        const currentEmail = document.getElementById('loginEmail').value;
+        if(currentEmail) document.getElementById('forgotEmail').value = currentEmail;
+        document.getElementById('modal-forgot-password').classList.remove('hidden');
+    }
+
+    function requestPasswordReset() {
+        const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+        if(!email) return showToast("Please enter your email", "bg-rose-50 text-rose-800");
+
+        const u = users.find(x => x && x.email.toLowerCase() === email);
+        if(!u) {
+            return showToast("If this email exists, a reset link has been dispatched.", "bg-slate-100 text-slate-800");
+        }
+
+        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        u.resetToken = token;
+        pushToCloud();
+
+        const resetLink = `${window.location.href.split('?')[0]}?reset=${token}&email=${encodeURIComponent(email)}`;
+        const msg = `You requested a password reset for your Golden Tree HR account.\n\nClick the secure link below to create a new password:\n${resetLink}\n\nIf you did not request this, please ignore this email.`;
+        
+        notifyStaff(u.id, "Golden Tree HR - Password Reset Request", msg, true);
+        
+        document.getElementById('modal-forgot-password').classList.add('hidden');
+        showToast("✓ Password reset link dispatched! Check your inbox.", "bg-emerald-50 text-emerald-800");
+    }
+
+    function executePasswordReset() {
+        const email = document.getElementById('resetFlowEmail').value.toLowerCase();
+        const token = document.getElementById('resetFlowToken').value;
+        const p1 = document.getElementById('resetNewPassword').value;
+        const p2 = document.getElementById('resetConfirmPassword').value;
+
+        if(!p1) return showToast("Please enter a new password.", "bg-rose-50 text-rose-800");
+        if(p1 !== p2) return showToast("Passwords do not match.", "bg-rose-50 text-rose-800");
+
+        const u = users.find(x => x && x.email.toLowerCase() === email && x.resetToken === token);
+        if(!u) return showToast("Invalid or expired reset token. Please request a new link from the login page.", "bg-rose-50 text-rose-800");
+
+        u.password = p1;
+        u.resetToken = null; 
+        pushToCloud();
+
+        document.getElementById('modal-reset-password').classList.add('hidden');
+        document.getElementById('authScreen').classList.remove('hidden');
+        document.getElementById('loginEmail').value = email;
+        document.getElementById('loginPassword').value = '';
+        
+        showToast("✓ Password securely reset! You can now sign in.", "bg-emerald-50 text-emerald-800");
     }
 
     function handleStaffSignup(e) {
