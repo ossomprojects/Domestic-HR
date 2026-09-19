@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.16
+    v4.1.17
   </div>
 
   <!-- Global Toast Notification -->
@@ -194,7 +194,7 @@
           <i class="fa-solid fa-chart-pie text-snoo-blue"></i> Manager Operations Hub
         </button>
         <button onclick="navigateTab('invoices')" id="tab-invoices" class="tab-btn invoice-access py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Finance & IT Pay
+          <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i> Finance
         </button>
         <button onclick="navigateTab('it-admin')" id="tab-it-admin" class="tab-btn admin-only py-4 px-1 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-shield-halved text-indigo-600"></i> Directory & Approvals
@@ -297,7 +297,7 @@
             <p id="sumWages" class="text-2xl font-black text-amber-600 mt-1">£0.00</p>
           </div>
           <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-200 shadow-sm">
-            <span class="text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered IT Admin (5%)</span>
+            <span class="text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider">Filtered System Maintenance (5%)</span>
             <p id="sumITAdmin" class="text-2xl font-black text-indigo-950 mt-1">£0.00</p>
           </div>
           <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm">
@@ -620,7 +620,7 @@
             </div>
 
             <div class="bg-indigo-50 p-6 rounded-3xl shadow-sm border border-indigo-200 space-y-4 text-xs">
-              <h3 class="text-sm font-bold text-indigo-900"><i class="fa-solid fa-calculator text-indigo-600"></i> Generate IT Admin Statement</h3>
+              <h3 class="text-sm font-bold text-indigo-900"><i class="fa-solid fa-calculator text-indigo-600"></i> Generate System Maintenance Statement</h3>
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label class="font-bold block mb-1 text-indigo-800">From Date:</label>
@@ -632,7 +632,7 @@
                 </div>
               </div>
               <button onclick="generateITEarnings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2 mt-2">
-                Compile IT Earnings (5%)
+                Compile System Maintenance (5%)
               </button>
             </div>
 
@@ -700,7 +700,20 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-indigo-50 p-6 rounded-3xl shadow-sm border border-indigo-200 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-indigo-950 text-sm"><i class="fa-solid fa-money-check-dollar text-indigo-600"></i> Monthly System Maintenance</h3>
+              </div>
+              <p class="text-[11px] text-indigo-800 font-medium">This automatically calculates 5% of the gross generated from all completed shifts for the <strong>current month</strong>.</p>
+            </div>
+            <div class="mt-4">
+              <p class="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wider">Current Month Total</p>
+              <p id="sysDiagMonthlyMaintenance" class="text-3xl font-black text-indigo-950 mt-1">£0.00</p>
+            </div>
+          </div>
+
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
               <div>
@@ -708,7 +721,7 @@
                 <p class="text-[11px] text-slate-500 mt-0.5">Database storage backend and cloud syncing.</p>
               </div>
               <button onclick="testFirebaseConnection()" class="px-3.5 py-1.5 bg-amber-500 text-white rounded-xl text-xs font-bold hover:bg-amber-600 transition cursor-pointer shadow-sm">
-                Ping Database
+                Ping DB
               </button>
             </div>
             
@@ -718,12 +731,12 @@
                 <span>ennins-domestic-hr</span>
               </div>
               <div class="flex justify-between border-b border-slate-200 pb-2">
-                <span class="font-bold">Database Instance:</span>
-                <span>ennins-domestic-hr-default-rtdb</span>
+                <span class="font-bold">Instance:</span>
+                <span class="truncate pl-2">ennins-domestic-hr-default...</span>
               </div>
               <div class="flex justify-between pt-1">
-                <span class="font-bold">Current Status:</span>
-                <span id="fbStatusVal" class="text-slate-400 italic">Connecting to live socket...</span>
+                <span class="font-bold">Status:</span>
+                <span id="fbStatusVal" class="text-slate-400 italic">Connecting...</span>
               </div>
             </div>
           </div>
@@ -731,11 +744,11 @@
           <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-4">
               <div>
-                <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-envelope text-snoo-blue"></i> EmailJS Notification API</h3>
-                <p class="text-[11px] text-slate-500 mt-0.5">Automated emails to staff on amendments/cancellations.</p>
+                <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-envelope text-snoo-blue"></i> EmailJS Setup</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Automated staff emails setup.</p>
               </div>
               <button onclick="testEmailJS()" class="px-3.5 py-1.5 bg-snoo-blue text-white rounded-xl text-xs font-bold hover:bg-snoo-lightBlue transition cursor-pointer shadow-sm">
-                Save & Test API
+                Test API
               </button>
             </div>
             <div class="space-y-3 text-xs">
@@ -744,7 +757,7 @@
                 <input type="email" id="emailjsTestEmail" placeholder="e.g. your-email@gmail.com" class="border border-slate-200 rounded-xl px-3 py-2 w-full font-medium bg-slate-50 text-indigo-900 focus:ring-1 focus:ring-indigo-500">
               </div>
               <div class="pt-2 border-t border-slate-100">
-                <label class="block text-slate-500 mb-1 font-bold">EmailJS Public Key:</label>
+                <label class="block text-slate-500 mb-1 font-bold">Public Key:</label>
                 <input type="text" id="emailjsKey" placeholder="e.g. YOUR_PUBLIC_KEY" class="border border-slate-200 rounded-xl px-3 py-2 w-full font-mono bg-slate-50">
               </div>
               <div class="grid grid-cols-2 gap-3">
@@ -1155,6 +1168,7 @@
             updateManagerView();
             renderRosterGrid();
             populateDropdowns(); 
+            renderSystemDiagnostics();
           }
         }
       });
@@ -1427,6 +1441,24 @@
       if (tabName === 'manager') updateManagerView();
       if (tabName === 'it-admin') updateITDirectory();
       if (tabName === 'roster') renderRosterGrid();
+      if (tabName === 'sys-diag') renderSystemDiagnostics();
+    }
+
+    function renderSystemDiagnostics() {
+      if (!currentUser || currentUser.role !== 'it_admin') return;
+      const now = new Date();
+      const currentMonthPrefix = now.toISOString().substring(0, 7);
+      
+      let monthlyGross = 0;
+      shifts.forEach(s => {
+        if (s && s.status === 'completed' && s.date && s.date.startsWith(currentMonthPrefix)) {
+          monthlyGross += (s.hours * s.chargeRate);
+        }
+      });
+      const monthlyMaintenance = monthlyGross * 0.05;
+      
+      const el = document.getElementById('sysDiagMonthlyMaintenance');
+      if (el) el.textContent = `£${monthlyMaintenance.toFixed(2)}`;
     }
 
     function testFirebaseConnection() {
@@ -1722,6 +1754,7 @@
         pay: pay,
         chargeRate: charge,
         status: status,
+        paymentStatus: 'pending',
         staffId: staffId,
         clockOutTime: null,
         postedBy: currentUser.id,
@@ -1999,9 +2032,19 @@
       if (!s) return;
       if (confirm("Mark this shift as fully completed?")) {
         s.status = 'completed'; const now = new Date();
+        s.paymentStatus = 'pending'; // Reset payment status to pending when completed
         s.clockOutTime = `Today ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         pushToCloud(); renderShifts(); if (currentUser.role !== 'staff') updateManagerView();
         showToast('✓ Shift marked as completed!', 'bg-emerald-50 text-emerald-800');
+      }
+    }
+    
+    function togglePaymentStatus(id) {
+      const s = shifts.find(x => x && x.id === id);
+      if (s) {
+        s.paymentStatus = s.paymentStatus === 'paid' ? 'pending' : 'paid';
+        pushToCloud();
+        updateManagerView();
       }
     }
 
@@ -2154,7 +2197,7 @@
 
       if (scheduleMode === 'single') {
         const d = document.getElementById('newShiftDate').value, h = parseFloat(document.getElementById('newShiftHours').value);
-        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", hours: h, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", hours: h, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
         
         emailSubject = parsedAssigneeId ? "New Shift Directly Assigned To You" : "New Open Shift Available in Marketplace";
         emailDetails = `Role: ${jTitle} - ${t}\nClient: ${clientName}\nLocation: ${clientAddress}\nDate: ${d}\nTime: 09:00 - 13:00 (${h} hrs)\nPay Rate: £${p.toFixed(2)}/hr\n\n`;
@@ -2176,7 +2219,7 @@
         if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800');
         const dateRangeStr = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
         
-        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr: dateRangeStr, date: startStr, datesList: datesList, time: "09:00 - 13:00", hoursPerDay: hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr: dateRangeStr, date: startStr, datesList: datesList, time: "09:00 - 13:00", hoursPerDay: hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', staffId: parsedAssigneeId, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
         
         emailSubject = parsedAssigneeId ? "New Contract Block Assigned To You" : "New Contract Block Available in Marketplace";
         emailDetails = `Role: ${jTitle} - ${t} (Block Contract)\nClient: ${clientName}\nLocation: ${clientAddress}\nDates: ${dateRangeStr}\nTime: 09:00 - 13:00 (${hoursPerDay} hrs/day)\nPay Rate: £${p.toFixed(2)}/hr\n\n`;
@@ -2252,15 +2295,18 @@
       if (document.getElementById('sumProfit')) document.getElementById('sumProfit').textContent = `£${netProfit.toFixed(2)}`;
 
       const header = document.getElementById('managerTableHeader');
-      if (header) header.innerHTML = `<tr><th class="p-3">Staff & Client</th><th class="p-3">Status</th>${showFin ? `<th class="p-3 text-right text-amber-700">Staff Pay</th><th class="p-3 text-right text-indigo-700">IT Cut (5%)</th><th class="p-3 text-right text-emerald-700">Net Margin</th>` : ''}</tr>`;
+      if (header) header.innerHTML = `<tr><th class="p-3">Staff & Client</th><th class="p-3">Status</th>${showFin ? `<th class="p-3">Payment</th><th class="p-3 text-right text-amber-700">Staff Pay</th><th class="p-3 text-right text-indigo-700">System Maintenance (5%)</th><th class="p-3 text-right text-emerald-700">Net Margin</th>` : ''}</tr>`;
 
       const table = document.getElementById('managerTable');
-      if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 5 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
+      if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 6 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
           const cl = clients.find(x => x && x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
           const st = users.find(u => u && u.id == s.staffId);
           const shiftGross = s.hours * s.chargeRate, staffEarned = s.hours * s.pay, itCut = shiftGross * 0.05, profit = shiftGross - staffEarned - itCut;
 
-          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
+          const isPaid = s.paymentStatus === 'paid';
+          const paymentToggle = `<button onclick="togglePaymentStatus(${s.id})" class="px-2 py-1 rounded-md text-[9px] font-black uppercase transition-colors shadow-xs cursor-pointer ${isPaid ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200' : 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200'}">${isPaid ? '<i class="fa-solid fa-check"></i> Paid' : 'Pending'}</button>`;
+
+          return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3">${s.status === 'completed' ? paymentToggle : '<span class="text-slate-300">-</span>'}</td><td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
         }).join('');
     }
 
@@ -2316,19 +2362,19 @@
       if (end) sList = sList.filter(s => s.date <= end);
       
       let sub = 0;
-      document.getElementById('invClient').innerHTML = `<span class="text-indigo-700 font-bold text-sm">Internal IT Admin Remuneration (5% of Gross)</span>`;
+      document.getElementById('invClient').innerHTML = `<span class="text-indigo-700 font-bold text-sm">Internal System Maintenance Remuneration (5% of Gross)</span>`;
       const dr = document.getElementById('invDateRange');
       if (start && end) dr.textContent = `Period: ${start} to ${end}`; else if (start) dr.textContent = `Period: From ${start}`; else if (end) dr.textContent = `Period: Up to ${end}`; else dr.textContent = `Period: All Time`;
 
-      document.querySelector('#invoicePaper h2').textContent = 'Golden Tree HR Ltd - IT Earnings';
-      document.querySelector('#invoicePaper .text-right span').textContent = 'IT Admin Statement';
+      document.querySelector('#invoicePaper h2').textContent = 'Golden Tree HR Ltd - System Maintenance';
+      document.querySelector('#invoicePaper .text-right span').textContent = 'System Maintenance Statement';
       document.querySelector('#invoicePaper .text-right span').className = 'text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full';
 
       document.querySelector('#invoicePaper thead tr').innerHTML = `
           <th class="py-2.5 px-2 text-left">Shift & Client</th>
           <th class="py-2.5 px-2 text-right">Hours</th>
           <th class="py-2.5 px-2 text-right">Client Gross</th>
-          <th class="py-2.5 px-2 text-right">IT Cut (5%)</th>
+          <th class="py-2.5 px-2 text-right">System Maintenance (5%)</th>
       `;
 
       if (sList.length === 0) document.getElementById('invoiceRows').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 font-bold">No completed shifts found for this period</td></tr>`;
@@ -2344,9 +2390,9 @@
       document.getElementById('invVat').parentElement.classList.add('hidden');
       document.getElementById('invTot').textContent = `£${sub.toFixed(2)}`;
       document.getElementById('invTot').parentElement.classList.replace('text-snoo-navy', 'text-indigo-700');
-      document.getElementById('invNum').textContent = `IT-STM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      document.getElementById('invNum').textContent = `SM-STM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       
-      showToast('IT Admin Statement compiled!', 'bg-indigo-50 text-indigo-800');
+      showToast('System Maintenance Statement compiled!', 'bg-indigo-50 text-indigo-800');
     }
 
     function showToast(m, cls) {
