@@ -49,7 +49,7 @@
 
   <!-- Version Tag -->
   <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">
-    v4.1.7
+    v4.1.8
   </div>
 
   <!-- 1. AUTHENTICATION & LOGIN SCREEN -->
@@ -1190,7 +1190,8 @@
 
     function notifyStaff(staffId, subject, details) {
       if(!staffId) return;
-      const s = users.find(u => u && u.id === staffId);
+      // Note: Using loose equality (==) here just in case ID got casted to a string during dropdown selection
+      const s = users.find(u => u && u.id == staffId);
       if (!s || !s.email) return;
 
       const pKey = (emailConfig && emailConfig.publicKey) || localStorage.getItem('enin_email_key');
@@ -1200,9 +1201,18 @@
       if (pKey && sId && tId) {
         try {
           if (typeof emailjs !== 'undefined') {
-            emailjs.send(sId, tId, { to_name: s.name, to_email: s.email, subject: subject, message: details }, pKey).catch(e => console.error(e));
+            emailjs.send(sId, tId, { to_name: s.name, to_email: s.email, subject: subject, message: details }, pKey)
+              .then(() => {
+                setTimeout(() => { showToast(`✓ Email alert successfully delivered to ${s.name}`, 'bg-emerald-50 text-emerald-800 border-emerald-200'); }, 1000);
+              })
+              .catch(e => {
+                console.error(e);
+                setTimeout(() => { showToast(`Failed to send email alert to ${s.name}. Check System Diagnostics API.`, 'bg-rose-50 text-rose-800 border-rose-200'); }, 1000);
+              });
           }
         } catch (e) { console.error(e); }
+      } else {
+         setTimeout(() => { showToast(`Note: Alert not sent to ${s.name} (Email API missing in Sys Diag)`, 'bg-amber-50 text-amber-800 border-amber-200'); }, 1500);
       }
     }
 
@@ -1278,7 +1288,7 @@
             const dayShifts = clientShifts.filter(s => s && (s.date === day.isoStr || (s.datesList && s.datesList.includes(day.isoStr))));
             bodyHTML += `<td class="p-1.5 align-top border-r border-slate-200">`;
             dayShifts.forEach((s, idx) => {
-              const assignee = users.find(u => u && u.id === s.staffId);
+              const assignee = users.find(u => u && u.id == s.staffId);
               const pillHTML = s.staffId 
                 ? `<div class="bg-emerald-700 text-emerald-50 px-1.5 py-0.5 rounded flex justify-between truncate items-center"><span class="truncate"><i class="fa-solid fa-check text-emerald-300"></i> ${assignee?.name || 'Staff'}</span></div>`
                 : `<div class="bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded font-bold truncate">⚠️ Open</div>`;
@@ -1349,7 +1359,7 @@
       select.innerHTML = `<option value="__marketplace__">⚠️ Return to Open Marketplace</option>`;
       users.forEach(u => {
         if(u && u.role !== 'it_admin' && u.status === 'active') {
-          const sel = u.id === s.staffId ? "selected" : "";
+          const sel = u.id == s.staffId ? "selected" : "";
           select.innerHTML += `<option value="${u.id}" ${sel}>${u.name} (${u.role})</option>`;
         }
       });
@@ -1369,8 +1379,8 @@
         document.getElementById('modal-reassign-shift').classList.add('hidden');
         renderRosterGrid(); renderShifts();
         showToast("Shift reassigned successfully", "bg-emerald-50 text-emerald-800");
-        if(oldStaffId && oldStaffId !== s.staffId) notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned.`);
-        if(s.staffId && s.staffId !== oldStaffId) notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
+        if(oldStaffId && oldStaffId != s.staffId) notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned.`);
+        if(s.staffId && s.staffId != oldStaffId) notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
       }
     }
 
@@ -1461,7 +1471,7 @@
       const start = document.getElementById('staffEarnStart').value;
       const end = document.getElementById('staffEarnEnd').value;
       
-      let myCompleted = shifts.filter(s => s && s.staffId === currentUser.id && s.status === 'completed');
+      let myCompleted = shifts.filter(s => s && s.staffId == currentUser.id && s.status === 'completed');
       if (start) myCompleted = myCompleted.filter(s => s.date >= start);
       if (end) myCompleted = myCompleted.filter(s => s.date <= end);
       
@@ -1501,7 +1511,8 @@
 
       let displayShifts = shifts.filter(x => x !== null);
       if (currentUser && currentUser.role === 'staff') {
-        displayShifts = displayShifts.filter(s => s.status === 'open' || s.staffId === currentUser.id);
+        // This line right here proves it is hidden from all other staff!
+        displayShifts = displayShifts.filter(s => s.status === 'open' || s.staffId == currentUser.id);
       }
 
       if (displayShifts.length === 0) {
@@ -1513,7 +1524,7 @@
       c.innerHTML = displayShifts.map(s => {
         if (!s) return '';
         const cl = clients.find(x => x && x.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
-        const isMine = s.staffId === currentUser.id;
+        const isMine = s.staffId == currentUser.id;
         const isBlock = s.isBlock === true;
         const totalEarningsNum = s.pay * s.hours;
         const totalEarnings = totalEarningsNum.toFixed(2);
@@ -1536,7 +1547,13 @@
             <div>
               ${s.status === 'open' ? `<button onclick="claimShift(${s.id})" class="w-full bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition flex items-center justify-center gap-1.5">${isBlock ? '<i class="fa-solid fa-cube"></i> Claim Entire Block' : 'Claim Shift'}</button>` : ''}
               ${isMine && s.status === 'claimed' ? `<button onclick="completeShift(${s.id})" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition">Mark Shift as Completed</button>` : ''}
-              ${!isMine && s.status !== 'open' ? `<span class="block text-center text-xs text-slate-400 font-bold py-2.5 bg-slate-50 rounded-xl">Booked Contract</span>` : ''}
+              
+              ${!isMine && s.status !== 'open' ? `
+                <div class="block text-center text-xs text-indigo-700 border border-indigo-200 font-bold py-2 bg-indigo-50 rounded-xl shadow-xs">
+                    <p><i class="fa-solid fa-lock text-indigo-500"></i> Assigned to ${users.find(u=>u.id==s.staffId)?.name || 'Staff'}</p>
+                    <p class="text-[9px] text-indigo-400 font-medium mt-0.5">(Hidden from other staff)</p>
+                </div>
+              ` : ''}
             </div>
           </div>
         `;
@@ -1757,7 +1774,7 @@
       const table = document.getElementById('managerTable');
       if (table) table.innerHTML = filteredShifts.length === 0 ? `<tr><td colspan="${showFin ? 4 : 2}" class="p-6 text-center text-slate-400 italic font-bold">No timesheets match the selected filters.</td></tr>` : filteredShifts.map(s => {
           const cl = clients.find(x => x && x.id === s.clientId) || { name: "Private Client (Deleted)", address: "UK Address" };
-          const st = users.find(u => u && u.id === s.staffId);
+          const st = users.find(u => u && u.id == s.staffId);
           const shiftGross = s.hours * s.chargeRate, staffEarned = s.hours * s.pay, profit = shiftGross - staffEarned;
 
           return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${s.status === 'completed' ? `<span class="font-bold text-emerald-700 block"><i class="fa-solid fa-circle-check text-emerald-500"></i> Completed</span><span class="text-slate-700 font-semibold block"><i class="fa-solid fa-flag-checkered text-slate-400"></i> ${s.clockOutTime || 'Logged out'}</span>` : '<span class="text-slate-400 italic">Not completed</span>'}</td>${showFin ? `<td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
@@ -1782,7 +1799,7 @@
       else {
         document.getElementById('invoiceRows').innerHTML = sList.map(s => {
           const rate = s.chargeRate || cl.rate; const tot = s.hours * rate; sub += tot;
-          const st = users.find(u => u && u.id === s.staffId);
+          const st = users.find(u => u && u.id == s.staffId);
           return `<tr><td class="py-2.5 px-2 font-semibold text-slate-800">${s.title} (${s.isBlock ? s.dateRangeStr : s.date}) - ${st ? st.name : 'Domestic Staff'}</td><td class="py-2.5 px-2 text-right">${s.hours}</td><td class="py-2.5 px-2 text-right">£${rate.toFixed(2)}</td><td class="py-2.5 px-2 text-right font-bold text-snoo-navy">£${tot.toFixed(2)}</td></tr>`;
         }).join('');
       }
