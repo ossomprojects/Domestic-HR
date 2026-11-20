@@ -35,7 +35,7 @@
 </head>
 <body class="bg-snoo-slate text-slate-800 antialiased min-h-screen flex flex-col selection:bg-snoo-blue selection:text-white">
 
-  <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">v4.1.22</div>
+  <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">v4.1.23</div>
 
   <div id="toast" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl p-4 rounded-2xl shadow-2xl border text-xs font-bold flex justify-between items-center transition z-[9999]">
     <span id="toast-msg"></span>
@@ -179,7 +179,7 @@
         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4">
           <div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Weekly Roster Matrix</h2>
-            <p class="text-xs text-slate-500 font-medium">Track who is where and instantly add or manage shifts live.</p>
+            <p class="text-xs text-slate-500 font-medium">Active facilities with scheduled shifts appear below. Use the quick scheduler panel to add shifts or new clients.</p>
           </div>
           <div class="flex items-center space-x-3 flex-wrap justify-end gap-y-2">
             <div class="flex items-center space-x-2 bg-white p-1 rounded-xl shadow-sm border border-slate-200 text-xs font-bold">
@@ -814,18 +814,40 @@
   </div>
   
   <div id="modal-quick-shift" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 text-xs">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 text-xs">
       <div class="flex justify-between items-center mb-4 pb-3 border-b">
-        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-bolt text-snoo-blue mr-1"></i> Quick Add Shift</h3>
+        <h3 class="font-bold text-snoo-navy text-sm"><i class="fa-solid fa-bolt text-snoo-blue mr-1"></i> Schedule Shift on Roster</h3>
         <button onclick="closeQuickShiftModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">&times;</button>
       </div>
-      <input type="hidden" id="qsClientId"><input type="hidden" id="qsDate">
       <div class="space-y-3">
-        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
-          <div><p class="text-[10px] uppercase font-bold text-slate-400">Client / Facility</p><p class="font-bold text-slate-800" id="qsClientNameDisplay"></p></div>
-          <div class="text-right"><p class="text-[10px] uppercase font-bold text-slate-400">Date</p><p class="font-bold text-indigo-700" id="qsDateDisplay"></p></div>
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <label class="font-bold text-slate-700 text-[11px] uppercase">Client / Facility</label>
+            <div class="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-bold">
+              <button type="button" onclick="setQsClientMode('existing')" id="btnQsClientExisting" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer">Existing Client</button>
+              <button type="button" onclick="setQsClientMode('new')" id="btnQsClientNew" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer">+ New Client</button>
+            </div>
+          </div>
+          <div id="qsSectionClientExisting">
+            <select id="qsClientSelect" onchange="onQsClientChange(this.value)" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-bold text-snoo-navy"></select>
+          </div>
+          <div id="qsSectionClientNew" class="hidden space-y-2">
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px]">New Client / Facility Name:</label>
+              <input type="text" id="qsCustomClientName" placeholder="e.g. 21 Wythes Road" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+            </div>
+            <div>
+              <label class="font-bold text-slate-700 block mb-1 text-[10px]">Full Street Address & Postcode:</label>
+              <input type="text" id="qsCustomClientAddress" placeholder="e.g. 21 Wythes Road, London E16 2DN" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
+            </div>
+          </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="font-bold block mb-1 text-slate-700">Shift Date:</label>
+            <input type="date" id="qsDate" class="w-full border border-slate-200 rounded-xl p-2.5 font-bold text-indigo-900 bg-white">
+          </div>
           <div>
             <label class="font-bold block mb-1 text-slate-700">Job Title:</label>
             <select id="qsJobTitle" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium bg-white">
@@ -950,7 +972,7 @@
       { id: 2, name: "Dr. Robert Chen", address: "42 Richmond Hill, London TW10 6RN", rate: 25.00 }
     ];
     let shifts = [];
-    let currentUser = null, clientDispatchMode = 'existing', scheduleMode = 'single', rosterWeekOffset = 0;
+    let currentUser = null, clientDispatchMode = 'existing', qsClientMode = 'existing', scheduleMode = 'single', rosterWeekOffset = 0;
     let expandedFacilities = new Set();
 
     function initApp() {
@@ -1502,7 +1524,8 @@
         if (!client) return;
         let clientShifts = shifts.filter(s => s && s.clientId === client.id && daysOfWeek.some(d => s.date === d.isoStr || (s.datesList && s.datesList.includes(d.isoStr))));
         if (dispatcherFilter !== 'all') clientShifts = clientShifts.filter(s => s && s.postedBy === parseInt(dispatcherFilter));
-        if (dispatcherFilter !== 'all' && clientShifts.length === 0) return;
+        // Only display facilities/clients that actually have scheduled shifts in this week
+        if (clientShifts.length === 0) return;
 
         const isExpanded = !expandedFacilities.has(client.id);
         bodyHTML += `
@@ -1563,16 +1586,71 @@
           bodyHTML += `</tr>`;
         }
       });
+
+      // Single dedicated empty panel for authorized users to add shifts or new clients directly in the scheduler
+      if (isManagerOrAdmin) {
+        bodyHTML += `
+          <tr class="bg-snoo-blue/5 border-t-2 border-dashed border-snoo-blue/20">
+            <td class="p-3 border-r border-slate-200 align-middle">
+              <div class="font-extrabold text-snoo-blue flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-calendar-plus"></i> Schedule Shift / Add Client
+              </div>
+              <p class="text-[10px] text-slate-500 mt-0.5 leading-snug">Click any day to schedule a shift for an existing client or add a new client.</p>
+            </td>
+            ${daysOfWeek.map(day => `
+              <td class="p-2 align-middle border-r border-slate-200 min-w-[120px]">
+                <button onclick="openQuickShiftModal(null, '${day.isoStr}')" class="w-full h-16 border-2 border-dashed border-snoo-blue/30 hover:border-snoo-blue bg-white hover:bg-snoo-blue/10 text-snoo-blue text-[11px] font-extrabold rounded-2xl flex flex-col items-center justify-center gap-1 transition cursor-pointer shadow-2xs">
+                  <i class="fa-solid fa-plus-circle text-sm"></i>
+                  <span>+ Add Shift</span>
+                </button>
+              </td>
+            `).join('')}
+          </tr>`;
+      } else if (!bodyHTML) {
+        bodyHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 font-bold italic">No shifts scheduled for this week.</td></tr>`;
+      }
+
       rosterBody.innerHTML = bodyHTML;
     }
 
+    function setQsClientMode(mode) {
+      qsClientMode = mode;
+      const btnEx = document.getElementById('btnQsClientExisting'), btnNew = document.getElementById('btnQsClientNew');
+      const secEx = document.getElementById('qsSectionClientExisting'), secNew = document.getElementById('qsSectionClientNew');
+      if (mode === 'existing') {
+        btnEx.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnNew.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
+        secEx.classList.remove('hidden'); secNew.classList.add('hidden');
+      } else {
+        btnNew.className = "px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs cursor-pointer";
+        btnEx.className = "px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 cursor-pointer";
+        secNew.classList.remove('hidden'); secEx.classList.add('hidden');
+      }
+    }
+
+    function onQsClientChange(clientId) {
+      const cl = clients.find(c => c && c.id === parseInt(clientId));
+      if (cl && cl.rate) document.getElementById('qsCharge').value = cl.rate.toFixed(2);
+    }
+
     function openQuickShiftModal(clientId, dateIso) {
-      const client = clients.find(c => c && c.id === clientId);
-      if (!client) return;
-      document.getElementById('qsClientId').value = clientId;
-      document.getElementById('qsDate').value = dateIso;
-      document.getElementById('qsClientNameDisplay').textContent = `${client.name} (${client.address})`;
-      document.getElementById('qsDateDisplay').textContent = dateIso;
+      const qsClientSelect = document.getElementById('qsClientSelect');
+      qsClientSelect.innerHTML = clients.map(c => c ? `<option value="${c.id}">${c.name} (${c.address})</option>` : '').join('');
+
+      if (clientId) {
+        setQsClientMode('existing');
+        qsClientSelect.value = clientId;
+      } else if (clients.length > 0) {
+        setQsClientMode('existing');
+        qsClientSelect.value = clients[0].id;
+      } else {
+        setQsClientMode('new');
+      }
+
+      const selectedClient = clients.find(c => c && c.id === parseInt(qsClientSelect.value));
+      document.getElementById('qsCustomClientName').value = '';
+      document.getElementById('qsCustomClientAddress').value = '';
+      document.getElementById('qsDate').value = dateIso || new Date().toISOString().split('T')[0];
 
       const qsAssignee = document.getElementById('qsAssignee');
       qsAssignee.innerHTML = `<option value="">🌍 Marketplace (Open)</option>`;
@@ -1586,7 +1664,7 @@
       document.getElementById('qsEndTime').value = '13:00';
       document.getElementById('qsHours').value = '4.0';
       document.getElementById('qsPay').value = '15.00';
-      document.getElementById('qsCharge').value = client.rate ? client.rate.toFixed(2) : '26.00';
+      document.getElementById('qsCharge').value = (selectedClient && selectedClient.rate) ? selectedClient.rate.toFixed(2) : '26.00';
       document.getElementById('qsFinancials').classList.toggle('hidden', !['manager', 'it_admin'].includes(currentUser.role));
       document.getElementById('modal-quick-shift').classList.remove('hidden');
     }
@@ -1594,8 +1672,8 @@
     function closeQuickShiftModal() { document.getElementById('modal-quick-shift').classList.add('hidden'); }
 
     function saveQuickShift() {
-      const clientId = parseInt(document.getElementById('qsClientId').value);
       const dateIso = document.getElementById('qsDate').value;
+      if (!dateIso) return showToast("Please select a shift date.", "bg-rose-50 text-rose-800");
       const title = document.getElementById('qsTitle').value.trim() || 'Deep Clean';
       const jobTitle = document.getElementById('qsJobTitle').value;
       const assigneeVal = document.getElementById('qsAssignee').value;
@@ -1607,12 +1685,27 @@
       const pay = parseFloat(document.getElementById('qsPay').value) || 15.00;
       const charge = parseFloat(document.getElementById('qsCharge').value) || 26.00;
       const status = staffId ? 'claimed' : 'open';
-      const client = clients.find(c => c && c.id === clientId);
-      const clientName = client ? client.name : "Domestic Client";
-      const clientAddress = client ? client.address : "UK Address";
+
+      let clientId = null, clientName = "Domestic Client", clientAddress = "UK Address";
+      if (qsClientMode === 'existing') {
+        clientId = parseInt(document.getElementById('qsClientSelect').value);
+        const client = clients.find(c => c && c.id === clientId);
+        if (!client) return showToast("Please select a client or click '+ New Client'.", "bg-rose-50 text-rose-800");
+        clientName = client.name;
+        clientAddress = client.address;
+      } else {
+        clientName = document.getElementById('qsCustomClientName').value.trim();
+        clientAddress = document.getElementById('qsCustomClientAddress').value.trim();
+        if (!clientName || !clientAddress) return showToast("Please enter both the New Client Name and Full Address.", "bg-rose-50 text-rose-800");
+        const newClient = { id: Date.now(), name: clientName, address: clientAddress, rate: charge };
+        clients.push(newClient);
+        clientId = newClient.id;
+        populateDropdowns();
+        if (['it_admin', 'manager', 'consultant'].includes(currentUser.role)) updateITDirectory();
+      }
 
       shifts.push({
-        id: Date.now(), clientId, title, jobTitle, isBlock: false, date: dateIso, time, hours, pay, chargeRate: charge,
+        id: Date.now() + 1, clientId, title, jobTitle, isBlock: false, date: dateIso, time, hours, pay, chargeRate: charge,
         status, paymentStatus: 'pending', itPaymentStatus: 'pending', staffId, clockInTime: null, clockOutTime: null,
         postedBy: currentUser.id, postedByName: currentUser.name
       });
@@ -1634,7 +1727,7 @@
       if (['manager', 'it_admin'].includes(currentUser.role)) updateManagerView();
       if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
       closeQuickShiftModal();
-      showToast("✓ Shift quickly dispatched to roster!", "bg-emerald-50 text-emerald-800");
+      showToast("✓ Shift scheduled on roster!", "bg-emerald-50 text-emerald-800");
     }
 
     function openAmendShift(id) {
