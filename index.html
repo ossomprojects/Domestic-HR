@@ -35,7 +35,7 @@
 </head>
 <body class="bg-snoo-slate text-slate-800 antialiased min-h-screen flex flex-col selection:bg-snoo-blue selection:text-white">
 
-  <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">v4.1.21</div>
+  <div class="fixed bottom-2 right-2 text-[10px] font-black text-slate-400 z-50 pointer-events-none bg-white/50 px-2 py-1 rounded">v4.1.22</div>
 
   <div id="toast" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl p-4 rounded-2xl shadow-2xl border text-xs font-bold flex justify-between items-center transition z-[9999]">
     <span id="toast-msg"></span>
@@ -336,10 +336,21 @@
 
             <div class="border border-slate-200 p-3.5 rounded-2xl bg-slate-50 space-y-2.5">
               <div class="flex justify-between items-center">
-                <label class="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1"><i class="fa-regular fa-calendar-days text-snoo-blue"></i> Schedule Type</label>
+                <label class="font-bold text-slate-700 text-[11px] uppercase tracking-wider flex items-center gap-1"><i class="fa-regular fa-calendar-days text-snoo-blue"></i> Schedule & Time</label>
                 <div class="flex bg-white p-0.5 rounded-lg border border-slate-200 text-[10px] font-bold">
                   <button type="button" onclick="setScheduleMode('single')" id="btnSchedSingle" class="px-2 py-0.5 rounded bg-snoo-blue text-white shadow-xs">Single Day</button>
                   <button type="button" onclick="setScheduleMode('range')" id="btnSchedRange" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900">📦 Recurring Block</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Start Time:</label>
+                  <input type="time" id="newShiftStartTime" value="09:00" onchange="syncDispatchTimeHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-snoo-navy">
+                </div>
+                <div>
+                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">End Time:</label>
+                  <input type="time" id="newShiftEndTime" value="13:00" onchange="syncDispatchTimeHours()" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-bold text-snoo-navy">
                 </div>
               </div>
 
@@ -349,7 +360,7 @@
                   <input type="date" id="newShiftDate" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
                 </div>
                 <div>
-                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Hours:</label>
+                  <label class="font-bold block mb-1 text-slate-700 text-[11px]">Total Hours:</label>
                   <input type="number" id="newShiftHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2 bg-white font-medium">
                 </div>
               </div>
@@ -445,7 +456,7 @@
               <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase border border-indigo-200">Management Console</span>
             </div>
             <h2 class="text-xl font-extrabold text-snoo-navy">Directory & Staff Approvals</h2>
-            <p class="text-xs text-slate-500 mt-1">Review and approve incoming staff sign-ups, and manage active personnel.</p>
+            <p class="text-xs text-slate-500 mt-1">Review and approve incoming staff sign-ups, manage active personnel, and register client addresses.</p>
           </div>
         </div>
 
@@ -513,14 +524,38 @@
           </div>
         </div>
 
-        <div id="itClientSection" class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hidden">
-          <div class="flex justify-between items-center mb-4">
+        <!-- CLIENT & FACILITY DIRECTORY MANAGEMENT -->
+        <div id="itClientSection" class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 space-y-5">
+          <div>
             <h3 class="text-sm font-bold text-snoo-navy flex items-center gap-2"><i class="fa-solid fa-house-user text-indigo-600"></i> Client & Facility Management</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Add new domestic clients or facilities here so they appear in the dropdown when creating shifts.</p>
           </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <h4 class="text-xs font-extrabold text-snoo-navy mb-3 flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-snoo-blue"></i> Add New Client / Facility to Directory</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs items-end">
+              <div>
+                <label class="font-bold text-slate-700 block mb-1">Client / Facility Name</label>
+                <input type="text" id="dirClientName" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium" placeholder="e.g. 21 Wythes Road">
+              </div>
+              <div>
+                <label class="font-bold text-slate-700 block mb-1">Full Street Address & Postcode</label>
+                <input type="text" id="dirClientAddress" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium" placeholder="e.g. 21 Wythes Road, London E16 2DN">
+              </div>
+              <div>
+                <label class="font-bold text-slate-700 block mb-1">Default Hourly Rate (£/hr)</label>
+                <input type="number" id="dirClientRate" value="26.00" step="0.50" class="w-full border border-slate-200 rounded-xl p-2.5 bg-white font-medium">
+              </div>
+            </div>
+            <button onclick="addDirectoryClient()" class="mt-3 w-full sm:w-auto bg-snoo-blue hover:bg-snoo-lightBlue text-white font-bold px-5 py-2.5 rounded-xl transition text-xs cursor-pointer shadow-sm flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-building-circle-check"></i> Save Client to System
+            </button>
+          </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-50 border-y text-slate-500 font-bold uppercase text-[10px]">
-                <tr><th class="p-3">Client Name</th><th class="p-3">Address</th><th class="p-3">Default Rate</th><th class="p-3 text-right">Actions</th></tr>
+                <tr><th class="p-3">Client Name</th><th class="p-3">Full Address</th><th class="p-3">Default Rate</th><th class="p-3 text-right">Actions</th></tr>
               </thead>
               <tbody id="itClientTable" class="divide-y divide-slate-100"></tbody>
             </table>
@@ -810,9 +845,10 @@
           </div>
         </div>
         <div><label class="font-bold block mb-1 text-slate-700">Service Description:</label><input type="text" id="qsTitle" value="Deep Clean" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium"></div>
-        <div class="grid grid-cols-2 gap-2">
-          <div><label class="font-bold block mb-1 text-slate-700">Hours:</label><input type="number" id="qsHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium"></div>
-          <div><label class="font-bold block mb-1 text-slate-700">Time:</label><input type="text" id="qsTime" value="09:00 - 13:00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium"></div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="font-bold block mb-1 text-slate-700">Start Time:</label><input type="time" id="qsStartTime" value="09:00" onchange="syncQuickShiftTimeHours()" class="w-full border border-slate-200 rounded-xl p-2 font-bold text-snoo-navy"></div>
+          <div><label class="font-bold block mb-1 text-slate-700">End Time:</label><input type="time" id="qsEndTime" value="13:00" onchange="syncQuickShiftTimeHours()" class="w-full border border-slate-200 rounded-xl p-2 font-bold text-snoo-navy"></div>
+          <div><label class="font-bold block mb-1 text-slate-700">Total Hrs:</label><input type="number" id="qsHours" value="4.0" step="0.5" class="w-full border border-slate-200 rounded-xl p-2 font-medium"></div>
         </div>
         <div id="qsFinancials" class="grid grid-cols-2 gap-2 hidden pt-2 border-t border-slate-200">
           <div><label class="font-bold block mb-1 text-slate-700">Staff Pay (£):</label><input type="number" id="qsPay" value="15.00" class="w-full border border-slate-200 rounded-xl p-2.5 font-medium"></div>
@@ -1037,6 +1073,7 @@
           if (!document.getElementById('mainApp').classList.contains('hidden')) {
             populateDropdowns();
             updateITDirectory();
+            renderRosterGrid();
           }
         }
       });
@@ -1065,6 +1102,35 @@
         fbDb.ref('users').set(uObj);
         fbDb.ref('shifts').set(sObj);
         fbDb.ref('clients').set(cObj);
+      }
+    }
+
+    function calculateHoursFromTimes(startStr, endStr) {
+      if (!startStr || !endStr) return null;
+      const [sh, sm] = startStr.split(':').map(Number);
+      const [eh, em] = endStr.split(':').map(Number);
+      if (isNaN(sh) || isNaN(sm) || isNaN(eh) || isNaN(em)) return null;
+      let diffMins = (eh * 60 + em) - (sh * 60 + sm);
+      if (diffMins <= 0) diffMins += 24 * 60;
+      return Math.round((diffMins / 60) * 2) / 2;
+    }
+
+    function syncDispatchTimeHours() {
+      const st = document.getElementById('newShiftStartTime')?.value;
+      const et = document.getElementById('newShiftEndTime')?.value;
+      const hrs = calculateHoursFromTimes(st, et);
+      if (hrs !== null && hrs > 0) {
+        if (document.getElementById('newShiftHours')) document.getElementById('newShiftHours').value = hrs.toFixed(1);
+        if (document.getElementById('newShiftRangeHours')) document.getElementById('newShiftRangeHours').value = hrs.toFixed(1);
+      }
+    }
+
+    function syncQuickShiftTimeHours() {
+      const st = document.getElementById('qsStartTime')?.value;
+      const et = document.getElementById('qsEndTime')?.value;
+      const hrs = calculateHoursFromTimes(st, et);
+      if (hrs !== null && hrs > 0 && document.getElementById('qsHours')) {
+        document.getElementById('qsHours').value = hrs.toFixed(1);
       }
     }
 
@@ -1444,13 +1510,13 @@
             <td colspan="8" class="p-3 font-bold text-snoo-navy flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-chevron-${isExpanded ? 'down' : 'right'} text-slate-400 w-3"></i>
-                ${client.name} <span class="bg-snoo-blue/10 text-snoo-blue px-2 py-0.5 rounded text-[10px] shadow-xs">[ ${clientShifts.length} ]</span>
+                ${client.name} <span class="text-[10px] font-medium text-slate-400">(${client.address})</span> <span class="bg-snoo-blue/10 text-snoo-blue px-2 py-0.5 rounded text-[10px] shadow-xs">[ ${clientShifts.length} ]</span>
               </div>
             </td>
           </tr>`;
 
         if (isExpanded) {
-          bodyHTML += `<tr><td class="p-2 border-r border-slate-200 text-slate-400 font-medium align-top break-words max-w-[15rem]">${client.name}</td>`;
+          bodyHTML += `<tr><td class="p-2 border-r border-slate-200 text-slate-500 font-medium align-top break-words max-w-[15rem]"><div class="font-bold text-snoo-navy">${client.name}</div><div class="text-[10px] text-slate-400 mt-0.5">${client.address}</div></td>`;
           daysOfWeek.forEach(day => {
             const dayShifts = clientShifts.filter(s => s && (s.date === day.isoStr || (s.datesList && s.datesList.includes(day.isoStr))));
             bodyHTML += `<td class="p-1.5 align-top border-r border-slate-200 min-w-[120px]">`;
@@ -1483,7 +1549,7 @@
                   <div class="flex justify-between items-center mb-0.5 border-b border-teal-500/50 pb-0.5">
                     <span class="text-[9px] bg-teal-800/80 px-1 rounded font-black">#${idx+1}</span>${actionMenu}
                   </div>
-                  <div class="font-bold text-[11px] mb-0.5 tracking-tight">${s.time}</div>
+                  <div class="font-bold text-[11px] mb-0.5 tracking-tight">${s.time || '09:00 - 13:00'}</div>
                   <div class="text-[9px] mb-1 truncate text-teal-100">${s.jobTitle || s.title} <span class="italic text-[8px] opacity-75">by ${s.postedByName || 'Admin'}</span></div>
                   ${pillHTML}
                 </div>`;
@@ -1505,7 +1571,7 @@
       if (!client) return;
       document.getElementById('qsClientId').value = clientId;
       document.getElementById('qsDate').value = dateIso;
-      document.getElementById('qsClientNameDisplay').textContent = client.name;
+      document.getElementById('qsClientNameDisplay').textContent = `${client.name} (${client.address})`;
       document.getElementById('qsDateDisplay').textContent = dateIso;
 
       const qsAssignee = document.getElementById('qsAssignee');
@@ -1516,8 +1582,9 @@
       
       document.getElementById('qsTitle').value = 'Deep Clean';
       document.getElementById('qsJobTitle').value = 'Support worker';
+      document.getElementById('qsStartTime').value = '09:00';
+      document.getElementById('qsEndTime').value = '13:00';
       document.getElementById('qsHours').value = '4.0';
-      document.getElementById('qsTime').value = '09:00 - 13:00';
       document.getElementById('qsPay').value = '15.00';
       document.getElementById('qsCharge').value = client.rate ? client.rate.toFixed(2) : '26.00';
       document.getElementById('qsFinancials').classList.toggle('hidden', !['manager', 'it_admin'].includes(currentUser.role));
@@ -1533,12 +1600,16 @@
       const jobTitle = document.getElementById('qsJobTitle').value;
       const assigneeVal = document.getElementById('qsAssignee').value;
       const staffId = assigneeVal ? parseInt(assigneeVal) : null;
+      const startTime = document.getElementById('qsStartTime').value || '09:00';
+      const endTime = document.getElementById('qsEndTime').value || '13:00';
+      const time = `${startTime} - ${endTime}`;
       const hours = parseFloat(document.getElementById('qsHours').value) || 4.0;
-      const time = document.getElementById('qsTime').value || '09:00 - 13:00';
       const pay = parseFloat(document.getElementById('qsPay').value) || 15.00;
       const charge = parseFloat(document.getElementById('qsCharge').value) || 26.00;
       const status = staffId ? 'claimed' : 'open';
       const client = clients.find(c => c && c.id === clientId);
+      const clientName = client ? client.name : "Domestic Client";
+      const clientAddress = client ? client.address : "UK Address";
 
       shifts.push({
         id: Date.now(), clientId, title, jobTitle, isBlock: false, date: dateIso, time, hours, pay, chargeRate: charge,
@@ -1547,8 +1618,8 @@
       });
 
       const emailSubject = staffId ? "New Shift Directly Assigned To You" : "New Open Shift Available in Marketplace";
-      let emailDetails = `Role: ${jobTitle} - ${title}\nClient: ${client ? client.name : "Client"}\nLocation: ${client ? client.address : "UK"}\nDate: ${dateIso}\nTime: ${time} (${hours} hrs)\nPay Rate: £${pay.toFixed(2)}/hr\n\n`;
-      emailDetails += staffId ? "This shift has been directly assigned to you. Remember to Clock In and Clock Out on the portal." : "This shift is open in the marketplace. Log into the portal immediately to claim it!";
+      let emailDetails = `Role: ${jobTitle} - ${title}\nClient: ${clientName}\nFull Shift Address: ${clientAddress}\nDate: ${dateIso}\nShift Time: ${time} (${hours} hrs)\nPay Rate: £${pay.toFixed(2)}/hr\n\n`;
+      emailDetails += staffId ? "This shift has been directly assigned to you. Remember to Clock In and Clock Out on the portal when working your shift." : "This shift is open in the marketplace. Log into the portal immediately to claim it!";
       
       if (staffId) {
         notifyStaff(staffId, emailSubject, emailDetails, false);
@@ -1588,12 +1659,15 @@
         if (!isNaN(newHrs) && newHrs > 0) s.hours = newHrs;
         s.pay = parseFloat(document.getElementById('amendShiftPay').value);
         s.chargeRate = parseFloat(document.getElementById('amendShiftCharge').value);
+        const cl = clients.find(c => c && c.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         pushToCloud();
         document.getElementById('modal-amend-shift').classList.add('hidden');
         renderRosterGrid(); renderShifts(); updateManagerView();
         if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
         showToast("Shift amended successfully", "bg-emerald-50 text-emerald-800");
-        if (s.staffId) notifyStaff(s.staffId, "Shift Amended", `Your shift/block for ${s.date || s.dateRangeStr} has been amended by management. Time: ${s.time} (${s.hours} hrs).`);
+        if (s.staffId) {
+          notifyStaff(s.staffId, "Shift Amended", `Your scheduled shift has been amended by management.\n\nRole: ${s.jobTitle || 'Staff'} - ${s.title}\nClient: ${cl.name}\nFull Shift Address: ${cl.address}\nDate: ${s.dateRangeStr || s.date}\nUpdated Shift Time: ${s.time} (${s.hours} hrs)\nPay Rate: £${s.pay.toFixed(2)}/hr`);
+        }
       }
     }
 
@@ -1617,6 +1691,7 @@
       if(s) {
         const val = document.getElementById('reassignSelectStaff').value;
         const oldStaffId = s.staffId;
+        const cl = clients.find(c => c && c.id === s.clientId) || { name: "Domestic Client", address: "UK Address" };
         s.activeClockInTime = null; s.activeClockInTs = null;
         if(val === '__marketplace__') { s.staffId = null; s.status = 'open'; }
         else { s.staffId = parseInt(val); s.status = 'claimed'; }
@@ -1626,8 +1701,12 @@
         renderRosterGrid(); renderShifts(); updateManagerView();
         if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
         showToast("Shift reassigned successfully", "bg-emerald-50 text-emerald-800");
-        if(oldStaffId && oldStaffId != s.staffId) notifyStaff(oldStaffId, "Shift Reassigned", `Your shift/block on ${s.date || s.dateRangeStr} has been reassigned.`);
-        if(s.staffId && s.staffId != oldStaffId) notifyStaff(s.staffId, "Shift Assigned", `You have been directly assigned a new shift/block starting ${s.date || s.dateRangeStr}.`);
+        if(oldStaffId && oldStaffId != s.staffId) {
+          notifyStaff(oldStaffId, "Shift Reassigned", `Your shift on ${s.dateRangeStr || s.date} at ${cl.name} (${cl.address}) has been reassigned.`);
+        }
+        if(s.staffId && s.staffId != oldStaffId) {
+          notifyStaff(s.staffId, "New Shift Assigned To You", `You have been directly assigned a shift by management.\n\nRole: ${s.jobTitle || 'Staff'} - ${s.title}\nClient: ${cl.name}\nFull Shift Address: ${cl.address}\nDate: ${s.dateRangeStr || s.date}\nShift Time: ${s.time || '09:00 - 13:00'} (${s.hours} hrs)\nPay Rate: £${s.pay.toFixed(2)}/hr\n\nRemember to Clock In and Clock Out on the portal when working your shift.`);
+        }
       }
     }
 
@@ -1636,13 +1715,14 @@
       if(!s) return;
       if(confirm("Are you sure you want to cancel this shift?")) {
         const staffId = s.staffId, shiftDate = s.date || s.dateRangeStr;
+        const cl = clients.find(c => c && c.id === s.clientId) || { name: "Client", address: "UK Address" };
         shifts = shifts.filter(x => x && x.id !== id);
         if (fbDb) fbDb.ref('shifts/' + id).remove();
         pushToCloud();
         renderRosterGrid(); renderShifts(); updateManagerView();
         if (typeof renderFinanceTracking === 'function') renderFinanceTracking();
         showToast("Shift cancelled", "bg-rose-50 text-rose-800 border-rose-200");
-        if (staffId) notifyStaff(staffId, "Shift Cancelled", `Your shift/block for ${shiftDate} has been cancelled by management.`);
+        if (staffId) notifyStaff(staffId, "Shift Cancelled", `Your shift for ${shiftDate} at ${cl.name} (${cl.address}) has been cancelled by management.`);
       }
     }
 
@@ -1906,7 +1986,7 @@
               <p class="text-xs text-slate-500 font-bold mb-1"><i class="fa-solid fa-user-tag text-snoo-blue"></i> ${s.jobTitle || 'General Staff'}</p>
               <p class="text-xs text-snoo-blue font-bold mb-1"><i class="fa-solid fa-house-user"></i> ${cl.name}</p>
               <p class="text-xs text-slate-500 mb-2"><i class="fa-solid fa-location-dot"></i> ${cl.address}</p>
-              ${isBlock ? `<div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs"><div class="flex justify-between font-bold text-indigo-950 text-[11px]"><span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span><span class="text-emerald-700">${s.hoursPerDay}h / day</span></div></div>` : `<p class="text-xs text-indigo-900 font-bold mb-1"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p><p class="text-[11px] text-slate-500 font-semibold mb-3"><i class="fa-regular fa-clock"></i> Scheduled: ${s.time || '09:00 - 13:00'}</p>`}
+              ${isBlock ? `<div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs space-y-1 mb-3 shadow-2xs"><div class="flex justify-between font-bold text-indigo-950 text-[11px]"><span><i class="fa-regular fa-calendar-days text-snoo-blue"></i> ${s.dateRangeStr || s.date}</span><span class="text-emerald-700">${s.hoursPerDay}h / day</span></div><div class="text-[11px] text-slate-500 font-semibold"><i class="fa-regular fa-clock text-snoo-blue"></i> Shift Time: ${s.time || '09:00 - 13:00'}</div></div>` : `<p class="text-xs text-indigo-900 font-bold mb-1"><i class="fa-regular fa-calendar"></i> Shift Date: ${s.date}</p><p class="text-[11px] text-slate-500 font-semibold mb-3"><i class="fa-regular fa-clock"></i> Shift Time: ${s.time || '09:00 - 13:00'}</p>`}
               <div class="text-xs bg-slate-50 p-3 rounded-2xl border mb-4 font-bold text-slate-700 space-y-2"><div class="flex justify-between items-center"><span>Rate: £${s.pay.toFixed(2)}/hr</span><span class="text-emerald-700 font-extrabold text-sm">Total: £${totalEarnings}</span></div><div class="flex justify-between items-center text-[10px] text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100"><span><i class="fa-solid fa-umbrella-beach"></i> Annual Leave (1%)</span><span>+ £${leavePay}</span></div></div>
             </div>
             <div>${actionSectionHTML}</div>
@@ -2006,6 +2086,25 @@
       if (s) { s.itPaymentStatus = s.itPaymentStatus === 'paid' ? 'pending' : 'paid'; pushToCloud(); updateManagerView(); if (typeof renderFinanceTracking === 'function') renderFinanceTracking(); }
     }
 
+    function addDirectoryClient() {
+      const name = document.getElementById('dirClientName').value.trim();
+      const address = document.getElementById('dirClientAddress').value.trim();
+      const rate = parseFloat(document.getElementById('dirClientRate').value) || 26.00;
+      if (!name || !address) return showToast("Please enter both the Client Name and Full Address.", "bg-rose-50 text-rose-800");
+
+      const newClient = { id: Date.now(), name, address, rate };
+      clients.push(newClient);
+      pushToCloud();
+      updateITDirectory();
+      populateDropdowns();
+      renderRosterGrid();
+
+      document.getElementById('dirClientName').value = '';
+      document.getElementById('dirClientAddress').value = '';
+      document.getElementById('dirClientRate').value = '26.00';
+      showToast(`✓ Added ${name} (${address}) to system!`, "bg-emerald-50 text-emerald-800 border-emerald-200");
+    }
+
     function updateITDirectory() {
       if (!currentUser) return;
       const isIT = currentUser.role === 'it_admin', isManager = currentUser.role === 'manager', isConsultant = currentUser.role === 'consultant';
@@ -2051,9 +2150,11 @@
       }
 
       const clientSec = document.getElementById('itClientSection');
-      if (clientSec) clientSec.classList.toggle('hidden', !(isIT || isManager));
+      if (clientSec) clientSec.classList.toggle('hidden', !(isIT || isManager || isConsultant));
       const cTable = document.getElementById('itClientTable');
-      if (cTable && (isIT || isManager)) cTable.innerHTML = clients.map(c => c ? `<tr class="hover:bg-slate-50 text-xs"><td class="p-3 font-bold text-snoo-navy">${c.name}</td><td class="p-3 text-slate-600">${c.address}</td><td class="p-3 font-semibold text-emerald-700">£${c.rate.toFixed(2)}</td><td class="p-3 text-right"><button onclick="deleteClient(${c.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded cursor-pointer">Delete</button></td></tr>` : '').join('');
+      if (cTable && (isIT || isManager || isConsultant)) {
+        cTable.innerHTML = clients.map(c => c ? `<tr class="hover:bg-slate-50 text-xs"><td class="p-3 font-bold text-snoo-navy">${c.name}</td><td class="p-3 text-slate-600">${c.address}</td><td class="p-3 font-semibold text-emerald-700">£${(c.rate || 26).toFixed(2)}</td><td class="p-3 text-right">${(isIT || isManager) ? `<button onclick="deleteClient(${c.id})" class="text-rose-600 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded cursor-pointer">Delete</button>` : '<span class="text-slate-300">-</span>'}</td></tr>` : '').join('');
+      }
     }
 
     function deleteClient(id) {
@@ -2159,13 +2260,22 @@
         if(cl) { clientName = cl.name; clientAddress = cl.address; }
       } else {
         clientName = document.getElementById('customClientName').value.trim() || 'Private Client';
-        clientAddress = document.getElementById('customAddress').value.trim() || document.getElementById('customPostcode').value.trim() || 'London UK';
+        const rawStreet = document.getElementById('customAddress').value.trim();
+        const rawPc = document.getElementById('customPostcode').value.trim();
+        if (rawStreet && rawPc && !rawStreet.toUpperCase().includes(rawPc.toUpperCase())) {
+          clientAddress = `${rawStreet}, ${rawPc}`;
+        } else {
+          clientAddress = rawStreet || rawPc || 'London UK';
+        }
         const newClient = { id: Date.now(), name: clientName, address: clientAddress, rate: ch };
         clients.push(newClient); finalClientId = newClient.id; populateDropdowns();
         if(['it_admin', 'manager', 'consultant'].includes(currentUser.role)) updateITDirectory();
       }
 
       const t = document.getElementById('newShiftTitle').value, jTitle = document.getElementById('newShiftJobTitle').value, p = parseFloat(document.getElementById('newShiftPay').value);
+      const startTime = document.getElementById('newShiftStartTime').value || '09:00';
+      const endTime = document.getElementById('newShiftEndTime').value || '13:00';
+      const shiftTimeStr = `${startTime} - ${endTime}`;
       const assigneeId = document.getElementById('newShiftAssignee').value;
       const parsedAssigneeId = assigneeId ? parseInt(assigneeId) : null;
       const shiftStatus = parsedAssigneeId ? "claimed" : "open";
@@ -2173,9 +2283,9 @@
 
       if (scheduleMode === 'single') {
         const d = document.getElementById('newShiftDate').value, h = parseFloat(document.getElementById('newShiftHours').value);
-        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: "09:00 - 13:00", hours: h, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', itPaymentStatus: 'pending', staffId: parsedAssigneeId, clockInTime: null, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: false, date: d, time: shiftTimeStr, hours: h, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', itPaymentStatus: 'pending', staffId: parsedAssigneeId, clockInTime: null, clockOutTime: null, postedBy: currentUser.id, postedByName: currentUser.name });
         emailSubject = parsedAssigneeId ? "New Shift Directly Assigned To You" : "New Open Shift Available in Marketplace";
-        emailDetails = `Role: ${jTitle} - ${t}\nClient: ${clientName}\nLocation: ${clientAddress}\nDate: ${d}\nTime: 09:00 - 13:00 (${h} hrs)\nPay Rate: £${p.toFixed(2)}/hr\n\n` + (parsedAssigneeId ? "This shift has been directly assigned to you. Remember to Clock In and Clock Out on the portal." : "This shift is open in the marketplace. Log into the portal immediately to claim it!");
+        emailDetails = `Role: ${jTitle} - ${t}\nClient: ${clientName}\nFull Shift Address: ${clientAddress}\nDate: ${d}\nShift Time: ${shiftTimeStr} (${h} hrs)\nPay Rate: £${p.toFixed(2)}/hr\n\n` + (parsedAssigneeId ? "This shift has been directly assigned to you. Remember to Clock In and Clock Out on the portal when working your shift." : "This shift is open in the marketplace. Log into the portal immediately to claim it!");
         showToast(`✓ Single shift published & dispatched!`, 'bg-emerald-50 text-emerald-800');
       } else {
         const startStr = document.getElementById('newShiftStartDate').value, endStr = document.getElementById('newShiftEndDate').value, pattern = document.getElementById('newShiftRepeatPattern').value, hoursPerDay = parseFloat(document.getElementById('newShiftRangeHours').value);
@@ -2192,9 +2302,9 @@
 
         if (validDays === 0) return showToast('No matching days in this date range.', 'bg-rose-50 text-rose-800');
         const dateRangeStr = `${startStr.slice(5)} to ${endStr.slice(5)} (${validDays} Days)`;
-        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr, date: startStr, datesList, time: "09:00 - 13:00", hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', itPaymentStatus: 'pending', staffId: parsedAssigneeId, clockInTime: null, clockOutTime: null, clockLogs: [], postedBy: currentUser.id, postedByName: currentUser.name });
+        shifts.push({ id: Date.now(), clientId: finalClientId, title: t, jobTitle: jTitle, isBlock: true, totalDays: validDays, dateRangeStr, date: startStr, datesList, time: shiftTimeStr, hoursPerDay, hours: validDays * hoursPerDay, pay: p, chargeRate: ch, status: shiftStatus, paymentStatus: 'pending', itPaymentStatus: 'pending', staffId: parsedAssigneeId, clockInTime: null, clockOutTime: null, clockLogs: [], postedBy: currentUser.id, postedByName: currentUser.name });
         emailSubject = parsedAssigneeId ? "New Contract Block Assigned To You" : "New Contract Block Available in Marketplace";
-        emailDetails = `Role: ${jTitle} - ${t} (Block Contract)\nClient: ${clientName}\nLocation: ${clientAddress}\nDates: ${dateRangeStr}\nTime: 09:00 - 13:00 (${hoursPerDay} hrs/day)\nPay Rate: £${p.toFixed(2)}/hr\n\n` + (parsedAssigneeId ? "This contract block has been directly assigned to you. Remember to Clock In and Clock Out each shift day." : "This block is open in the marketplace. Log into the portal immediately to claim the whole block!");
+        emailDetails = `Role: ${jTitle} - ${t} (Block Contract)\nClient: ${clientName}\nFull Shift Address: ${clientAddress}\nDates: ${dateRangeStr}\nShift Time: ${shiftTimeStr} (${hoursPerDay} hrs/day)\nPay Rate: £${p.toFixed(2)}/hr\n\n` + (parsedAssigneeId ? "This contract block has been directly assigned to you. Remember to Clock In and Clock Out each shift day." : "This block is open in the marketplace. Log into the portal immediately to claim the whole block!");
         showToast(`✓ Published as 1 Unified Block Shift (${validDays} Days)!`, 'bg-emerald-50 text-emerald-800');
       }
       
@@ -2215,6 +2325,8 @@
       document.getElementById('customClientName').value = '';
       document.getElementById('customPostcode').value = '';
       document.getElementById('customAddress').value = '';
+      document.getElementById('newShiftStartTime').value = '09:00';
+      document.getElementById('newShiftEndTime').value = '13:00';
       document.getElementById('newShiftHours').value = '4.0';
       document.getElementById('newShiftRangeHours').value = '4.0';
       document.getElementById('newShiftPay').value = '15.00';
@@ -2286,7 +2398,7 @@
         const staffToggle = `<button onclick="togglePaymentStatus(${s.id})" class="px-2 py-1 mb-1 w-full rounded-md text-[9px] font-black uppercase transition-colors shadow-xs cursor-pointer ${isPaid ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200'}">Staff: ${isPaid ? '<i class="fa-solid fa-check"></i> Paid' : 'Pending'}</button>`;
         const itToggle = `<button onclick="toggleITPaymentStatus(${s.id})" class="px-2 py-1 w-full rounded-md text-[9px] font-black uppercase transition-colors shadow-xs cursor-pointer ${isITPaid ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border border-indigo-200' : 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200'}">System: ${isITPaid ? '<i class="fa-solid fa-check"></i> Paid' : 'Pending'}</button>`;
 
-        return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} (${s.hours}h)</span></td><td class="p-3">${auditHTML}</td>${showFin ? `<td class="p-2 align-middle w-28">${s.status === 'completed' ? staffToggle + itToggle : '<span class="text-slate-300">-</span>'}</td><td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
+        return `<tr class="hover:bg-slate-50 text-xs"><td class="p-3"><p class="font-bold text-snoo-navy">${st ? st.name : '<span class="text-amber-600 font-bold">Unassigned (Open)</span>'}</p><p class="text-[11px] text-snoo-blue font-semibold">${cl.name}</p><span class="text-[10px] text-slate-400">${s.isBlock ? '📦 Block: ' + s.dateRangeStr : s.date} &bull; ${s.time || '09:00 - 13:00'} (${s.hours}h)</span></td><td class="p-3">${auditHTML}</td>${showFin ? `<td class="p-2 align-middle w-28">${s.status === 'completed' ? staffToggle + itToggle : '<span class="text-slate-300">-</span>'}</td><td class="p-3 text-right"><span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">£${staffEarned.toFixed(2)}</span></td><td class="p-3 text-right font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">£${itCut.toFixed(2)}</td><td class="p-3 text-right font-bold text-emerald-700">+ £${profit.toFixed(2)}</td>` : ''}</tr>`;
       }).join('');
     }
 
